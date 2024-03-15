@@ -1,10 +1,13 @@
 import 'assets/styles/globals.css'
 
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Courier_Prime } from 'next/font/google'
 import Providers from 'contexts/providers'
 
-const inter = Inter({ subsets: ['latin'] })
+const courier = Courier_Prime({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+})
 
 export const metadata: Metadata = {
   title: 'arod.studio react ts template',
@@ -14,7 +17,7 @@ export const metadata: Metadata = {
 function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={courier.className}>
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -9,6 +9,7 @@ import duration from 'dayjs/plugin/duration'
 import dayjs from 'dayjs'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { config } from '../settings/wagmi'
+import theme from 'settings/theme'
 
 dayjs.extend(duration)
 
@@ -22,7 +23,7 @@ function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <CacheProvider>
-      <ChakraProvider>
+      <ChakraProvider theme={theme}>
         <WagmiProvider config={config}>
           <QueryClientProvider client={queryClient}>
             {!mounted && <p>Loading</p>}
