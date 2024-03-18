@@ -7,22 +7,22 @@ const styles: Theme['styles'] = {
       color: theme.colors.black,
     },
     h1: {
-      color: theme.colors.black,
+      color: theme.colors.gray[700],
     },
     h2: {
-      color: theme.colors.black,
+      color: theme.colors.gray[700],
     },
     h3: {
-      color: theme.colors.black,
+      color: theme.colors.gray[700],
     },
     h4: {
-      color: theme.colors.black,
+      color: theme.colors.gray[700],
     },
     h5: {
-      color: theme.colors.black,
+      color: theme.colors.gray[700],
     },
     h6: {
-      color: theme.colors.black,
+      color: theme.colors.gray[700],
     },
   }),
 }

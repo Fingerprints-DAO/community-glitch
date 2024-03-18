@@ -1,6 +1,13 @@
-import { defineStyle, defineStyleConfig } from '@chakra-ui/react'
+import { Heading, defineStyle, defineStyleConfig } from '@chakra-ui/react'
 
 const components = {
+  Heading: defineStyleConfig({
+    baseStyle: {
+      fontWeight: 'normal',
+      pt: 12,
+      pb: 4,
+    },
+  }),
   Input: defineStyleConfig({
     baseStyle: {
       borderRadius: 0,

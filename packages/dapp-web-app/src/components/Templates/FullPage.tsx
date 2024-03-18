@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { Box, Container, Flex } from '@chakra-ui/react'
+import React from 'react'
+import { Container } from '@chakra-ui/react'
 import Header from 'components/Header'
 import Footer from 'components/Footer'
 

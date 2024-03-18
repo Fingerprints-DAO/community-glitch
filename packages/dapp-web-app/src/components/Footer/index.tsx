@@ -11,7 +11,7 @@ const glitchAddress = null
 
 const Footer = () => {
   return (
-    <Box as="footer" pb={0} pt={8} w={'auto'}>
+    <Box as="footer" pt={14} pb={6} w={'auto'}>
       <Flex flexDir={'column'} mx="auto">
         <Flex
           flexDir={'row'}
