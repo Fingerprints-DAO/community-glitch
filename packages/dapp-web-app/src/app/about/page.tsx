@@ -134,7 +134,7 @@ export default function About() {
       </Section>
 
       <Section title="Frequently asked questions">
-        <Accordion>
+        <Accordion id={'faq'}>
           {questions.map((item, index) => (
             <AccordionItem as={'article'} key={index}>
               {({ isExpanded }) => (

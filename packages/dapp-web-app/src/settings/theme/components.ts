@@ -1,5 +1,16 @@
 import { Heading, defineStyle, defineStyleConfig } from '@chakra-ui/react'
 
+const blackButton = {
+  bgColor: 'black',
+  color: 'white',
+  borderColor: 'white',
+}
+const outlineButton = {
+  bgColor: 'white',
+  color: 'black',
+  borderColor: 'black',
+}
+
 const components = {
   Heading: defineStyleConfig({
     baseStyle: {
@@ -16,63 +27,50 @@ const components = {
     },
   }),
   Button: defineStyleConfig({
-    sizes: {
-      md: {
-        // fontWeight: 'bold',
-        height: 8,
-        fontSize: 11,
-        px: 4,
-        py: 0,
-      },
-    },
     variants: {
       solid: defineStyle(({ colorScheme }) => ({
-        bgColor: `${colorScheme}.900`,
-        color: 'gray.50',
-        borderWidth: 2,
-        borderColor: `${colorScheme}.900`,
+        ...blackButton,
         _hover: {
-          bgColor: `gray.50`,
-          color: `${colorScheme}.900`,
-          borderWidth: '2px',
-          borderColor: `${colorScheme}.900`,
+          ...blackButton,
           borderStyle: 'solid',
-          _disabled: {
-            bgColor: `${colorScheme}.900`,
-            color: 'gray.50',
-            borderWidth: '2px',
-            borderColor: `${colorScheme}.900`,
-            borderStyle: 'solid',
-          },
+          // _disabled: {
+          //   bgColor: `${colorScheme}.900`,
+          //   color: 'gray.50',
+          //   borderColor: `${colorScheme}.900`,
+          //   borderStyle: 'solid',
+          // },
         },
         _active: {
-          background: ``,
+          ...outlineButton,
         },
       })),
       outline: defineStyle(({ colorScheme }) => ({
-        borderWidth: 2,
-        borderColor: `${colorScheme}.900`,
-        rounded: 'none',
-        // pt: 1,
-        // pb: 0,
+        ...outlineButton,
+        _hover: {
+          ...outlineButton,
+          borderStyle: 'solid',
+        },
+        _active: {
+          ...blackButton,
+        },
       })),
     },
     baseStyle: {
       borderRadius: 0,
-      _disabled: {
-        transition: 'none',
-      },
-      textTransform: 'uppercase',
+      textTransform: 'lowercase',
+      borderWidth: 1,
     },
   }),
   Link: defineStyleConfig({
     baseStyle: {
-      color: 'black',
-      _hover: {
-        color: 'cyan.400',
-        textDecoration: 'underline',
-      },
+      // color: 'black',
+      // _hover: {
+      //   color: 'cyan.400',
+      // },
+      color: 'gray.500',
+      textDecoration: 'underline',
     },
+    defaultProps: {},
   }),
   Checkbox: defineStyleConfig({
     baseStyle: {

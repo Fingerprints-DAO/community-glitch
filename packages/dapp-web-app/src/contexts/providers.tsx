@@ -10,6 +10,7 @@ import dayjs from 'dayjs'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { config } from '../settings/wagmi'
 import theme from 'settings/theme'
+import { useEffect } from 'react'
 
 dayjs.extend(duration)
 
@@ -17,8 +18,17 @@ const queryClient = new QueryClient()
 
 function Providers({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = React.useState(false)
-  React.useEffect(() => {
+  useEffect(() => {
     setMounted(true)
+    if (window.location.hash) {
+      setTimeout(() => {
+        const id = window.location.hash.replace('#', '')
+        const element = document.getElementById(id)
+        if (element) {
+          element.scrollIntoView()
+        }
+      }, 1000) // Ajuste o tempo conforme necessário
+    }
   }, [])
 
   return (

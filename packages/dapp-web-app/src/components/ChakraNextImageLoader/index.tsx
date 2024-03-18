@@ -54,7 +54,7 @@ export const ChakraNextImageLoader = (
         alt={alt}
         width={imageWidth}
         height={imageHeight}
-        onLoadingComplete={() => setLoading(false)}
+        onLoad={() => setLoading(false)}
         ref={ref}
         style={{
           width: '100%',
