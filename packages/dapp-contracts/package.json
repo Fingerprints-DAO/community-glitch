@@ -5,7 +5,7 @@
   "types": "dist/src/index.d.ts",
   "scripts": {
     "clean": "rm -rf cache out",
-    "build": "yarn build:ts && forge build",
+    "build": "forge build && yarn build:ts",
     "build:ts": "tsc -p tsconfig.json",
     "lint": "yarn run lint:sol && yarn run prettier:check",
     "lint:sol": "forge fmt --check && yarn solhint {script,src,test}/**/*.sol",
