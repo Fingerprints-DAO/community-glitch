@@ -37,7 +37,9 @@ const Header = ({ isDrawer = false }) => {
             h="full"
           >
             {nav.map((item, index) => {
-              const isActive = !item.isDisabled && pathname === item.href
+              const isActive =
+                (!item.isDisabled && pathname === item.href) ||
+                (pathname.includes('gallery') && item.href === '/')
               if (item.label === '') return
 
               return (

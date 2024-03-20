@@ -17,7 +17,7 @@ export const ArtGrid = () => {
       {randomTokens.map((token) => (
         <Box
           as={Link}
-          href={`/token/${token.id}`}
+          href={`/gallery/${token.id}`}
           key={token.filename}
           maxW={token.width / divisor}
         >
