@@ -1,0 +1,14 @@
+{
+  "1": {
+    "Glitch": "0xc49d27c4a520a71ff899de7aca9fb56794bb0f1e",
+    "chainId": 1
+  },
+  "31337": {
+    "Glitch": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+    "chainId": 31337
+  },
+  "11155111": {
+    "Glitch": "0xd3a2373276b23396c70abd7061bd6a5e69b1e5db",
+    "chainId": 11155111
+  }
+}

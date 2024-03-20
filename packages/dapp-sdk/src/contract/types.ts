@@ -1,5 +1,5 @@
 export interface ContractAddress {
-  ERC20Mock: string
+  Glitch: string
   chainId: number
 }
 

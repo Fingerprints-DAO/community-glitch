@@ -1,9 +1,12 @@
 {
   "name": "@dapp/contracts",
   "version": "1.0.0",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "scripts": {
     "clean": "rm -rf cache out",
-    "build": "forge build",
+    "build": "yarn build:ts && forge build",
+    "build:ts": "tsc -p tsconfig.json",
     "lint": "yarn run lint:sol && yarn run prettier:check",
     "lint:sol": "forge fmt --check && yarn solhint {script,src,test}/**/*.sol",
     "prettier:check": "prettier --check **/*.{json,md,yml} --ignore-path=.prettierignore",
