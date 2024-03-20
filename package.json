@@ -1,6 +1,10 @@
 {
   "name": "root",
   "private": true,
+  "author": {
+    "name": "arod.studio",
+    "url": "https://github.com/arodstudio"
+  },
   "scripts": {
     "dev": "yarn lerna run dev --parallel",
     "build": "yarn lerna run build"
