@@ -5,7 +5,8 @@
   "types": "dist/src/index.d.ts",
   "scripts": {
     "clean": "rm -rf cache out",
-    "build": "forge build && yarn build:ts",
+    "build": "yarn build:ts",
+    "build-local": "forge build && yarn build:ts && cp out/Glitch.sol/Glitch.json abi/Glitch.json",
     "build:ts": "tsc -p tsconfig.json",
     "lint": "yarn run lint:sol && yarn run prettier:check",
     "lint:sol": "forge fmt --check && yarn solhint {script,src,test}/**/*.sol",
