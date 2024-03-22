@@ -47,7 +47,6 @@ contract GlitchTest is PRBTest, StdCheats {
       fail('Unexpected error type');
     }
   }
-
   function test_shouldSuccessfullyMintTokenAndIncrementNextTokenId() public {
     // Arrange
     address recipient = address(0x123);
@@ -63,7 +62,6 @@ contract GlitchTest is PRBTest, StdCheats {
     vm.expectRevert(abi.encodeWithSelector(IERC721Errors.ERC721NonexistentToken.selector, initialNextTokenId + 1));
     glitch.ownerOf(initialNextTokenId + 1);
   }
-
   function test_shouldAllowMinterContractToMintAToken() public {
     // Arrange
     address recipient = address(0x123);
@@ -79,7 +77,6 @@ contract GlitchTest is PRBTest, StdCheats {
     assertEq(glitch.totalSupply(), initialNextTokenId + 1, 'Next token ID not incremented');
     assertEq(glitch.ownerOf(1), recipient, 'Incorrect token owner');
   }
-
   function test_shouldRevertIfRecipientAddressIsInvalid() public {
     // Arrange
     address recipient = address(0);
@@ -88,7 +85,6 @@ contract GlitchTest is PRBTest, StdCheats {
     vm.expectRevert('Cannot mint to zero address');
     glitch.mint(recipient);
   }
-
   function test_mintingFailsIfMaxSupplyReached() public {
     // Arrange
     address recipient = address(0x123);
@@ -102,6 +98,32 @@ contract GlitchTest is PRBTest, StdCheats {
     vm.expectRevert('Max. supply reached');
     glitch.mint(recipient);
     assertEq(glitch.totalSupply(), 50, 'Incorrect total supply');
+  }
+  function test_shouldMintSpecifiedAmountOfTokensByAdmin() public {
+    // Arrange
+    address recipient = address(0x123);
+    uint256 initialNextTokenId = glitch.totalSupply();
+    uint256 amountToMint = 5;
+
+    // Act
+    vm.prank(address(this));
+    glitch.adminMint(recipient, amountToMint);
+
+    // Assert
+    assertEq(glitch.totalSupply(), initialNextTokenId + amountToMint, 'Next token ID not incremented');
+    assertEq(glitch.ownerOf(initialNextTokenId + 1), recipient, 'Incorrect token owner');
+  }
+  function test_shouldRevertAdminMintIfItIsNotAdmin() public {
+    // Arrange
+    address recipient = address(0x123);
+    uint256 amountToMint = 5;
+
+    // Act
+    vm.prank(address(0x456));
+
+    // Assert
+    vm.expectRevert('Only owner');
+    glitch.adminMint(recipient, amountToMint);
   }
 
   // TOKEN VERSION
