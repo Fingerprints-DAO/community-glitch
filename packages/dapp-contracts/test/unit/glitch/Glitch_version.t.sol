@@ -8,122 +8,18 @@ import {stdError} from 'forge-std/src/stdError.sol';
 import {ERC721} from '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import {IERC721Errors} from '@openzeppelin/contracts/interfaces/draft-IERC6093.sol';
 
-import {Glitch, TokenVersion} from '../src/Glitch.sol';
+import {Glitch, TokenVersion} from '../../../src/Glitch.sol';
+import {Helpers} from '../../../script/Helpers.s.sol';
 
 /// @dev If this is your first time with Forge, read this tutorial in the Foundry Book:
 /// https://book.getfoundry.sh/forge/writing-tests
-contract GlitchTest is PRBTest, StdCheats {
+contract GlitchTokenVersionTest is PRBTest, StdCheats, Helpers {
   Glitch internal glitch;
 
   /// @dev A function invoked before each test_ case is run.
   function setUp() public virtual {
     // Instantiate the contract-under-test.
     glitch = new Glitch(address(this));
-  }
-  function tokenVersionToString(TokenVersion version) public pure returns (string memory) {
-    return string(abi.encodePacked(version));
-  }
-
-  //   DEPLOY
-  function test_deployWithInitialOwner() public {
-    address initialOwner = address(0x123);
-    Glitch newGlitch = new Glitch(initialOwner);
-    assertEq(newGlitch.owner(), initialOwner, 'Incorrect initial owner');
-  }
-
-  // MINT
-  function test_shouldRevertIfNonOwnerAndNonMinterContractMintsToken() public {
-    // Arrange
-    address recipient = address(0x123);
-    address nonOwnerNonMinter = address(0x456);
-
-    // Act and Assert
-    vm.prank(nonOwnerNonMinter);
-    try glitch.mint(recipient) {
-      fail("Expected to revert with 'Only minter contract and owner'");
-    } catch Error(string memory reason) {
-      assertEq(reason, 'Only minter contract and owner');
-    } catch (bytes memory) {
-      fail('Unexpected error type');
-    }
-  }
-  function test_shouldSuccessfullyMintTokenAndIncrementNextTokenId() public {
-    // Arrange
-    address recipient = address(0x123);
-    uint256 initialNextTokenId = glitch.totalSupply();
-
-    // Act
-    glitch.mint(recipient);
-
-    // Assert
-    assertEq(glitch.totalSupply(), initialNextTokenId + 1, 'Next token ID not incremented');
-
-    // // Assert
-    vm.expectRevert(abi.encodeWithSelector(IERC721Errors.ERC721NonexistentToken.selector, initialNextTokenId + 1));
-    glitch.ownerOf(initialNextTokenId + 1);
-  }
-  function test_shouldAllowMinterContractToMintAToken() public {
-    // Arrange
-    address recipient = address(0x123);
-    address minterContract = address(0x789);
-    uint256 initialNextTokenId = glitch.totalSupply();
-
-    // Act
-    glitch.setMinterContractAddress(minterContract);
-    vm.prank(minterContract);
-    glitch.mint(recipient);
-
-    // Assert
-    assertEq(glitch.totalSupply(), initialNextTokenId + 1, 'Next token ID not incremented');
-    assertEq(glitch.ownerOf(1), recipient, 'Incorrect token owner');
-  }
-  function test_shouldRevertIfRecipientAddressIsInvalid() public {
-    // Arrange
-    address recipient = address(0);
-
-    // Act and Assert
-    vm.expectRevert('Cannot mint to zero address');
-    glitch.mint(recipient);
-  }
-  function test_mintingFailsIfMaxSupplyReached() public {
-    // Arrange
-    address recipient = address(0x123);
-
-    // Act
-    for (uint i = 0; i < 49; i++) {
-      glitch.mint(recipient);
-    }
-
-    // Act and Assert
-    vm.expectRevert('Max. supply reached');
-    glitch.mint(recipient);
-    assertEq(glitch.totalSupply(), 50, 'Incorrect total supply');
-  }
-  function test_shouldMintSpecifiedAmountOfTokensByAdmin() public {
-    // Arrange
-    address recipient = address(0x123);
-    uint256 initialNextTokenId = glitch.totalSupply();
-    uint256 amountToMint = 5;
-
-    // Act
-    vm.prank(address(this));
-    glitch.adminMint(recipient, amountToMint);
-
-    // Assert
-    assertEq(glitch.totalSupply(), initialNextTokenId + amountToMint, 'Next token ID not incremented');
-    assertEq(glitch.ownerOf(initialNextTokenId + 1), recipient, 'Incorrect token owner');
-  }
-  function test_shouldRevertAdminMintIfItIsNotAdmin() public {
-    // Arrange
-    address recipient = address(0x123);
-    uint256 amountToMint = 5;
-
-    // Act
-    vm.prank(address(0x456));
-
-    // Assert
-    vm.expectRevert('Only owner');
-    glitch.adminMint(recipient, amountToMint);
   }
 
   // TOKEN VERSION
@@ -249,31 +145,5 @@ contract GlitchTest is PRBTest, StdCheats {
 
     // Assert
     assertEq(updatedVersion, after4thTransfer, 'Token version should not be updated beyond version D');
-  }
-
-  // token uri
-  function test_tokenUriNonexistentTokenId() public {
-    // Arrange
-    uint256 tokenId = 1;
-
-    // Act and Assert
-    vm.expectRevert(abi.encodeWithSelector(IERC721Errors.ERC721NonexistentToken.selector, 1));
-    glitch.tokenURI(tokenId);
-  }
-
-  function test_baseUriValueCanBeSet() public {
-    // Arrange
-    string memory baseURI = 'http://example.com/';
-
-    // Act
-    glitch.mint(msg.sender);
-    glitch.setBaseURI(baseURI);
-
-    // Assert
-    assertEq(glitch.baseURI(), baseURI, 'Base URI not set correctly');
-
-    // assert if tokenURI containes baseURI
-    string memory tokenURI = glitch.tokenURI(1);
-    assertEq(tokenURI, string(abi.encodePacked(baseURI, 'A/1')), 'Token URI does not contain base URI');
   }
 }
