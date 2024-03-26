@@ -1,0 +1,112 @@
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity >=0.8.23;
+
+import {PRBTest} from '@prb/test/src/PRBTest.sol';
+import {console2} from 'forge-std/src/console2.sol';
+import {StdCheats} from 'forge-std/src/StdCheats.sol';
+import {stdError} from 'forge-std/src/stdError.sol';
+import {ERC721} from '@openzeppelin/contracts/token/ERC721/ERC721.sol';
+import {IERC721Errors} from '@openzeppelin/contracts/interfaces/draft-IERC6093.sol';
+import {IERC721Enumerable} from '@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol';
+
+import {GlitchAuction, Bid} from '../../../src/GlitchAuction.sol';
+
+contract GlitchTest is PRBTest, StdCheats {
+  GlitchAuction internal auction;
+  address internal owner = vm.addr(2);
+  address internal alice = vm.addr(3);
+  address internal bob = vm.addr(4);
+  uint256 internal startTime = block.timestamp + 3600 * 2; // 1 hour from now
+  uint256 internal endTime = startTime + 1800; // 1 hour after start time
+  uint256 internal minBidIncrementInWei = 100;
+  uint256 internal startAmountInWei = 1000;
+
+  /// @dev A function invoked before each test_ case is run.
+  function setUp() public virtual {
+    // Instantiate the contract-under-test.
+    auction = new GlitchAuction(owner, owner);
+    vm.deal(alice, 1 ether);
+    // set config for auction to start in 2 hours and end after 30 minutes
+    vm.prank(owner);
+    auction.setConfig(startTime, endTime, minBidIncrementInWei, startAmountInWei);
+  }
+
+  // User can successfully place a bid with a bid amount greater than the current 10th highest bid.
+  function test_successfulBidWithHigherAmount() public {
+    // Arrange
+    uint256 bidAmount = 0.1 ether;
+    vm.warp(startTime + 2);
+
+    // Act
+    vm.prank(alice);
+    auction.bid{value: bidAmount}(bidAmount);
+    Bid[10] memory bids = auction.getTopBids();
+    uint256 highestBidAmount = bids[0].amount;
+
+    // Assert
+    // Check that the bid was successful by verifying that the new bid amount is now the 10th highest bid
+    assertEq(highestBidAmount, bidAmount, 'Bid was not successful');
+  }
+
+  function test_BidManyTimesAndCheckOrder() public {
+    // Arrange
+    // create a list to iterate with 11 bids, in a predetermined order
+    address[11] memory addresses = [
+      vm.addr(42),
+      vm.addr(43),
+      vm.addr(44),
+      vm.addr(45),
+      vm.addr(46),
+      vm.addr(47),
+      vm.addr(48),
+      vm.addr(49),
+      vm.addr(50),
+      vm.addr(20),
+      vm.addr(51)
+    ];
+    uint64[11] memory bidAmounts = [
+      10.9 ether,
+      0.7 ether,
+      1.9 ether,
+      0.9 ether,
+      10.8 ether,
+      1.8 ether,
+      0.8 ether,
+      10.7 ether,
+      1.7 ether,
+      10.6 ether,
+      1.6 ether
+    ];
+    // list of bidAmounts ordered using loop
+    uint64[11] memory orderedBidAmounts;
+    // set up the orderedBidAmounts list
+    for (uint256 i = 0; i < 11; i++) {
+      orderedBidAmounts[i] = bidAmounts[i];
+    }
+    // now, sort the array using a simple bubble sort in descending order
+    for (uint256 i = 0; i < 10; i++) {
+      for (uint256 j = 0; j < 10 - i; j++) {
+        if (orderedBidAmounts[j] < orderedBidAmounts[j + 1]) {
+          // swap
+          uint64 temp = orderedBidAmounts[j];
+          orderedBidAmounts[j] = orderedBidAmounts[j + 1];
+          orderedBidAmounts[j + 1] = temp;
+        }
+      }
+    }
+
+    vm.warp(startTime + 2);
+
+    // Act
+    for (uint256 i = 0; i < addresses.length; i++) {
+      vm.startPrank(addresses[i]);
+      vm.deal(addresses[i], 100 ether);
+      auction.bid{value: bidAmounts[i]}(bidAmounts[i]);
+      vm.stopPrank();
+    }
+    // Assert
+    for (uint256 i = 0; i < 10; i++) {
+      assertEq(auction.getTopBids()[i].amount, orderedBidAmounts[i], 'Incorrect order of bids');
+    }
+  }
+}

@@ -6,13 +6,14 @@
   "scripts": {
     "clean": "rm -rf cache out",
     "build": "yarn build:ts",
-    "build-local": "forge build && yarn build:ts && cp out/Glitch.sol/Glitch.json abi/Glitch.json",
+    "build-local": "forge build && yarn build:ts && cp out/Glitch.sol/Glitch.json abi/Glitch.json && cp out/GlitchAuction.sol/GlitchAuction.json abi/GlitchAuction.json",
     "build:ts": "tsc -p tsconfig.json",
     "lint": "yarn run lint:sol && yarn run prettier:check",
     "lint:sol": "forge fmt --check && yarn solhint {script,src,test}/**/*.sol",
     "prettier:check": "prettier --check **/*.{json,md,yml} --ignore-path=.prettierignore",
     "prettier:write": "prettier --write **/*.{json,md,yml} --ignore-path=.prettierignore",
     "test": "forge test",
+    "test:watch": "forge test --watch",
     "test:coverage": "forge coverage",
     "test:coverage:report": "forge coverage --report lcov && genhtml lcov.info --branch-coverage --output-dir coverage"
   },

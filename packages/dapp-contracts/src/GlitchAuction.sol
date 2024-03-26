@@ -1,9 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.23;
 
-import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol';
+import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
+import {Base} from './Base.sol';
+
+struct Bid {
+  address bidder;
+  uint256 amount;
+}
 
 /// @dev Represents the auction configuration
 struct Config {
@@ -29,12 +35,7 @@ error InvalidStartEndTime(uint256 startTime, uint256 endTime);
 /// @dev Emitted when a config-related operation is attempted before the config has been set.
 error ConfigNotSet();
 
-contract GlitchAuction is Ownable {
-  struct Bid {
-    address bidder;
-    uint256 amount;
-  }
-
+contract GlitchAuction is Base {
   uint256 public constant MAX_TOP_BIDS = 10;
   IERC721Enumerable public erc721Address;
   Bid[MAX_TOP_BIDS] public topBids;
@@ -74,7 +75,8 @@ contract GlitchAuction is Ownable {
   }
 
   /// @notice Sets the configuration parameters for the auction.
-  /// @dev This function can only be called by an admin. It can be used to set the start time, end time, minimum bid increment in WEI, and starting bid amount.
+  /// @dev This function can only be called by an admin. It can be used to set the start time, end time,
+  /// minimum bid increment in WEI, and starting bid amount.
   /// @param _startTime Auction start time
   /// @param _endTime Auction end time
   /// @param _minBidIncrementInWei Auction minimum bid increment in WEI
@@ -143,5 +145,9 @@ contract GlitchAuction is Ownable {
   /// @return config A struct containing the start time, end time, minimum bid increment in WEI, and starting bid amount of the auction.
   function getConfig() external view returns (Config memory) {
     return _config;
+  }
+
+  function getTopBids() external view returns (Bid[MAX_TOP_BIDS] memory) {
+    return topBids;
   }
 }
