@@ -10,8 +10,6 @@ import {IERC721Errors} from '@openzeppelin/contracts/interfaces/draft-IERC6093.s
 
 import {Glitch, TokenVersion} from '../../../src/Glitch.sol';
 
-/// @dev If this is your first time with Forge, read this tutorial in the Foundry Book:
-/// https://book.getfoundry.sh/forge/writing-tests
 contract GlitchMintTest is PRBTest, StdCheats {
   Glitch internal glitch;
 
@@ -47,8 +45,6 @@ contract GlitchMintTest is PRBTest, StdCheats {
 
     // Assert
     assertEq(glitch.totalSupply(), initialNextTokenId + 1, 'Next token ID not incremented');
-
-    // // Assert
     vm.expectRevert(abi.encodeWithSelector(IERC721Errors.ERC721NonexistentToken.selector, initialNextTokenId + 1));
     glitch.ownerOf(initialNextTokenId + 1);
   }

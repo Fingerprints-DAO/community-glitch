@@ -2,7 +2,8 @@
 pragma solidity >=0.8.23;
 
 import {Strings} from '@openzeppelin/contracts/utils/Strings.sol';
-import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
+import {ERC721, IERC721} from '@openzeppelin/contracts/token/ERC721/ERC721.sol';
+import {ERC721Enumerable} from '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol';
 import {ERC721URIStorage} from '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
 import {ERC721Burnable} from '@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol';
 import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
@@ -18,10 +19,10 @@ enum TokenVersion {
  * @title Glitch
  * @dev ERC721 token contract representing a collection of digital artworks
  */
-contract Glitch is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
+contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, Ownable {
   uint256 private _nextTokenId = 1;
   uint16 private _tokenIdMax = 50;
-  address private _minterContractAddress;
+  address public minterContractAddress;
   string public baseURI;
   mapping(uint256 tokenId => TokenVersion version) private _tokenVersionMap;
 
@@ -31,14 +32,15 @@ contract Glitch is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
    */
   constructor(address initialOwner) ERC721('glitch', 'GLT') Ownable(initialOwner) {
     baseURI = 'http://localhost:3000/arts/';
-    _minterContractAddress = initialOwner;
+    minterContractAddress = initialOwner;
+    Ownable(initialOwner);
   }
 
   /**
    * @dev Modifier to check if the caller is the minter contract or the owner
    */
   modifier _onlyMinterOrOwner() {
-    require(msg.sender == _minterContractAddress || msg.sender == owner(), 'Only minter contract and owner');
+    require(msg.sender == minterContractAddress || msg.sender == owner(), 'Only minter contract and owner');
     _;
   }
 
@@ -74,7 +76,7 @@ contract Glitch is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
    * @dev Returns the total number of tokens minted
    * @return The total supply of tokens
    */
-  function totalSupply() public view returns (uint256) {
+  function totalSupply() public view override(ERC721Enumerable) returns (uint256) {
     return _nextTokenId;
   }
 
@@ -139,10 +141,10 @@ contract Glitch is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
 
   /**
    * @dev Sets the address of the minter contract
-   * @param minterContractAddress The address of the minter contract
+   * @param newMinterContractAddress The address of the minter contract
    */
-  function setMinterContractAddress(address minterContractAddress) public _onlyOwner {
-    _minterContractAddress = minterContractAddress;
+  function setMinterContractAddress(address newMinterContractAddress) public _onlyOwner {
+    minterContractAddress = newMinterContractAddress;
   }
 
   /**
@@ -176,12 +178,20 @@ contract Glitch is ERC721, ERC721URIStorage, ERC721Burnable, Ownable {
     super.transferFrom(from, to, tokenId);
   }
 
+  function _update(address to, uint256 tokenId, address auth) internal override(ERC721, ERC721Enumerable) returns (address) {
+    return super._update(to, tokenId, auth);
+  }
+
+  function _increaseBalance(address account, uint128 value) internal override(ERC721, ERC721Enumerable) {
+    super._increaseBalance(account, value);
+  }
+
   /**
    * @dev Checks if a specific interface is supported by the contract
    * @param interfaceId The interface ID to check
    * @return True if the interface is supported, false otherwise
    */
-  function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721URIStorage) returns (bool) {
+  function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721URIStorage, ERC721Enumerable) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

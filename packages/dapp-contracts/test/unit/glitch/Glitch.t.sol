@@ -10,8 +10,6 @@ import {IERC721Errors} from '@openzeppelin/contracts/interfaces/draft-IERC6093.s
 
 import {Glitch, TokenVersion} from '../../../src/Glitch.sol';
 
-/// @dev If this is your first time with Forge, read this tutorial in the Foundry Book:
-/// https://book.getfoundry.sh/forge/writing-tests
 contract GlitchTest is PRBTest, StdCheats {
   Glitch internal glitch;
 
