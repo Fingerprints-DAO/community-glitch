@@ -27,13 +27,8 @@ contract GlitchMintTest is PRBTest, StdCheats {
 
     // Act and Assert
     vm.prank(nonOwnerNonMinter);
-    try glitch.mint(recipient) {
-      fail("Expected to revert with 'Only minter contract and owner'");
-    } catch Error(string memory reason) {
-      assertEq(reason, 'Only minter contract and owner');
-    } catch (bytes memory) {
-      fail('Unexpected error type');
-    }
+    vm.expectRevert('Only minter contract and owner');
+    glitch.mint(recipient);
   }
   function test_shouldSuccessfullyMintTokenAndIncrementNextTokenId() public {
     // Arrange
