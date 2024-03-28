@@ -10,7 +10,7 @@ import {IERC721Errors} from '@openzeppelin/contracts/interfaces/draft-IERC6093.s
 
 import {GlitchAuction, Config, ConfigAlreadySet} from '../../../src/GlitchAuction.sol';
 
-contract GlitchTest is PRBTest, StdCheats {
+contract GlitchConfigTest is PRBTest, StdCheats {
   GlitchAuction internal auction;
   address internal owner = vm.addr(2);
   address internal alice = vm.addr(3);

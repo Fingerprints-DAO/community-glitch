@@ -93,7 +93,7 @@ contract GlitchAuction is Base {
   }
 
   function getMinimumBid() public view returns (uint256) {
-    return topBids[9].amount + _config.minBidIncrementInWei;
+    return topBids[MAX_TOP_BIDS - 1].amount + _config.minBidIncrementInWei;
   }
 
   function bid(uint256 bidAmount) public payable validConfig validTime {
@@ -107,18 +107,18 @@ contract GlitchAuction is Base {
 
   function processBid(address bidder, uint256 amount) internal {
     uint256 position;
-    for (position = 0; position < 10; position++) {
+    for (position = 0; position < MAX_TOP_BIDS; position++) {
       if (amount > topBids[position].amount) {
         break;
       }
     }
 
-    require(position < 10, 'Bid does not qualify for top 10');
+    require(position < MAX_TOP_BIDS, 'Bid does not qualify for top bids');
 
     Bid memory outbid = topBids[MAX_TOP_BIDS - 1];
     bidBalances[outbid.bidder] = bidBalances[outbid.bidder] + outbid.amount;
 
-    for (uint256 i = 9; i > position; i--) {
+    for (uint256 i = MAX_TOP_BIDS - 1; i > position; i--) {
       topBids[i] = topBids[i - 1];
     }
 
@@ -129,7 +129,7 @@ contract GlitchAuction is Base {
     require(_config.endTime > block.timestamp, 'Auction not ended');
 
     uint256 tokenId = 0;
-    for (uint256 i = 0; i < 10; i++) {
+    for (uint256 i = 0; i < MAX_TOP_BIDS; i++) {
       if (topBids[i].bidder == msg.sender) {
         tokenId = i + 1;
         break;

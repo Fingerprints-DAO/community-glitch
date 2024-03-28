@@ -11,7 +11,7 @@ import {IERC721Enumerable} from '@openzeppelin/contracts/token/ERC721/extensions
 
 import {GlitchAuction, Bid} from '../../../src/GlitchAuction.sol';
 
-contract GlitchTest is PRBTest, StdCheats {
+contract GlitchBidTest is PRBTest, StdCheats {
   GlitchAuction internal auction;
   address internal owner = vm.addr(2);
   address internal alice = vm.addr(3);
