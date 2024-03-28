@@ -18,7 +18,7 @@ contract GlitchTest is PRBTest, StdCheats {
   address internal bob = vm.addr(4);
   uint256 internal startTime = block.timestamp + 3600 * 2; // 1 hour from now
   uint256 internal endTime = startTime + 1800; // 1 hour after start time
-  uint256 internal minBidIncrementInWei = 100;
+  uint256 internal minBidIncrementInWei = 0.01 ether;
   uint256 internal startAmountInWei = 1000;
 
   /// @dev A function invoked before each test_ case is run.
@@ -29,6 +29,40 @@ contract GlitchTest is PRBTest, StdCheats {
     // set config for auction to start in 2 hours and end after 30 minutes
     vm.prank(owner);
     auction.setConfig(startTime, endTime, minBidIncrementInWei, startAmountInWei);
+  }
+
+  function fillTopBids() internal {
+    address[10] memory addresses = [
+      vm.addr(42),
+      vm.addr(43),
+      vm.addr(44),
+      vm.addr(45),
+      vm.addr(46),
+      vm.addr(47),
+      vm.addr(48),
+      vm.addr(49),
+      vm.addr(50),
+      vm.addr(20)
+    ];
+    uint64[10] memory bidAmounts = [
+      10.9 ether, // 1st highest bid
+      0.7 ether, // 11th highest bid
+      1.9 ether, // 5th highest bid
+      0.9 ether,
+      10.8 ether, // 2nd highest bid
+      1.8 ether,
+      0.8 ether, // 10th highest bid
+      10.7 ether, // 3rd highest bid
+      1.7 ether, // 6th highest bid
+      10.6 ether
+    ];
+    // Act
+    for (uint256 i = 0; i < addresses.length; i++) {
+      vm.startPrank(addresses[i]);
+      vm.deal(addresses[i], 100 ether);
+      auction.bid{value: bidAmounts[i]}(bidAmounts[i]);
+      vm.stopPrank();
+    }
   }
 
   // User can successfully place a bid with a bid amount greater than the current 10th highest bid.
@@ -116,4 +150,31 @@ contract GlitchTest is PRBTest, StdCheats {
 
     assertEq(auction.bidBalances(addresses[1]), bidAmounts[1], 'Outbid balance incorrect');
   }
+
+  function test_outbidCanBidUsingBalance() public {
+    // Arrange
+    vm.warp(startTime + 2);
+    fillTopBids();
+    Bid memory lowestBid = auction.getTopBids()[9];
+    uint256 minimumBid = auction.getMinimumBid();
+    uint256 aliceBid = minimumBid;
+
+    // Act
+    vm.prank(alice);
+    auction.bid{value: minimumBid}(minimumBid);
+
+    minimumBid = auction.getMinimumBid();
+    vm.prank(lowestBid.bidder);
+    auction.bid{value: minimumBid - lowestBid.amount}(minimumBid);
+
+    // Assert
+    // Check that the bid was successful by verifying that the new bid amount is now the 10th highest bid
+    assertEq(auction.getTopBids()[9].amount, minimumBid, 'Bid was not successful');
+    assertEq(auction.getTopBids()[9].bidder, lowestBid.bidder, 'Bid was not successful');
+    assertEq(auction.bidBalances(lowestBid.bidder), 0, 'Bid was not successful');
+    assertEq(auction.bidBalances(alice), aliceBid, 'Alice bid was not outbid');
+  }
 }
+
+// 20000000000000000
+// 720000000000000000

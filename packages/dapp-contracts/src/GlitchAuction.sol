@@ -92,8 +92,12 @@ contract GlitchAuction is Base {
     _config = Config({startTime: _startTime, endTime: _endTime, minBidIncrementInWei: _minBidIncrementInWei});
   }
 
+  function getMinimumBid() public view returns (uint256) {
+    return topBids[9].amount + _config.minBidIncrementInWei;
+  }
+
   function bid(uint256 bidAmount) public payable validConfig validTime {
-    require(bidAmount > topBids[9].amount, 'Bid too low');
+    require(bidAmount >= getMinimumBid(), 'Bid too low');
     uint256 totalBidAmount = bidBalances[msg.sender] + msg.value;
     require(totalBidAmount >= bidAmount, 'Insufficient funds for bid');
 
