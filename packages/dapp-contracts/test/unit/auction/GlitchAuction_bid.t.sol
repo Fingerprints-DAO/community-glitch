@@ -174,7 +174,42 @@ contract GlitchTest is PRBTest, StdCheats {
     assertEq(auction.bidBalances(lowestBid.bidder), 0, 'Bid was not successful');
     assertEq(auction.bidBalances(alice), aliceBid, 'Alice bid was not outbid');
   }
-}
 
-// 20000000000000000
-// 720000000000000000
+  function test_balanceAccumulatesWhenOutbid() public {
+    // Arrange
+    vm.warp(startTime + 2);
+    fillTopBids();
+    Bid memory lowestBid = auction.getTopBids()[9];
+    Bid memory secondLowestBid = auction.getTopBids()[8];
+    uint256 minBidIncrease = auction.getConfig().minBidIncrementInWei;
+    uint256 aliceBids = 0;
+    uint256 minimunBid = auction.getMinimumBid();
+    vm.deal(alice, 100 ether);
+    vm.deal(bob, 100 ether);
+
+    // Act
+    vm.startPrank(alice);
+    uint256 aliceBid = secondLowestBid.amount + minBidIncrease;
+    auction.bid{value: aliceBid}(aliceBid);
+    aliceBids += aliceBid;
+
+    minimunBid = auction.getMinimumBid();
+    aliceBids += minimunBid;
+    auction.bid{value: minimunBid}(minimunBid);
+    vm.stopPrank();
+
+    vm.startPrank(bob);
+    auction.bid{value: aliceBid + minBidIncrease}(aliceBid + minBidIncrease);
+    auction.bid{value: aliceBid + minBidIncrease}(aliceBid + minBidIncrease);
+    vm.stopPrank();
+
+    // Assert
+    assertEq(auction.bidBalances(alice), aliceBids, 'Alice`s balance is wrong');
+    assertEq(auction.bidBalances(lowestBid.bidder), lowestBid.amount);
+    assertNotEq(secondLowestBid.bidder, auction.getTopBids()[8].bidder);
+    assertEq(auction.getTopBids()[8].bidder, bob, 'Bob bid was not successful');
+    assertEq(auction.getTopBids()[9].bidder, bob, 'Bob bid was not successful');
+  }
+
+  // check if a bid with the same value doesnt outbid previous bid with the same value
+}
