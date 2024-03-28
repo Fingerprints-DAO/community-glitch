@@ -212,4 +212,20 @@ contract GlitchTest is PRBTest, StdCheats {
   }
 
   // check if a bid with the same value doesnt outbid previous bid with the same value
+  function test_dontOutbidWithSameValue() public {
+    // Arrange
+    vm.warp(startTime + 2);
+    fillTopBids();
+    Bid memory highestBid = auction.getTopBids()[0];
+    vm.deal(alice, 100 ether);
+
+    // Act
+    vm.prank(alice);
+    auction.bid{value: highestBid.amount}(highestBid.amount);
+
+    // Assert
+    assertEq(auction.getTopBids()[0].amount, highestBid.amount, 'Bid was not successful');
+    assertEq(auction.getTopBids()[0].bidder, highestBid.bidder, 'Bid was not successful');
+    assertEq(auction.getTopBids()[1].bidder, alice, 'Bid was not successful');
+  }
 }
