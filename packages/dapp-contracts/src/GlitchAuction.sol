@@ -111,6 +111,9 @@ contract GlitchAuction is Base {
 
     require(position < 10, 'Bid does not qualify for top 10');
 
+    Bid memory outbid = topBids[MAX_TOP_BIDS - 1];
+    bidBalances[outbid.bidder] = bidBalances[outbid.bidder] + outbid.amount;
+
     for (uint256 i = 9; i > position; i--) {
       topBids[i] = topBids[i - 1];
     }

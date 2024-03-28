@@ -65,16 +65,16 @@ contract GlitchTest is PRBTest, StdCheats {
       vm.addr(51)
     ];
     uint64[11] memory bidAmounts = [
-      10.9 ether,
-      0.7 ether,
-      1.9 ether,
+      10.9 ether, // 1st highest bid
+      0.7 ether, // 11th highest bid
+      1.9 ether, // 5th highest bid
       0.9 ether,
-      10.8 ether,
+      10.8 ether, // 2nd highest bid
       1.8 ether,
-      0.8 ether,
-      10.7 ether,
-      1.7 ether,
-      10.6 ether,
+      0.8 ether, // 10th highest bid
+      10.7 ether, // 3rd highest bid
+      1.7 ether, // 6th highest bid
+      10.6 ether, // 4th highest bid
       1.6 ether
     ];
     // list of bidAmounts ordered using loop
@@ -105,8 +105,15 @@ contract GlitchTest is PRBTest, StdCheats {
       vm.stopPrank();
     }
     // Assert
+    Bid[10] memory topBids = auction.getTopBids();
     for (uint256 i = 0; i < 10; i++) {
-      assertEq(auction.getTopBids()[i].amount, orderedBidAmounts[i], 'Incorrect order of bids');
+      assertEq(topBids[i].amount, orderedBidAmounts[i], 'Incorrect order of bids');
     }
+    // Manual assert
+    assertEq(topBids[0].amount, 10.9 ether, 'Incorrect order of bids');
+    assertEq(topBids[4].amount, 1.9 ether, 'Incorrect order of bids');
+    assertEq(topBids[9].amount, 0.8 ether, 'Incorrect order of bids');
+
+    assertEq(auction.bidBalances(addresses[1]), bidAmounts[1], 'Outbid balance incorrect');
   }
 }
