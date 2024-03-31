@@ -10,10 +10,12 @@ import {IERC721Errors} from '@openzeppelin/contracts/interfaces/draft-IERC6093.s
 import {IERC721Enumerable} from '@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol';
 
 import {GlitchAuction, Bid, InvalidStartEndTime} from '../../src/GlitchAuction.sol';
+import {Glitch, TokenVersion} from '../../src/Glitch.sol';
 import {TestHelpers} from '../../script/Helpers.s.sol';
 
 contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
   GlitchAuction internal auction;
+  Glitch internal glitch;
   address internal owner = vm.addr(2);
   address internal alice = vm.addr(3);
   address internal bob = vm.addr(4);
@@ -21,14 +23,163 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
   uint256 internal endTime = startTime + 1800; // 1 hour after start time
   uint256 internal minBidIncrementInWei = 0.01 ether;
   uint256 internal startAmountInWei = 1000;
+  address[10] internal addresses = [
+    vm.addr(42),
+    vm.addr(43),
+    vm.addr(44),
+    vm.addr(45),
+    vm.addr(46),
+    vm.addr(47),
+    vm.addr(48),
+    vm.addr(49),
+    vm.addr(50),
+    vm.addr(20)
+  ];
 
   /// @dev A function invoked before each test_ case is run.
   function setUp() public virtual {
-    // Instantiate the contract-under-test.
-    auction = new GlitchAuction(owner, owner);
+    // Instantiate the contracts-under-test.
+    glitch = new Glitch(owner);
+    auction = new GlitchAuction(owner, address(glitch));
     vm.deal(alice, 1 ether);
+
+    vm.startPrank(owner);
+    // set minter contract address
+    glitch.setMinterContractAddress(address(auction));
     // set config for auction to start in 2 hours and end after 30 minutes
-    vm.prank(owner);
     auction.setConfig(startTime, endTime, minBidIncrementInWei, startAmountInWei);
+    vm.stopPrank();
+  }
+
+  function fillTopBids() internal {
+    uint64[10] memory bidAmounts = [
+      10.9 ether, // 1st highest bid
+      0.7 ether, // 11th highest bid
+      1.9 ether, // 5th highest bid
+      0.9 ether,
+      10.8 ether, // 2nd highest bid
+      1.8 ether,
+      0.8 ether, // 10th highest bid
+      10.7 ether, // 3rd highest bid
+      1.7 ether, // 6th highest bid
+      10.6 ether
+    ];
+    // Act
+    for (uint256 i = 0; i < addresses.length; i++) {
+      vm.startPrank(addresses[i]);
+      vm.deal(addresses[i], 100 ether);
+      auction.bid{value: bidAmounts[i]}(bidAmounts[i]);
+      vm.stopPrank();
+    }
+  }
+
+  function test_claimAll_TransferNFTsAndRefund() public {
+    // Arrange
+    // fill top bids
+    vm.warp(startTime + 2);
+    fillTopBids();
+
+    // bid top 1
+    vm.deal(alice, 100 ether);
+    vm.startPrank(alice);
+    uint256 aliceBid = 99 ether;
+    auction.bid{value: aliceBid}(aliceBid);
+
+    uint256 aliceBalance = alice.balance;
+    uint256 settledPrice = auction.getSettledPrice();
+    uint256 refundAmount = aliceBid - settledPrice;
+    uint256 tokenId = 1;
+
+    // end the auction
+    vm.warp(endTime + 1);
+    // Act
+    // alice claim the nfts and refund
+    auction.claimAll();
+    vm.stopPrank();
+
+    // Assert
+    assert(auction.claimed(alice));
+    assertEq(alice.balance, aliceBalance + refundAmount, 'Caller`s bid balance should sum to refund amount');
+    assertEq(glitch.ownerOf(tokenId), alice, 'NFT should be transferred to recipient');
+  }
+
+  function test_claimAll_TransferNFTsAndRefund_With2WinnerBids() public {
+    // Arrange
+    // fill top bids
+    vm.warp(startTime + 2);
+    fillTopBids();
+
+    // bid top 1
+    vm.deal(alice, 100 ether);
+    vm.startPrank(alice);
+    uint256 aliceFirstBid = 80 ether;
+    auction.bid{value: aliceFirstBid}(aliceFirstBid);
+
+    uint256 aliceSecondBid = auction.getMinimumBid();
+    auction.bid{value: aliceSecondBid}(aliceSecondBid);
+
+    uint256 aliceBalance = alice.balance;
+    uint256 settledPrice = auction.getSettledPrice();
+    uint256 refundAmount = aliceFirstBid + aliceSecondBid - (settledPrice * 2);
+
+    // end the auction
+    vm.warp(endTime + 1);
+    // Act
+    // alice claim the nfts and refund
+    auction.claimAll();
+    vm.stopPrank();
+
+    // Assert
+    assert(auction.claimed(alice));
+    assertEq(alice.balance, aliceBalance + refundAmount, 'Caller`s bid balance should sum to refund amount');
+    assertEq(alice.balance, aliceBalance + aliceFirstBid - settledPrice, 'Last bid is not refunded once it`s the settled price');
+    assertEq(glitch.ownerOf(1), alice, 'NFT should be minted to recipient');
+    assertEq(glitch.ownerOf(2), alice, 'NFT should be minted to recipient');
+  }
+
+  function test_claimAll_TransferNFTsAndRefund_With2WinnerBidsAndOneOutbid() public {
+    // Arrange
+    // fill top bids
+    vm.warp(startTime + 2);
+    fillTopBids();
+
+    // bid top 1
+    vm.deal(alice, 100 ether);
+    vm.startPrank(alice);
+    uint256 aliceFirstBid = 80 ether;
+    auction.bid{value: aliceFirstBid}(aliceFirstBid);
+
+    uint256 aliceSecondBid = auction.getMinimumBid();
+    auction.bid{value: aliceSecondBid}(aliceSecondBid);
+
+    vm.stopPrank();
+
+    // outbid last bid
+    vm.deal(bob, 1 ether);
+    vm.prank(bob);
+    uint256 bobBid = auction.getMinimumBid();
+    auction.bid{value: bobBid}(bobBid);
+
+    // end the auction
+    vm.warp(endTime + 1);
+
+    uint256 aliceBalance = alice.balance;
+    uint256 settledPrice = auction.getSettledPrice();
+    uint256 refundAliceAmount = aliceFirstBid - settledPrice;
+
+    // Act
+    // alice claim the nfts and refund
+    vm.prank(alice);
+    auction.claimAll();
+
+    // Assert
+    assert(auction.claimed(alice));
+    assert(!auction.claimed(bob));
+    assertEq(glitch.balanceOf(alice), 1, 'Alice must be owner of one NFT');
+    assertEq(alice.balance, aliceBalance + refundAliceAmount + aliceSecondBid, 'Caller`s bid balance should sum to refund amount');
+    assertEq(glitch.ownerOf(1), alice, 'NFT should be minted to recipient');
+
+    vm.expectRevert(abi.encodeWithSelector(IERC721Errors.ERC721NonexistentToken.selector, 2));
+    glitch.ownerOf(2);
   }
 }

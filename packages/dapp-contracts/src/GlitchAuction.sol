@@ -5,6 +5,7 @@ import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol';
 import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
 import {Base} from './Base.sol';
+import {IGlitch} from './IGlitch.sol';
 
 struct Bid {
   address bidder;
@@ -35,9 +36,10 @@ error ConfigNotSet();
 
 contract GlitchAuction is Base {
   uint256 public constant MAX_TOP_BIDS = 10;
-  IERC721Enumerable public erc721Address;
+  IGlitch public erc721Address;
   Bid[MAX_TOP_BIDS] public topBids;
   mapping(address => uint256) public bidBalances;
+  mapping(address => bool) public claimed;
   /// @dev Auction Config
   Config private _config;
 
@@ -69,7 +71,7 @@ contract GlitchAuction is Base {
   }
 
   constructor(address initialOwner, address _erc721Address) Ownable(initialOwner) {
-    erc721Address = IERC721Enumerable(_erc721Address);
+    erc721Address = IGlitch(_erc721Address);
   }
 
   /// @notice Sets the configuration parameters for the auction.
@@ -133,7 +135,7 @@ contract GlitchAuction is Base {
     }
 
     require(tokenId > 0, 'Not a top bidder or already claimed');
-    erc721Address.safeTransferFrom(address(this), msg.sender, tokenId);
+    erc721Address.mint(msg.sender);
   }
 
   function claimRefund() public {
@@ -144,6 +146,31 @@ contract GlitchAuction is Base {
     payable(msg.sender).transfer(refundAmount);
   }
 
+  function claimAll() public {
+    require(block.timestamp > _config.endTime, 'Auction not ended');
+    require(!claimed[msg.sender], 'Already claimed');
+
+    uint256 nftsMinted = 0;
+    uint256 amountSpent = 0;
+    claimed[msg.sender] = true;
+    for (uint256 i = 0; i < MAX_TOP_BIDS; i++) {
+      if (topBids[i].bidder == msg.sender) {
+        // erc721Address.safeTransferFrom(address(this), msg.sender, i + 1);
+        erc721Address.mint(msg.sender);
+        nftsMinted++;
+        amountSpent += topBids[i].amount;
+      }
+    }
+    uint256 refundAmount = bidBalances[msg.sender] + (amountSpent - (nftsMinted * topBids[MAX_TOP_BIDS - 1].amount));
+    if (refundAmount > 0) {
+      bidBalances[msg.sender] = 0;
+      payable(msg.sender).transfer(refundAmount);
+    }
+  }
+
+  function getSettledPrice() external view returns (uint256) {
+    return topBids[MAX_TOP_BIDS - 1].amount;
+  }
   /// @notice Gets the current configuration parameters of the auction.
   /// @return config A struct containing the start time, end time, minimum bid increment in WEI, and starting bid amount of the auction.
   function getConfig() external view returns (Config memory) {
