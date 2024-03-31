@@ -20,8 +20,6 @@ struct Config {
   /// @notice The minimum value to increase the current bid in WEI.
   uint256 minBidIncrementInWei;
 }
-/// @dev Emitted when trying to set the contract config when it's already been set.
-error ConfigAlreadySet();
 
 /// @dev Emitted when the amount of wei provided for a bid or starting bid is invalid. This usually means the amount is zero.
 error InvalidAmountInWei();
@@ -82,8 +80,6 @@ contract GlitchAuction is Base {
   /// @param _minBidIncrementInWei Auction minimum bid increment in WEI
   /// @param _startAmountInWei Auction starting bid
   function setConfig(uint256 _startTime, uint256 _endTime, uint256 _minBidIncrementInWei, uint256 _startAmountInWei) external _onlyOwner {
-    if (_config.startTime != 0 && _config.startTime <= block.timestamp) revert ConfigAlreadySet();
-
     if (_startTime == 0 || _startTime >= _endTime) revert InvalidStartEndTime(_startTime, _endTime);
     if (_startAmountInWei == 0) revert InvalidAmountInWei();
 

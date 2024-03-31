@@ -9,8 +9,8 @@ import {ERC721} from '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import {IERC721Errors} from '@openzeppelin/contracts/interfaces/draft-IERC6093.sol';
 import {IERC721Enumerable} from '@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol';
 
-import {GlitchAuction, Bid, InvalidStartEndTime} from '../../../src/GlitchAuction.sol';
-import {TestHelpers} from '../../../script/Helpers.s.sol';
+import {GlitchAuction, Bid, InvalidStartEndTime} from '../../src/GlitchAuction.sol';
+import {TestHelpers} from '../../script/Helpers.s.sol';
 
 contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
   GlitchAuction internal auction;
@@ -30,23 +30,5 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     // set config for auction to start in 2 hours and end after 30 minutes
     vm.prank(owner);
     auction.setConfig(startTime, endTime, minBidIncrementInWei, startAmountInWei);
-  }
-
-  // Test if can bid after auction ended
-  function test_canBidAfterEnded() public {
-    // Arrange
-    vm.warp(startTime + 2);
-    uint256 minBid = auction.getMinimumBid();
-
-    // Act
-    vm.prank(alice);
-    auction.bid{value: minBid}(minBid);
-    vm.warp(endTime);
-
-    // Assert
-    minBid = auction.getMinimumBid();
-    vm.prank(alice);
-    vm.expectRevert(abi.encodeWithSelector(InvalidStartEndTime.selector, startTime, endTime));
-    auction.bid{value: minBid}(minBid);
   }
 }

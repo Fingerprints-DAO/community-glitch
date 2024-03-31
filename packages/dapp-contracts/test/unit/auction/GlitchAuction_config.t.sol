@@ -8,13 +8,17 @@ import {stdError} from 'forge-std/src/stdError.sol';
 import {ERC721} from '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import {IERC721Errors} from '@openzeppelin/contracts/interfaces/draft-IERC6093.sol';
 
-import {GlitchAuction, Config, ConfigAlreadySet} from '../../../src/GlitchAuction.sol';
+import {GlitchAuction, Config, InvalidStartEndTime} from '../../../src/GlitchAuction.sol';
 
 contract GlitchConfigTest is PRBTest, StdCheats {
   GlitchAuction internal auction;
   address internal owner = vm.addr(2);
   address internal alice = vm.addr(3);
   address internal bob = vm.addr(4);
+  uint256 internal startTime = block.timestamp + 3600; // 1 hour from now
+  uint256 internal endTime = startTime + 3600; // 1 hour after start time
+  uint256 internal minBidIncrementInWei = 100;
+  uint256 internal startAmountInWei = 1000;
 
   /// @dev A function invoked before each test_ case is run.
   function setUp() public virtual {
@@ -31,10 +35,6 @@ contract GlitchConfigTest is PRBTest, StdCheats {
   // Set valid configuration parameters and verify they are stored correctly.
   function test_setValidConfigurationParameters() public {
     // Arrange
-    uint256 startTime = block.timestamp + 3600; // 1 hour from now
-    uint256 endTime = startTime + 3600; // 1 hour after start time
-    uint256 minBidIncrementInWei = 100;
-    uint256 startAmountInWei = 1000;
 
     // Act
     vm.prank(owner);
@@ -47,33 +47,33 @@ contract GlitchConfigTest is PRBTest, StdCheats {
     assertEq(config.minBidIncrementInWei, minBidIncrementInWei, 'Min bid increment should be set correctly');
   }
 
-  function test_revertIfConfigAlreadySetAndStartTimeInPast() public {
-    // Arrange
-    uint256 startTime = block.timestamp - 100;
-    uint256 endTime = startTime + 1000;
-    uint256 minBidIncrementInWei = 100;
-    uint256 startAmountInWei = 1000;
-
-    vm.prank(owner);
-    auction.setConfig(block.timestamp, endTime, minBidIncrementInWei, startAmountInWei);
-
-    // Act and Assert
-    vm.prank(owner);
-    vm.expectRevert(ConfigAlreadySet.selector);
-    auction.setConfig(startTime, endTime, minBidIncrementInWei, startAmountInWei);
-  }
   function test_revertIfCalledByNonOwner() public {
-    // Arrange
-    uint256 startTime = block.timestamp + 3600; // 1 hour from now
-    uint256 endTime = startTime + 3600; // 1 hour after start time
-    uint256 minBidIncrementInWei = 100;
-    uint256 startAmountInWei = 1000;
-
     // Act
     vm.prank(alice);
 
     // As
     vm.expectRevert('Only owner');
     auction.setConfig(startTime, endTime, minBidIncrementInWei, startAmountInWei);
+  }
+
+  // Test if can bid after auction ended
+  function test_canBidAfterEnded() public {
+    // Arrange
+    vm.prank(owner);
+    auction.setConfig(startTime, endTime, minBidIncrementInWei, startAmountInWei);
+    vm.warp(startTime + 2);
+    uint256 minBid = auction.getMinimumBid();
+
+    // Act
+    vm.deal(alice, 1 ether);
+    vm.prank(alice);
+    auction.bid{value: minBid}(minBid);
+    vm.warp(endTime);
+
+    // Assert
+    minBid = auction.getMinimumBid();
+    vm.prank(alice);
+    vm.expectRevert(abi.encodeWithSelector(InvalidStartEndTime.selector, startTime, endTime));
+    auction.bid{value: minBid}(minBid);
   }
 }
