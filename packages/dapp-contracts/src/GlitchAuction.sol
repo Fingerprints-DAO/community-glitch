@@ -37,6 +37,8 @@ error ConfigNotSet();
 
 contract GlitchAuction is Base {
   uint256 public constant MAX_TOP_BIDS = 10;
+  address public treasuryWallet;
+  bool public withdrawn;
   IGlitch public erc721Address;
   Bid[MAX_TOP_BIDS] public topBids;
   mapping(address => uint256) public bidBalances;
@@ -71,8 +73,10 @@ contract GlitchAuction is Base {
     _;
   }
 
+  // TODO: add treasuryWallet argument instead using initialOwner and add setTreasuryWallet function
   constructor(address initialOwner, address _erc721Address) Ownable(initialOwner) {
     erc721Address = IGlitch(_erc721Address);
+    treasuryWallet = initialOwner;
   }
 
   /// @notice Sets the configuration parameters for the auction.
@@ -89,10 +93,6 @@ contract GlitchAuction is Base {
     if (_minBidIncrementInWei == 0) revert InvalidMinBidIncrementValue();
 
     _config = Config({startTime: _startTime, endTime: _endTime, minBidIncrementInWei: _minBidIncrementInWei});
-  }
-
-  function getMinimumBid() public view returns (uint256) {
-    return topBids[MAX_TOP_BIDS - 1].amount + _config.minBidIncrementInWei;
   }
 
   function bid(uint256 bidAmount) public payable validConfig validTime {
@@ -162,15 +162,26 @@ contract GlitchAuction is Base {
         amountSpent += topBids[i].amount;
       }
     }
-    uint256 refundAmount = bidBalances[msg.sender] + (amountSpent - (nftsMinted * topBids[MAX_TOP_BIDS - 1].amount));
+    uint256 refundAmount = bidBalances[msg.sender] + (amountSpent - (nftsMinted * getSettledPrice()));
     if (refundAmount > 0) {
       bidBalances[msg.sender] = 0;
       payable(msg.sender).transfer(refundAmount);
     }
   }
 
-  function getSettledPrice() external view returns (uint256) {
+  function withdraw() public _onlyOwner {
+    require(block.timestamp > _config.endTime, 'Auction not ended');
+    require(!withdrawn, 'Already withdrawn');
+    withdrawn = true;
+    uint256 salesAmount = getSettledPrice() * MAX_TOP_BIDS;
+    payable(treasuryWallet).transfer(salesAmount);
+  }
+
+  function getSettledPrice() public view returns (uint256) {
     return topBids[MAX_TOP_BIDS - 1].amount;
+  }
+  function getMinimumBid() public view returns (uint256) {
+    return getSettledPrice() + _config.minBidIncrementInWei;
   }
   /// @notice Gets the current configuration parameters of the auction.
   /// @return config A struct containing the start time, end time, minimum bid increment in WEI, and starting bid amount of the auction.

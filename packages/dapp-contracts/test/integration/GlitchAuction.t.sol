@@ -23,6 +23,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
   uint256 internal endTime = startTime + 1800; // 1 hour after start time
   uint256 internal minBidIncrementInWei = 0.01 ether;
   uint256 internal startAmountInWei = 1000;
+  uint256 internal constant MAX_TOP_BIDS = 10;
   address[10] internal addresses = [
     vm.addr(42),
     vm.addr(43),
@@ -253,5 +254,88 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     assertEq(alice.balance, aliceBalance, 'Alice bid should keep the same after claim refund');
     assertEq(settledPrice, aliceBid, 'Settled price should be equal to last bid which is aliceBid');
     assertEq(glitch.ownerOf(1), alice, 'NFT should be minted to recipient');
+  }
+
+  function test_withdrawCorrectValue() public {
+    // Arrange
+    // fill top bids
+    vm.warp(startTime + 1);
+    fillTopBids();
+    vm.warp(endTime + 1);
+    uint256 settledPrice = auction.getSettledPrice();
+    uint256 ownerBalance = owner.balance;
+
+    // Act
+    vm.prank(owner);
+    auction.withdraw();
+
+    // Assert
+    assertEq(owner.balance, ownerBalance + settledPrice * MAX_TOP_BIDS, '');
+  }
+  function test_revertWhenWithdrawingTwice() public {
+    // Arrange
+    // fill top bids
+    vm.warp(startTime + 1);
+    fillTopBids();
+    vm.warp(endTime + 1);
+
+    // Act
+    vm.prank(owner);
+    auction.withdraw();
+
+    // Assert
+    vm.prank(owner);
+    vm.expectRevert('Already withdrawn');
+    auction.withdraw();
+  }
+  function test_revertWhenWithdrawIfNotOwner() public {
+    // Arrange
+    // fill top bids
+    vm.warp(startTime + 1);
+    fillTopBids();
+    vm.warp(endTime);
+
+    // Assert
+    vm.prank(alice);
+    vm.expectRevert('Only owner');
+    auction.withdraw();
+  }
+  function test_revertWhenWithdrawBeforeAuctionEnding() public {
+    // Arrange
+    // fill top bids
+    vm.warp(startTime + 1);
+    fillTopBids();
+
+    // Assert
+    vm.prank(owner);
+    vm.expectRevert('Auction not ended');
+    auction.withdraw();
+  }
+  function test_adminMintAndAuctionWorksFine() public {
+    // Arrange
+    vm.startPrank(owner);
+    glitch.adminMint(alice, 5);
+    vm.warp(startTime + 1);
+    glitch.adminMint(bob, 3);
+    vm.stopPrank();
+
+    // Act
+    fillTopBids();
+    vm.deal(alice, 1 ether);
+    vm.prank(alice);
+    auction.bid{value: 1 ether}(1 ether);
+
+    vm.warp(endTime + 1);
+    vm.prank(alice);
+    auction.claimAll();
+
+    // Assert
+    assertEq(glitch.balanceOf(alice), 6, 'Alice should own 6 NFTs');
+    assertEq(glitch.balanceOf(bob), 3, 'Bob should own 3 NFTs');
+    assertEq(glitch.ownerOf(9), alice, 'NFT should be minted to recipient');
+    assertEq(glitch.ownerOf(7), bob, 'NFT should be minted to recipient');
+
+    vm.expectRevert(abi.encodeWithSelector(IERC721Errors.ERC721NonexistentToken.selector, 10));
+    glitch.ownerOf(10);
   }
 }
