@@ -33,7 +33,6 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, O
   constructor(address initialOwner) ERC721('glitch', 'GLT') Ownable(initialOwner) {
     baseURI = 'http://localhost:3000/arts/';
     minterContractAddress = initialOwner;
-    Ownable(initialOwner);
   }
 
   /**

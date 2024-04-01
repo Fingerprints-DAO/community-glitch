@@ -8,12 +8,13 @@ import {Base} from './Base.sol';
 import {IGlitch} from './IGlitch.sol';
 // import {console2} from 'forge-std/src/console2.sol';
 
+/// @dev Represents a bid in the auction.
 struct Bid {
   address bidder;
   uint256 amount;
 }
 
-/// @dev Represents the auction configuration
+/// @dev Represents the auction configuration.
 struct Config {
   /// @notice The start time of the auction.
   uint256 startTime;
@@ -36,14 +37,43 @@ error InvalidStartEndTime(uint256 startTime, uint256 endTime);
 error ConfigNotSet();
 
 contract GlitchAuction is Base {
+  /**
+   * @notice MAX_TOP_BIDS represents the maximum number of top bids that can be stored.
+   */
   uint256 public constant MAX_TOP_BIDS = 10;
+  /**
+   * @notice treasuryWallet stores the address of the treasury wallet where auction funds are sent.
+   */
   address public treasuryWallet;
+
+  /**
+   * @notice withdrawn indicates whether the auction funds have been withdrawn post-auction.
+   */
   bool public withdrawn;
+
+  /**
+   * @notice erc721Address stores the address of the ERC721 token (Glitch NFT) being auctioned.
+   */
   IGlitch public erc721Address;
+
+  /**
+   * @notice topBids stores the top bids in the auction up to a maximum of MAX_TOP_BIDS.
+   */
   Bid[MAX_TOP_BIDS] public topBids;
+
+  /**
+   * @notice bidBalances maps each bidder's address to their total bid amount in the auction.
+   */
   mapping(address => uint256) public bidBalances;
+
+  /**
+   * @notice claimed maps each bidder's address to a boolean indicating whether they have claimed their NFT and/or refund.
+   */
   mapping(address => bool) public claimed;
-  /// @dev Auction Config
+
+  /**
+   * @dev _config stores the configuration of the auction, including start time, end time, and minimum bid increment.
+   */
   Config private _config;
 
   /**
@@ -73,7 +103,12 @@ contract GlitchAuction is Base {
     _;
   }
 
-  // TODO: add treasuryWallet argument instead using initialOwner and add setTreasuryWallet function
+  // TODO: add treasuryWallet argument instead using initialOwner
+  /**
+   * @dev Constructor to initialize the auction with the owner and the ERC721 address.
+   * @param initialOwner The initial owner of the contract.
+   * @param _erc721Address The address of the ERC721 token to be auctioned.
+   */
   constructor(address initialOwner, address _erc721Address) Ownable(initialOwner) {
     erc721Address = IGlitch(_erc721Address);
     treasuryWallet = initialOwner;
@@ -95,11 +130,19 @@ contract GlitchAuction is Base {
     _config = Config({startTime: _startTime, endTime: _endTime, minBidIncrementInWei: _minBidIncrementInWei});
   }
 
+  /**
+   * @dev Allows the owner to set a new treasury wallet address.
+   * @param newWallet The new treasury wallet address.
+   */
   function setTreasuryWallet(address newWallet) external _onlyOwner {
     require(newWallet != address(0), 'Invalid address');
     treasuryWallet = newWallet;
   }
 
+  /**
+   * @dev Allows users to place bids on the auction.
+   * @param bidAmount The amount of the bid.
+   */
   function bid(uint256 bidAmount) public payable validConfig validTime {
     require(bidAmount >= getMinimumBid(), 'Bid too low');
     uint256 totalBidAmount = bidBalances[msg.sender] + msg.value;
@@ -109,6 +152,11 @@ contract GlitchAuction is Base {
     processBid(msg.sender, bidAmount);
   }
 
+  /**
+   * @dev Internal function to process a bid.
+   * @param bidder The address of the bidder.
+   * @param amount The amount of the bid.
+   */
   function processBid(address bidder, uint256 amount) internal {
     uint256 position;
     for (position = 0; position < MAX_TOP_BIDS; position++) {
@@ -152,6 +200,9 @@ contract GlitchAuction is Base {
   //   payable(msg.sender).transfer(refundAmount);
   // }
 
+  /**
+   * @dev Allows users to claim their NFTs and any refunds after the auction ends.
+   */
   function claimAll() public {
     require(block.timestamp > _config.endTime, 'Auction not ended');
     require(!claimed[msg.sender], 'Already claimed');
@@ -174,6 +225,9 @@ contract GlitchAuction is Base {
     }
   }
 
+  /**
+   * @dev Allows the owner to withdraw the sales amount after the auction ends.
+   */
   function withdraw() public _onlyOwner {
     require(block.timestamp > _config.endTime, 'Auction not ended');
     require(!withdrawn, 'Already withdrawn');
@@ -182,18 +236,32 @@ contract GlitchAuction is Base {
     payable(treasuryWallet).transfer(salesAmount);
   }
 
+  /**
+   * @dev Returns the settled price of the auction.
+   * @return The price of the lowest winning bid.
+   */
   function getSettledPrice() public view returns (uint256) {
     return topBids[MAX_TOP_BIDS - 1].amount;
   }
+  /**
+   * @dev Returns the minimum bid amount required to place a bid.
+   * @return The minimum bid amount.
+   */
   function getMinimumBid() public view returns (uint256) {
     return getSettledPrice() + _config.minBidIncrementInWei;
   }
-  /// @notice Gets the current configuration parameters of the auction.
-  /// @return config A struct containing the start time, end time, minimum bid increment in WEI, and starting bid amount of the auction.
+  /**
+   * @dev Returns the current configuration of the auction.
+   * @return The auction configuration.
+   */
   function getConfig() external view returns (Config memory) {
     return _config;
   }
 
+  /**
+   * @dev Returns the top bids of the auction.
+   * @return An array of the top bids.
+   */
   function getTopBids() external view returns (Bid[MAX_TOP_BIDS] memory) {
     return topBids;
   }
