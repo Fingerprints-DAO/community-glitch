@@ -239,6 +239,7 @@ contract GlitchAuction is Base {
 
     uint256 nftsMinted = 0;
     uint256 amountSpent = 0;
+    DiscountType discountType = DiscountType.None;
     claimed[msg.sender] = true;
     for (uint256 i = 0; i < MAX_TOP_BIDS; i++) {
       if (topBids[i].bidder == msg.sender) {
@@ -246,9 +247,12 @@ contract GlitchAuction is Base {
         erc721Address.mint(msg.sender);
         nftsMinted++;
         amountSpent += topBids[i].amount;
+        if (topBids[i].discountType != DiscountType.None) {
+          discountType = topBids[i].discountType;
+        }
       }
     }
-    uint256 refundAmount = bidBalances[msg.sender] + (amountSpent - (nftsMinted * getSettledPrice()));
+    uint256 refundAmount = bidBalances[msg.sender] + (amountSpent - (nftsMinted * getSettledPriceWithDiscount(discountType)));
     if (refundAmount > 0) {
       bidBalances[msg.sender] = 0;
       payable(msg.sender).transfer(refundAmount);
@@ -262,8 +266,23 @@ contract GlitchAuction is Base {
     require(block.timestamp > _config.endTime, 'Auction not ended');
     require(!withdrawn, 'Already withdrawn');
     withdrawn = true;
-    uint256 salesAmount = getSettledPrice() * MAX_TOP_BIDS;
-    (bool success, ) = treasuryWallet.call{value: salesAmount, gas: FUNDS_SEND_GAS_LIMIT}('');
+    uint256 givenFirstTierDiscount = 0;
+    uint256 givenSecondTierDiscount = 0;
+
+    for (uint256 i = 0; i < MAX_TOP_BIDS; i++) {
+      if (topBids[i].discountType == DiscountType.FirstTier) {
+        givenFirstTierDiscount++;
+      } else if (topBids[i].discountType == DiscountType.SecondTier) {
+        givenSecondTierDiscount++;
+      }
+    }
+
+    uint256 salesAmountWithDiscount = getSettledPriceWithDiscount(DiscountType.FirstTier) *
+      givenFirstTierDiscount +
+      getSettledPriceWithDiscount(DiscountType.SecondTier) *
+      givenSecondTierDiscount;
+    uint256 salesAmount = getSettledPrice() * MAX_TOP_BIDS - givenFirstTierDiscount + givenSecondTierDiscount;
+    (bool success, ) = treasuryWallet.call{value: salesAmountWithDiscount + salesAmount, gas: FUNDS_SEND_GAS_LIMIT}('');
     require(success, 'Transfer failed.');
   }
 
@@ -287,6 +306,23 @@ contract GlitchAuction is Base {
    */
   function getSettledPrice() public view returns (uint256) {
     return topBids[MAX_TOP_BIDS - 1].amount;
+  }
+
+  /**
+   * @dev Returns the settled price of the auction with discount.
+   * @param discountType The type of discount to apply.
+   * @return The price of the lowest winning bid.
+   */
+  function getSettledPriceWithDiscount(DiscountType discountType) public view returns (uint256) {
+    if (discountType == DiscountType.None) {
+      return getSettledPrice();
+    }
+
+    if (discountType == DiscountType.FirstTier) {
+      return (getSettledPrice() * 80) / 100; // 20% discount
+    }
+
+    return (getSettledPrice() * 85) / 100; // 15% discount
   }
   /**
    * @dev Returns the minimum bid amount required to place a bid.
