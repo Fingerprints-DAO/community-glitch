@@ -41,7 +41,7 @@ contract TestHelpers is PRBTest {
     for (uint256 i = 0; i < addresses.length; i++) {
       vm.startPrank(addresses[i]);
       vm.deal(addresses[i], 100 ether);
-      auction.bid{value: bidAmounts[i]}(bidAmounts[i]);
+      auction.bid{value: bidAmounts[i]}(bidAmounts[i], new bytes32[](1));
       vm.stopPrank();
     }
   }

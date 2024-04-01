@@ -24,7 +24,7 @@ contract GlitchBidTest is PRBTest, StdCheats {
   /// @dev A function invoked before each test_ case is run.
   function setUp() public virtual {
     // Instantiate the contract-under-test.
-    auction = new GlitchAuction(owner, owner);
+    auction = new GlitchAuction(owner, owner, owner);
     vm.deal(alice, 1 ether);
     // set config for auction to start in 2 hours and end after 30 minutes
     vm.prank(owner);
@@ -60,7 +60,7 @@ contract GlitchBidTest is PRBTest, StdCheats {
     for (uint256 i = 0; i < addresses.length; i++) {
       vm.startPrank(addresses[i]);
       vm.deal(addresses[i], 100 ether);
-      auction.bid{value: bidAmounts[i]}(bidAmounts[i]);
+      auction.bid{value: bidAmounts[i]}(bidAmounts[i], new bytes32[](1));
       vm.stopPrank();
     }
   }
@@ -73,7 +73,7 @@ contract GlitchBidTest is PRBTest, StdCheats {
 
     // Act
     vm.prank(alice);
-    auction.bid{value: bidAmount}(bidAmount);
+    auction.bid{value: bidAmount}(bidAmount, new bytes32[](1));
     Bid[10] memory bids = auction.getTopBids();
     uint256 highestBidAmount = bids[0].amount;
 
@@ -135,7 +135,7 @@ contract GlitchBidTest is PRBTest, StdCheats {
     for (uint256 i = 0; i < addresses.length; i++) {
       vm.startPrank(addresses[i]);
       vm.deal(addresses[i], 100 ether);
-      auction.bid{value: bidAmounts[i]}(bidAmounts[i]);
+      auction.bid{value: bidAmounts[i]}(bidAmounts[i], new bytes32[](1));
       vm.stopPrank();
     }
     // Assert
@@ -161,11 +161,11 @@ contract GlitchBidTest is PRBTest, StdCheats {
 
     // Act
     vm.prank(alice);
-    auction.bid{value: minimumBid}(minimumBid);
+    auction.bid{value: minimumBid}(minimumBid, new bytes32[](1));
 
     minimumBid = auction.getMinimumBid();
     vm.prank(lowestBid.bidder);
-    auction.bid{value: minimumBid - lowestBid.amount}(minimumBid);
+    auction.bid{value: minimumBid - lowestBid.amount}(minimumBid, new bytes32[](1));
 
     // Assert
     // Check that the bid was successful by verifying that the new bid amount is now the 10th highest bid
@@ -190,17 +190,17 @@ contract GlitchBidTest is PRBTest, StdCheats {
     // Act
     vm.startPrank(alice);
     uint256 aliceBid = secondLowestBid.amount + minBidIncrease;
-    auction.bid{value: aliceBid}(aliceBid);
+    auction.bid{value: aliceBid}(aliceBid, new bytes32[](1));
     aliceBids += aliceBid;
 
     minimunBid = auction.getMinimumBid();
     aliceBids += minimunBid;
-    auction.bid{value: minimunBid}(minimunBid);
+    auction.bid{value: minimunBid}(minimunBid, new bytes32[](1));
     vm.stopPrank();
 
     vm.startPrank(bob);
-    auction.bid{value: aliceBid + minBidIncrease}(aliceBid + minBidIncrease);
-    auction.bid{value: aliceBid + minBidIncrease}(aliceBid + minBidIncrease);
+    auction.bid{value: aliceBid + minBidIncrease}(aliceBid + minBidIncrease, new bytes32[](1));
+    auction.bid{value: aliceBid + minBidIncrease}(aliceBid + minBidIncrease, new bytes32[](1));
     vm.stopPrank();
 
     // Assert
@@ -221,7 +221,7 @@ contract GlitchBidTest is PRBTest, StdCheats {
 
     // Act
     vm.prank(alice);
-    auction.bid{value: highestBid.amount}(highestBid.amount);
+    auction.bid{value: highestBid.amount}(highestBid.amount, new bytes32[](1));
 
     // Assert
     assertEq(auction.getTopBids()[0].amount, highestBid.amount, 'Bid was not successful');

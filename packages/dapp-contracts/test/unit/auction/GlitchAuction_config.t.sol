@@ -23,12 +23,12 @@ contract GlitchConfigTest is PRBTest, StdCheats {
   /// @dev A function invoked before each test_ case is run.
   function setUp() public virtual {
     // Instantiate the contract-under-test.
-    auction = new GlitchAuction(owner, owner);
+    auction = new GlitchAuction(owner, owner, owner);
   }
 
   // DEPLOY
   function test_deployWithInitialOwner() public {
-    GlitchAuction newAuction = new GlitchAuction(owner, owner);
+    GlitchAuction newAuction = new GlitchAuction(owner, owner, owner);
     assertEq(newAuction.owner(), owner, 'Incorrect initial owner');
   }
 
@@ -67,13 +67,13 @@ contract GlitchConfigTest is PRBTest, StdCheats {
     // Act
     vm.deal(alice, 1 ether);
     vm.prank(alice);
-    auction.bid{value: minBid}(minBid);
+    auction.bid{value: minBid}(minBid, new bytes32[](1));
     vm.warp(endTime);
 
     // Assert
     minBid = auction.getMinimumBid();
     vm.prank(alice);
     vm.expectRevert(abi.encodeWithSelector(InvalidStartEndTime.selector, startTime, endTime));
-    auction.bid{value: minBid}(minBid);
+    auction.bid{value: minBid}(minBid, new bytes32[](1));
   }
 }

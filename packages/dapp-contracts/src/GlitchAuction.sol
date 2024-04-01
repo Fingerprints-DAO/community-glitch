@@ -4,14 +4,22 @@ pragma solidity >=0.8.23;
 import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol';
 import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
+import {MerkleProof} from '@openzeppelin/contracts/utils/cryptography/MerkleProof.sol';
 import {Base} from './Base.sol';
 import {IGlitch} from './IGlitch.sol';
 // import {console2} from 'forge-std/src/console2.sol';
+
+enum DiscountType {
+  FirstTier,
+  SecondTier,
+  None
+}
 
 /// @dev Represents a bid in the auction.
 struct Bid {
   address bidder;
   uint256 amount;
+  DiscountType discountType;
 }
 
 /// @dev Represents the auction configuration.
@@ -41,10 +49,22 @@ contract GlitchAuction is Base {
    * @notice MAX_TOP_BIDS represents the maximum number of top bids that can be stored.
    */
   uint256 public constant MAX_TOP_BIDS = 10;
+
+  /**
+   * @notice FUNDS_SEND_GAS_LIMIT represents the gas limit for sending auction funds.
+   */
+  uint256 internal immutable FUNDS_SEND_GAS_LIMIT = 210_000;
+
+  /// @dev The merkle root for members of FingerprintsDAO. 20%
+  bytes32 public firstTierMerkleRoot;
+
+  /// @dev The merkle root for holders and communities. 15%
+  bytes32 public secondTierMerkleRoot;
+
   /**
    * @notice treasuryWallet stores the address of the treasury wallet where auction funds are sent.
    */
-  address public treasuryWallet;
+  address payable public treasuryWallet;
 
   /**
    * @notice withdrawn indicates whether the auction funds have been withdrawn post-auction.
@@ -103,15 +123,14 @@ contract GlitchAuction is Base {
     _;
   }
 
-  // TODO: add treasuryWallet argument instead using initialOwner
   /**
    * @dev Constructor to initialize the auction with the owner and the ERC721 address.
    * @param initialOwner The initial owner of the contract.
    * @param _erc721Address The address of the ERC721 token to be auctioned.
    */
-  constructor(address initialOwner, address _erc721Address) Ownable(initialOwner) {
+  constructor(address initialOwner, address _erc721Address, address _treasuryWallet) Ownable(initialOwner) {
     erc721Address = IGlitch(_erc721Address);
-    treasuryWallet = initialOwner;
+    treasuryWallet = payable(_treasuryWallet);
   }
 
   /// @notice Sets the configuration parameters for the auction.
@@ -136,20 +155,32 @@ contract GlitchAuction is Base {
    */
   function setTreasuryWallet(address newWallet) external _onlyOwner {
     require(newWallet != address(0), 'Invalid address');
-    treasuryWallet = newWallet;
+    treasuryWallet = payable(newWallet);
+  }
+
+  /// @dev Updates the merkle roots
+  function updateMerkleRoots(bytes32 _firstTierRoot, bytes32 _secondTierRoot) external onlyOwner {
+    firstTierMerkleRoot = _firstTierRoot;
+    secondTierMerkleRoot = _secondTierRoot;
+  }
+
+  /// @dev Returns if a wallet address/proof is part of the given merkle root.
+  function checkMerkleProof(bytes32[] calldata merkleProof, address _address, bytes32 _root) public pure returns (bool) {
+    bytes32 leaf = keccak256(abi.encodePacked(_address));
+    return MerkleProof.verify(merkleProof, _root, leaf);
   }
 
   /**
    * @dev Allows users to place bids on the auction.
    * @param bidAmount The amount of the bid.
    */
-  function bid(uint256 bidAmount) public payable validConfig validTime {
+  function bid(uint256 bidAmount, bytes32[] calldata merkleProof) public payable validConfig validTime {
     require(bidAmount >= getMinimumBid(), 'Bid too low');
     uint256 totalBidAmount = bidBalances[msg.sender] + msg.value;
     require(totalBidAmount >= bidAmount, 'Insufficient funds for bid');
 
     bidBalances[msg.sender] = totalBidAmount - bidAmount;
-    processBid(msg.sender, bidAmount);
+    processBid(msg.sender, bidAmount, _getTierDiscount(merkleProof, msg.sender));
   }
 
   /**
@@ -157,7 +188,7 @@ contract GlitchAuction is Base {
    * @param bidder The address of the bidder.
    * @param amount The amount of the bid.
    */
-  function processBid(address bidder, uint256 amount) internal {
+  function processBid(address bidder, uint256 amount, DiscountType discountType) internal {
     uint256 position;
     for (position = 0; position < MAX_TOP_BIDS; position++) {
       if (amount > topBids[position].amount) {
@@ -173,8 +204,7 @@ contract GlitchAuction is Base {
     for (uint256 i = MAX_TOP_BIDS - 1; i > position; i--) {
       topBids[i] = topBids[i - 1];
     }
-
-    topBids[position] = Bid(bidder, amount);
+    topBids[position] = Bid(bidder, amount, discountType);
   }
 
   // function claimNFT() public {
@@ -233,7 +263,22 @@ contract GlitchAuction is Base {
     require(!withdrawn, 'Already withdrawn');
     withdrawn = true;
     uint256 salesAmount = getSettledPrice() * MAX_TOP_BIDS;
-    payable(treasuryWallet).transfer(salesAmount);
+    (bool success, ) = treasuryWallet.call{value: salesAmount, gas: FUNDS_SEND_GAS_LIMIT}('');
+    require(success, 'Transfer failed.');
+  }
+
+  function _getTierDiscount(bytes32[] calldata merkleProof, address addressToCheck) private view returns (DiscountType) {
+    if (merkleProof.length == 0) {
+      return DiscountType.None;
+    }
+    if (checkMerkleProof(merkleProof, addressToCheck, firstTierMerkleRoot)) {
+      return DiscountType.FirstTier;
+    }
+    if (checkMerkleProof(merkleProof, addressToCheck, secondTierMerkleRoot)) {
+      return DiscountType.SecondTier;
+    }
+
+    return DiscountType.None;
   }
 
   /**
