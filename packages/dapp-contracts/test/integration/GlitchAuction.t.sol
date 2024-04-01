@@ -102,6 +102,47 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     assertEq(alice.balance, aliceBalance + refundAmount, 'Caller`s bid balance should sum to refund amount');
     assertEq(glitch.ownerOf(tokenId), alice, 'NFT should be transferred to recipient');
   }
+  function test_revertWhenClaimingBeforeAuctionEnding() public {
+    // Arrange
+    // fill top bids
+    vm.warp(startTime + 2);
+    fillTopBids();
+
+    // act
+    vm.deal(alice, 100 ether);
+    vm.startPrank(alice);
+    uint256 aliceBid = 99 ether;
+    auction.bid{value: aliceBid}(aliceBid);
+
+    vm.warp(endTime - 200);
+
+    // Assert
+    vm.expectRevert('Auction not ended');
+    auction.claimAll();
+    vm.stopPrank();
+  }
+  function test_revertWhenClaimingTwice() public {
+    // Arrange
+    // fill top bids
+    vm.warp(startTime + 2);
+    fillTopBids();
+
+    // bid top 1
+    vm.deal(alice, 100 ether);
+    vm.startPrank(alice);
+    uint256 aliceBid = 99 ether;
+    auction.bid{value: aliceBid}(aliceBid);
+
+    // end the auction
+    vm.warp(endTime + 1);
+    // Act
+    // alice claim the nfts and refund
+    auction.claimAll();
+    // Assert
+    vm.expectRevert('Already claimed');
+    auction.claimAll();
+    vm.stopPrank();
+  }
 
   function test_claimAll_TransferNFTsAndRefund_With2WinnerBids() public {
     // Arrange
@@ -181,5 +222,36 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
 
     vm.expectRevert(abi.encodeWithSelector(IERC721Errors.ERC721NonexistentToken.selector, 2));
     glitch.ownerOf(2);
+  }
+  function test_claimAll_TransferNFTsAndRefund_LastBidWithoutRefund() public {
+    // Arrange
+    // fill top bids
+    vm.warp(startTime + 2);
+    fillTopBids();
+
+    // bid as the last one
+    vm.deal(alice, 100 ether);
+    uint256 aliceBid = auction.getMinimumBid();
+
+    vm.prank(alice);
+    auction.bid{value: aliceBid}(aliceBid);
+
+    // end the auction
+    vm.warp(endTime + 1);
+
+    uint256 aliceBalance = alice.balance;
+    uint256 settledPrice = auction.getSettledPrice();
+
+    // Act
+    // alice claim the nfts and refund
+    vm.prank(alice);
+    auction.claimAll();
+
+    // Assert
+    assert(auction.claimed(alice));
+    assertEq(glitch.balanceOf(alice), 1, 'Alice must be owner of one NFT');
+    assertEq(alice.balance, aliceBalance, 'Alice bid should keep the same after claim refund');
+    assertEq(settledPrice, aliceBid, 'Settled price should be equal to last bid which is aliceBid');
+    assertEq(glitch.ownerOf(1), alice, 'NFT should be minted to recipient');
   }
 }

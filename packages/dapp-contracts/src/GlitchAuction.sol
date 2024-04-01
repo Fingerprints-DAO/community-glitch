@@ -6,6 +6,7 @@ import '@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol';
 import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
 import {Base} from './Base.sol';
 import {IGlitch} from './IGlitch.sol';
+// import {console2} from 'forge-std/src/console2.sol';
 
 struct Bid {
   address bidder;
@@ -123,28 +124,28 @@ contract GlitchAuction is Base {
     topBids[position] = Bid(bidder, amount);
   }
 
-  function claimNFT() public {
-    require(_config.endTime > block.timestamp, 'Auction not ended');
+  // function claimNFT() public {
+  //   require(_config.endTime > block.timestamp, 'Auction not ended');
 
-    uint256 tokenId = 0;
-    for (uint256 i = 0; i < MAX_TOP_BIDS; i++) {
-      if (topBids[i].bidder == msg.sender) {
-        tokenId = i + 1;
-        break;
-      }
-    }
+  //   uint256 tokenId = 0;
+  //   for (uint256 i = 0; i < MAX_TOP_BIDS; i++) {
+  //     if (topBids[i].bidder == msg.sender) {
+  //       tokenId = i + 1;
+  //       break;
+  //     }
+  //   }
 
-    require(tokenId > 0, 'Not a top bidder or already claimed');
-    erc721Address.mint(msg.sender);
-  }
+  //   require(tokenId > 0, 'Not a top bidder or already claimed');
+  //   erc721Address.mint(msg.sender);
+  // }
 
-  function claimRefund() public {
-    require(_config.endTime > block.timestamp, 'Auction not ended');
-    uint256 refundAmount = bidBalances[msg.sender];
-    require(refundAmount > 0, 'No refund available');
-    bidBalances[msg.sender] = 0;
-    payable(msg.sender).transfer(refundAmount);
-  }
+  // function claimRefund() public {
+  //   require(_config.endTime > block.timestamp, 'Auction not ended');
+  //   uint256 refundAmount = bidBalances[msg.sender];
+  //   require(refundAmount > 0, 'No refund available');
+  //   bidBalances[msg.sender] = 0;
+  //   payable(msg.sender).transfer(refundAmount);
+  // }
 
   function claimAll() public {
     require(block.timestamp > _config.endTime, 'Auction not ended');
