@@ -256,6 +256,32 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     assertEq(glitch.ownerOf(1), alice, 'NFT should be minted to recipient');
   }
 
+  function test_refundEtherToOutbiddedUser() public {
+    // Arrange
+    // fill top bids
+    vm.warp(startTime + 1);
+    vm.deal(alice, 100 ether);
+
+    // Act
+    vm.startPrank(alice);
+    uint256 aliceBid = 0.1 ether;
+    auction.bid{value: aliceBid}(aliceBid);
+    uint256 aliceSecondBid = auction.getMinimumBid();
+    auction.bid{value: aliceSecondBid}(aliceSecondBid);
+    vm.stopPrank();
+
+    fillTopBids();
+    vm.warp(endTime + 1);
+
+    uint256 aliceBalance = alice.balance;
+    vm.prank(alice);
+    auction.claimAll();
+
+    // Assert
+    assertEq(alice.balance, aliceBalance + aliceBid + aliceSecondBid, 'Alice balance should have been refunded correctly');
+    assertEq(glitch.balanceOf(alice), 0, 'Alice nft balance should be zero');
+  }
+
   function test_withdrawCorrectValue() public {
     // Arrange
     // fill top bids
