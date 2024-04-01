@@ -95,6 +95,11 @@ contract GlitchAuction is Base {
     _config = Config({startTime: _startTime, endTime: _endTime, minBidIncrementInWei: _minBidIncrementInWei});
   }
 
+  function setTreasuryWallet(address newWallet) external _onlyOwner {
+    require(newWallet != address(0), 'Invalid address');
+    treasuryWallet = newWallet;
+  }
+
   function bid(uint256 bidAmount) public payable validConfig validTime {
     require(bidAmount >= getMinimumBid(), 'Bid too low');
     uint256 totalBidAmount = bidBalances[msg.sender] + msg.value;

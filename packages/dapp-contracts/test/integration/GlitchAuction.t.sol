@@ -338,4 +338,22 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     vm.expectRevert(abi.encodeWithSelector(IERC721Errors.ERC721NonexistentToken.selector, 10));
     glitch.ownerOf(10);
   }
+
+  function test_canSetNewTreasuryWallet() public {
+    vm.prank(owner);
+    auction.setTreasuryWallet(alice);
+    assertEq(auction.treasuryWallet(), alice);
+  }
+
+  function test_revertWhenSetTreasuryWalletIfNotOwner() public {
+    vm.prank(alice);
+    vm.expectRevert('Only owner');
+    auction.setTreasuryWallet(alice);
+  }
+
+  function test_revertWhenSetTreasuryWalletIfZeroAddress() public {
+    vm.expectRevert('Invalid address');
+    vm.prank(owner);
+    auction.setTreasuryWallet(address(0));
+  }
 }
