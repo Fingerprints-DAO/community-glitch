@@ -7,7 +7,7 @@ import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
 import {MerkleProof} from '@openzeppelin/contracts/utils/cryptography/MerkleProof.sol';
 import {Base} from './Base.sol';
 import {IGlitch} from './IGlitch.sol';
-// import {console2} from 'forge-std/src/console2.sol';
+import {console2} from 'forge-std/src/console2.sol';
 
 enum DiscountType {
   FirstTier,
@@ -159,7 +159,7 @@ contract GlitchAuction is Base {
   }
 
   /// @dev Updates the merkle roots
-  function updateMerkleRoots(bytes32 _firstTierRoot, bytes32 _secondTierRoot) external onlyOwner {
+  function setMerkleRoots(bytes32 _firstTierRoot, bytes32 _secondTierRoot) external onlyOwner {
     firstTierMerkleRoot = _firstTierRoot;
     secondTierMerkleRoot = _secondTierRoot;
   }
@@ -252,6 +252,7 @@ contract GlitchAuction is Base {
         }
       }
     }
+
     uint256 refundAmount = bidBalances[msg.sender] + (amountSpent - (nftsMinted * getSettledPriceWithDiscount(discountType)));
     if (refundAmount > 0) {
       bidBalances[msg.sender] = 0;
@@ -281,7 +282,7 @@ contract GlitchAuction is Base {
       givenFirstTierDiscount +
       getSettledPriceWithDiscount(DiscountType.SecondTier) *
       givenSecondTierDiscount;
-    uint256 salesAmount = getSettledPrice() * MAX_TOP_BIDS - givenFirstTierDiscount + givenSecondTierDiscount;
+    uint256 salesAmount = getSettledPrice() * (MAX_TOP_BIDS - givenFirstTierDiscount - givenSecondTierDiscount);
     (bool success, ) = treasuryWallet.call{value: salesAmountWithDiscount + salesAmount, gas: FUNDS_SEND_GAS_LIMIT}('');
     require(success, 'Transfer failed.');
   }

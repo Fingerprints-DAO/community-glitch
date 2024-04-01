@@ -435,4 +435,106 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     assertEq(glitch.balanceOf(alice), 1, 'Alice should own 1 NFT');
     assertEq(alice.balance, aliceBalanceBeforeClaim + aliceBid - settledPriceWithDiscount, 'Alice should receive refund with first tier discount');
   }
+  function test_bidWithSecondTierDiscount() public {
+    // Arrange
+    vm.warp(startTime + 1);
+    fillTopBids();
+
+    // Create merkle root and set it
+    Merkle m = new Merkle();
+    bytes32[] memory data = new bytes32[](2);
+    data[0] = keccak256(abi.encodePacked(alice));
+    data[1] = keccak256(abi.encodePacked(bob));
+    bytes32 root = m.getRoot(data);
+
+    vm.prank(owner);
+    auction.setMerkleRoots(bytes32(''), root);
+
+    // Act
+    // get proof and bid
+    bytes32[] memory proof = m.getProof(data, 0); // will get proof for 0x2 value
+    uint256 aliceBid = 1 ether;
+    vm.deal(alice, aliceBid);
+    vm.prank(alice);
+    auction.bid{value: aliceBid}(aliceBid, proof);
+
+    vm.warp(endTime + 1);
+
+    uint256 aliceBalanceBeforeClaim = alice.balance;
+    vm.prank(alice);
+    auction.claimAll();
+
+    // Assert
+    uint256 settledPriceWithDiscount = (auction.getSettledPrice() * 85) / 100;
+    assertEq(glitch.balanceOf(alice), 1, 'Alice should own 1 NFT');
+    assertEq(alice.balance, aliceBalanceBeforeClaim + aliceBid - settledPriceWithDiscount, 'Alice should receive refund with first tier discount');
+  }
+
+  function test_withdrawCorrectValueAfterBuysWithDiscount() public {
+    // Arrange
+    // Create merkle root and set it
+    Merkle firstTierMerkle = new Merkle();
+    Merkle secondTierMerkle = new Merkle();
+    bytes32[] memory firstData = new bytes32[](3);
+    bytes32[] memory secondData = new bytes32[](4);
+    firstData[0] = keccak256(abi.encodePacked(alice));
+    firstData[1] = keccak256(abi.encodePacked(vm.addr(1112)));
+    firstData[2] = keccak256(abi.encodePacked(vm.addr(1113)));
+    secondData[0] = keccak256(abi.encodePacked(bob));
+    secondData[1] = keccak256(abi.encodePacked(alice));
+    secondData[2] = keccak256(abi.encodePacked(vm.addr(1115)));
+    secondData[3] = keccak256(abi.encodePacked(vm.addr(1117)));
+    bytes32 firstTierRoot = firstTierMerkle.getRoot(firstData);
+    bytes32 secondTierRoot = secondTierMerkle.getRoot(secondData);
+
+    // Act
+    uint256 bid = 5 ether;
+    vm.deal(alice, bid);
+    vm.deal(bob, bid);
+
+    vm.prank(owner);
+    auction.setMerkleRoots(firstTierRoot, secondTierRoot);
+
+    vm.warp(startTime + 1);
+
+    // alice bid
+    vm.startPrank(alice);
+    auction.bid{value: bid}(bid, firstTierMerkle.getProof(firstData, 0));
+    vm.stopPrank();
+
+    // bob bid
+    vm.startPrank(bob);
+    auction.bid{value: bid}(bid, secondTierMerkle.getProof(secondData, 0));
+    vm.stopPrank();
+
+    // fill top bids
+    fillTopBids();
+    vm.warp(endTime + 1);
+
+    uint256 settledPrice = auction.getSettledPrice();
+    uint256 settledPriceWithTierOneDiscount = auction.getSettledPriceWithDiscount(DiscountType.FirstTier);
+    uint256 settledPriceWithTierTwoDiscount = auction.getSettledPriceWithDiscount(DiscountType.SecondTier);
+    uint256 discountedNfts = 2;
+    uint256 salesAmount = settledPrice * (MAX_TOP_BIDS - discountedNfts) + settledPriceWithTierOneDiscount + settledPriceWithTierTwoDiscount;
+    uint256 ownerBalance = owner.balance;
+
+    vm.prank(alice);
+    auction.claimAll();
+    vm.prank(bob);
+    auction.claimAll();
+
+    for (uint256 i = 0; i < addresses.length; i++) {
+      vm.prank(addresses[i]);
+      auction.claimAll();
+    }
+
+    vm.prank(owner);
+    auction.withdraw();
+
+    // Assert
+    assertEq(glitch.balanceOf(alice), 1, 'Alice should own 1 NFT');
+    assertEq(owner.balance, ownerBalance + salesAmount, '');
+
+    assertEq(address(auction).balance, 0, 'Contract balance after withdraw and claim should be zero');
+  }
 }
