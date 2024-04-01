@@ -8,9 +8,9 @@ import {stdError} from 'forge-std/src/stdError.sol';
 import {ERC721} from '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import {IERC721Errors} from '@openzeppelin/contracts/interfaces/draft-IERC6093.sol';
 import {IERC721Enumerable} from '@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol';
-import {CompleteMerkle} from 'murky-merkle/src/CompleteMerkle.sol';
+import {Merkle} from 'murky-merkle/src/Merkle.sol';
 
-import {GlitchAuction, Bid, InvalidStartEndTime} from '../../src/GlitchAuction.sol';
+import {GlitchAuction, Bid, InvalidStartEndTime, DiscountType} from '../../src/GlitchAuction.sol';
 import {Glitch, TokenVersion} from '../../src/Glitch.sol';
 import {TestHelpers} from '../../script/Helpers.s.sol';
 
@@ -401,5 +401,38 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     assertEq(address(auction).balance, 0, 'Contract balance after withdraw and claim should be zero');
   }
 
-  function test_bidWithDiscount() public {}
+  function test_bidWithFirstTierDiscount() public {
+    // Arrange
+    vm.warp(startTime + 1);
+    fillTopBids();
+
+    // Create merkle root and set it
+    Merkle m = new Merkle();
+    bytes32[] memory data = new bytes32[](2);
+    data[0] = keccak256(abi.encodePacked(alice));
+    data[1] = keccak256(abi.encodePacked(bob));
+    bytes32 root = m.getRoot(data);
+
+    vm.prank(owner);
+    auction.setMerkleRoots(root, root);
+
+    // Act
+    // get proof and bid
+    bytes32[] memory proof = m.getProof(data, 0); // will get proof for 0x2 value
+    uint256 aliceBid = 1 ether;
+    vm.deal(alice, aliceBid);
+    vm.prank(alice);
+    auction.bid{value: aliceBid}(aliceBid, proof);
+
+    vm.warp(endTime + 1);
+
+    uint256 aliceBalanceBeforeClaim = alice.balance;
+    vm.prank(alice);
+    auction.claimAll();
+
+    // Assert
+    uint256 settledPriceWithDiscount = (auction.getSettledPrice() * 80) / 100;
+    assertEq(glitch.balanceOf(alice), 1, 'Alice should own 1 NFT');
+    assertEq(alice.balance, aliceBalanceBeforeClaim + aliceBid - settledPriceWithDiscount, 'Alice should receive refund with first tier discount');
+  }
 }
