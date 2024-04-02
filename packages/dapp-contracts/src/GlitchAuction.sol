@@ -10,9 +10,9 @@ import {IGlitch} from './IGlitch.sol';
 import {console2} from 'forge-std/src/console2.sol';
 
 enum DiscountType {
+  None,
   FirstTier,
-  SecondTier,
-  None
+  SecondTier
 }
 
 /// @dev Represents a bid in the auction.
@@ -30,6 +30,8 @@ struct Config {
   uint256 endTime;
   /// @notice The minimum value to increase the current bid in WEI.
   uint256 minBidIncrementInWei;
+  /// @notice The starting amount in WEI.
+  uint256 startAmountInWei;
 }
 
 /// @dev Emitted when the amount of wei provided for a bid or starting bid is invalid. This usually means the amount is zero.
@@ -146,7 +148,7 @@ contract GlitchAuction is Base {
 
     if (_minBidIncrementInWei == 0) revert InvalidMinBidIncrementValue();
 
-    _config = Config({startTime: _startTime, endTime: _endTime, minBidIncrementInWei: _minBidIncrementInWei});
+    _config = Config({startTime: _startTime, endTime: _endTime, minBidIncrementInWei: _minBidIncrementInWei, startAmountInWei: _startAmountInWei});
   }
 
   /**
@@ -190,6 +192,7 @@ contract GlitchAuction is Base {
    */
   function processBid(address bidder, uint256 amount, DiscountType discountType) internal {
     uint256 position;
+    // Find the position of the new bid in the top bids
     for (position = 0; position < MAX_TOP_BIDS; position++) {
       if (amount > topBids[position].amount) {
         break;
@@ -198,37 +201,16 @@ contract GlitchAuction is Base {
 
     require(position < MAX_TOP_BIDS, 'Bid does not qualify for top bids');
 
+    // Remove the old top bid
     Bid memory outbid = topBids[MAX_TOP_BIDS - 1];
     bidBalances[outbid.bidder] = bidBalances[outbid.bidder] + outbid.amount;
 
+    // Insert the new bid
     for (uint256 i = MAX_TOP_BIDS - 1; i > position; i--) {
       topBids[i] = topBids[i - 1];
     }
     topBids[position] = Bid(bidder, amount, discountType);
   }
-
-  // function claimNFT() public {
-  //   require(_config.endTime > block.timestamp, 'Auction not ended');
-
-  //   uint256 tokenId = 0;
-  //   for (uint256 i = 0; i < MAX_TOP_BIDS; i++) {
-  //     if (topBids[i].bidder == msg.sender) {
-  //       tokenId = i + 1;
-  //       break;
-  //     }
-  //   }
-
-  //   require(tokenId > 0, 'Not a top bidder or already claimed');
-  //   erc721Address.mint(msg.sender);
-  // }
-
-  // function claimRefund() public {
-  //   require(_config.endTime > block.timestamp, 'Auction not ended');
-  //   uint256 refundAmount = bidBalances[msg.sender];
-  //   require(refundAmount > 0, 'No refund available');
-  //   bidBalances[msg.sender] = 0;
-  //   payable(msg.sender).transfer(refundAmount);
-  // }
 
   /**
    * @dev Allows users to claim their NFTs and any refunds after the auction ends.
@@ -243,7 +225,6 @@ contract GlitchAuction is Base {
     claimed[msg.sender] = true;
     for (uint256 i = 0; i < MAX_TOP_BIDS; i++) {
       if (topBids[i].bidder == msg.sender) {
-        // erc721Address.safeTransferFrom(address(this), msg.sender, i + 1);
         erc721Address.mint(msg.sender, i + 1);
         nftsMinted++;
         amountSpent += topBids[i].amount;
@@ -259,6 +240,20 @@ contract GlitchAuction is Base {
       payable(msg.sender).transfer(refundAmount);
     }
   }
+
+  // /**
+  //  * @dev Allows the owner to mint ids after the auction ends.
+  //  * admin can mint only remaining ids
+  //  */
+  // function adminMint() public _onlyOwner {
+  //   require(block.timestamp > _config.endTime, 'Auction not ended');
+  //   uint256 lastId = MAX_TOP_BIDS;
+  //   for(uint256 i = 0; i < MAX_TOP_BIDS; i++) {
+  //     if(claimed[topBids[MAX_TOP_BIDS - 1].bidder]) {
+  //       erc721Address.mint(topBids[i].bidder, i + 1);
+  //     }
+  //   }
+  // }
 
   /**
    * @dev Allows the owner to withdraw the sales amount after the auction ends.
@@ -306,7 +301,14 @@ contract GlitchAuction is Base {
    * @return The price of the lowest winning bid.
    */
   function getSettledPrice() public view returns (uint256) {
-    return topBids[MAX_TOP_BIDS - 1].amount;
+    uint256 lastBidPosition;
+    for (lastBidPosition = MAX_TOP_BIDS - 1; lastBidPosition >= 0; lastBidPosition--) {
+      if (topBids[lastBidPosition].amount != 0) {
+        break;
+      }
+    }
+    uint256 lastBidAmount = topBids[lastBidPosition].amount;
+    return lastBidAmount < _config.startAmountInWei ? _config.startAmountInWei : lastBidAmount;
   }
 
   /**
@@ -330,7 +332,8 @@ contract GlitchAuction is Base {
    * @return The minimum bid amount.
    */
   function getMinimumBid() public view returns (uint256) {
-    return getSettledPrice() + _config.minBidIncrementInWei;
+    uint256 lastBidAmount = topBids[MAX_TOP_BIDS - 1].amount;
+    return lastBidAmount < _config.startAmountInWei ? _config.startAmountInWei : lastBidAmount + _config.minBidIncrementInWei;
   }
   /**
    * @dev Returns the current configuration of the auction.

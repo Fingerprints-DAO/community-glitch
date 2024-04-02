@@ -228,4 +228,57 @@ contract GlitchBidTest is PRBTest, StdCheats {
     assertEq(auction.getTopBids()[0].bidder, highestBid.bidder, 'Bid was not successful');
     assertEq(auction.getTopBids()[1].bidder, alice, 'Bid was not successful');
   }
+
+  function test_firstBidMustBeStartAmountInWei() public {
+    // Arrange
+    vm.warp(startTime + 2);
+
+    // Act
+    vm.deal(alice, 1 ether);
+    vm.prank(alice);
+    auction.bid{value: startAmountInWei}(startAmountInWei, new bytes32[](1));
+
+    // Assert
+    assertEq(auction.getTopBids()[0].bidder, alice, 'Bid was not successful');
+  }
+  function test_settledPriceMustBeTheUniqueBid() public {
+    // Arrange
+    vm.warp(startTime + 2);
+
+    // Act
+    vm.deal(alice, 1 ether);
+    vm.deal(bob, 1 ether);
+    // vm.prank(alice);
+    // auction.bid{value: 0.5 ether}(0.5 ether, new bytes32[](1));
+
+    uint256 bobBid = 0.4 ether;
+    vm.prank(bob);
+    auction.bid{value: bobBid}(bobBid, new bytes32[](1));
+
+    vm.warp(endTime + 1);
+
+    // Assert
+    assertEq(auction.getSettledPrice(), bobBid, 'Settled price is wrong');
+    assertEq(auction.getSettledPrice(), auction.getTopBids()[0].amount, 'Settled price is wrong');
+  }
+  function test_settledPriceMustBeLastBidEvenWeDontFillAllBids() public {
+    // Arrange
+    vm.warp(startTime + 2);
+
+    // Act
+    vm.deal(alice, 1 ether);
+    vm.deal(bob, 1 ether);
+    vm.prank(alice);
+    auction.bid{value: 0.5 ether}(0.5 ether, new bytes32[](1));
+
+    uint256 bobBid = 0.4 ether;
+    vm.prank(bob);
+    auction.bid{value: bobBid}(bobBid, new bytes32[](1));
+
+    vm.warp(endTime + 1);
+
+    // Assert
+    assertEq(auction.getSettledPrice(), bobBid, 'Settled price is wrong');
+    assertEq(auction.getSettledPrice(), auction.getTopBids()[1].amount, 'Settled price is wrong');
+  }
 }
