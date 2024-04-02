@@ -212,10 +212,18 @@ contract GlitchAuction is Base {
     topBids[position] = Bid(bidder, amount, discountType);
   }
 
+  function _getLastBidPosition() internal view returns (uint256 lastBidPosition) {
+    for (lastBidPosition = MAX_TOP_BIDS - 1; lastBidPosition >= 0; lastBidPosition--) {
+      if (topBids[lastBidPosition].amount != 0) {
+        break;
+      }
+    }
+  }
+
   /**
    * @dev Allows users to claim their NFTs and any refunds after the auction ends.
    */
-  function claimAll() public {
+  function claimAll() public validConfig {
     require(block.timestamp > _config.endTime, 'Auction not ended');
     require(!claimed[msg.sender], 'Already claimed');
 
@@ -241,19 +249,16 @@ contract GlitchAuction is Base {
     }
   }
 
-  // /**
-  //  * @dev Allows the owner to mint ids after the auction ends.
-  //  * admin can mint only remaining ids
-  //  */
-  // function adminMint() public _onlyOwner {
-  //   require(block.timestamp > _config.endTime, 'Auction not ended');
-  //   uint256 lastId = MAX_TOP_BIDS;
-  //   for(uint256 i = 0; i < MAX_TOP_BIDS; i++) {
-  //     if(claimed[topBids[MAX_TOP_BIDS - 1].bidder]) {
-  //       erc721Address.mint(topBids[i].bidder, i + 1);
-  //     }
-  //   }
-  // }
+  /**
+   * @dev Allows the owner to mint the remaining NFTs after the auction ends.
+   */
+  function adminMintRemaining(address _recipient) public _onlyOwner validConfig {
+    require(block.timestamp > _config.endTime, 'Auction not ended');
+    uint256 lastBidPosition = _getLastBidPosition();
+    for (uint256 i = lastBidPosition + 1; i < MAX_TOP_BIDS; i++) {
+      erc721Address.mint(_recipient, i + 1);
+    }
+  }
 
   /**
    * @dev Allows the owner to withdraw the sales amount after the auction ends.
@@ -301,12 +306,7 @@ contract GlitchAuction is Base {
    * @return The price of the lowest winning bid.
    */
   function getSettledPrice() public view returns (uint256) {
-    uint256 lastBidPosition;
-    for (lastBidPosition = MAX_TOP_BIDS - 1; lastBidPosition >= 0; lastBidPosition--) {
-      if (topBids[lastBidPosition].amount != 0) {
-        break;
-      }
-    }
+    uint256 lastBidPosition = _getLastBidPosition();
     uint256 lastBidAmount = topBids[lastBidPosition].amount;
     return lastBidAmount < _config.startAmountInWei ? _config.startAmountInWei : lastBidAmount;
   }
