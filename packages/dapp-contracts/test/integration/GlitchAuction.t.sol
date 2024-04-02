@@ -537,4 +537,54 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     assertEq(owner.balance, ownerBalance + salesAmount, '');
     assertEq(address(auction).balance, 0, 'Contract balance after withdraw and claim should be zero');
   }
+
+  function test_adminCanMintRemainingNFTsWhenAuctionEnds() public {
+    // Arrange
+    uint256 bidsCounter = 5;
+
+    // act
+    vm.warp(startTime + 1);
+    for (uint256 i = 0; i < bidsCounter; i++) {
+      vm.startPrank(addresses[i]);
+      vm.deal(addresses[i], 100 ether);
+      auction.bid{value: (i + 1) * 1 ether}((i + 1) * 1 ether, new bytes32[](1));
+      vm.stopPrank();
+    }
+
+    vm.warp(endTime + 1);
+
+    for (uint256 i = 0; i < bidsCounter; i++) {
+      vm.startPrank(addresses[i]);
+      auction.claimAll();
+      vm.stopPrank();
+    }
+
+    vm.startPrank(owner);
+    auction.adminMintRemaining(alice);
+    vm.stopPrank();
+
+    // Assert
+    assertEq(glitch.balanceOf(alice), MAX_TOP_BIDS - bidsCounter, 'Alice should own 5 NFT');
+    assertEq(glitch.balanceOf(addresses[1]), 1, 'addresses[1] should own 1 NFT');
+    assertEq(glitch.balanceOf(addresses[4]), 1, 'addresses[1] should own 1 NFT');
+  }
+  function test_revertIfCallAdminMintRemainingBeforeAuctionEnd() public {
+    // Arrange
+    uint256 bidsCounter = 5;
+
+    // act
+    vm.warp(startTime + 1);
+    for (uint256 i = 0; i < bidsCounter; i++) {
+      vm.startPrank(addresses[i]);
+      vm.deal(addresses[i], 100 ether);
+      auction.bid{value: (i + 1) * 1 ether}((i + 1) * 1 ether, new bytes32[](1));
+      vm.stopPrank();
+    }
+
+    // Assert
+    vm.startPrank(owner);
+    vm.expectRevert('Auction not ended');
+    auction.adminMintRemaining(alice);
+    vm.stopPrank();
+  }
 }
