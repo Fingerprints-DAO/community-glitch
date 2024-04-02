@@ -20,8 +20,7 @@ enum TokenVersion {
  * @dev ERC721 token contract representing a collection of digital artworks
  */
 contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, Ownable {
-  uint256 private _nextTokenId = 1;
-  uint16 private _tokenIdMax = 50;
+  uint16 private constant MAX_SUPPLY = 50;
   address public minterContractAddress;
   string public baseURI;
   mapping(uint256 tokenId => TokenVersion version) private _tokenVersionMap;
@@ -38,8 +37,8 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, O
   /**
    * @dev Modifier to check if the caller is the minter contract or the owner
    */
-  modifier _onlyMinterOrOwner() {
-    require(msg.sender == minterContractAddress || msg.sender == owner(), 'Only minter contract and owner');
+  modifier _onlyMinter() {
+    require(msg.sender == minterContractAddress, 'Only minter can mint');
     _;
   }
 
@@ -55,10 +54,10 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, O
    * @dev Mints a new token and assigns it to the specified recipient
    * @param recipient The address to receive the minted token
    */
-  function mint(address recipient) external _onlyMinterOrOwner {
+  function mint(address recipient, uint256 _id) external _onlyMinter {
     require(recipient != address(0), 'Cannot mint to zero address');
-    require(_nextTokenId < _tokenIdMax, 'Max. supply reached');
-    _safeMint(recipient, _nextTokenId++);
+    require(_id <= MAX_SUPPLY && _id > 0, 'Id out of bounds');
+    _safeMint(recipient, _id);
   }
 
   /**
@@ -75,8 +74,8 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, O
    * @dev Returns the total number of tokens minted
    * @return The total supply of tokens
    */
-  function totalSupply() public view override(ERC721Enumerable) returns (uint256) {
-    return _nextTokenId;
+  function totalSupply() public pure override(ERC721Enumerable) returns (uint256) {
+    return MAX_SUPPLY;
   }
 
   /**
@@ -102,8 +101,9 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, O
    * @return versions An array of versions for all tokens
    */
   function getAllTokensVersion() public view returns (string[] memory versions) {
-    versions = new string[](_nextTokenId - 1);
-    for (uint256 i = 0; i < versions.length; i++) {
+    versions = new string[](MAX_SUPPLY);
+    for (uint256 i = 0; i < MAX_SUPPLY; i++) {
+      // token id start on #1
       versions[i] = getTokenVersion(i + 1);
     }
   }
@@ -152,17 +152,6 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, O
    */
   function setBaseURI(string memory newBaseURI) public _onlyOwner {
     baseURI = newBaseURI;
-  }
-
-  /**
-   * @dev Mints multiple tokens by the contract owner
-   * @param recipient The address to receive the minted tokens
-   * @param amount The number of tokens to mint
-   */
-  function adminMint(address recipient, uint256 amount) public _onlyOwner {
-    for (uint256 i = 0; i < amount; i++) {
-      _safeMint(recipient, _nextTokenId++);
-    }
   }
 
   /**

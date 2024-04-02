@@ -44,7 +44,7 @@ contract GlitchTest is PRBTest, StdCheats {
     string memory baseURI = 'http://example.com/';
 
     // Act
-    glitch.mint(msg.sender);
+    glitch.mint(msg.sender, 1);
     glitch.setBaseURI(baseURI);
 
     // Assert

@@ -31,7 +31,7 @@ interface IGlitch {
   function getApproved(uint256 tokenId) external view returns (address);
   function getTokenVersion(uint256 tokenId) external view returns (string memory versionStr);
   function isApprovedForAll(address owner, address operator) external view returns (bool);
-  function mint(address recipient) external;
+  function mint(address recipient, uint256 id) external;
   function minterContractAddress() external view returns (address);
   function name() external view returns (string memory);
   function owner() external view returns (address);

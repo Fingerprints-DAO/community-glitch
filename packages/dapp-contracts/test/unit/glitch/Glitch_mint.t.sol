@@ -20,43 +20,30 @@ contract GlitchMintTest is PRBTest, StdCheats {
   }
 
   // MINT
-  function test_shouldRevertIfNonOwnerAndNonMinterContractMintsToken() public {
+  function test_shouldRevertIfOwnerTryToMint() public {
     // Arrange
     address recipient = address(0x123);
-    address nonOwnerNonMinter = address(0x456);
+    address newMinter = address(0x456);
 
     // Act and Assert
-    vm.prank(nonOwnerNonMinter);
-    vm.expectRevert('Only minter contract and owner');
-    glitch.mint(recipient);
-  }
-  function test_shouldSuccessfullyMintTokenAndIncrementNextTokenId() public {
-    // Arrange
-    address recipient = address(0x123);
-    uint256 initialNextTokenId = glitch.totalSupply();
+    glitch.setMinterContractAddress(newMinter);
 
-    // Act
-    glitch.mint(recipient);
-
-    // Assert
-    assertEq(glitch.totalSupply(), initialNextTokenId + 1, 'Next token ID not incremented');
-    vm.expectRevert(abi.encodeWithSelector(IERC721Errors.ERC721NonexistentToken.selector, initialNextTokenId + 1));
-    glitch.ownerOf(initialNextTokenId + 1);
+    vm.expectRevert('Only minter can mint');
+    glitch.mint(recipient, 1);
   }
   function test_shouldAllowMinterContractToMintAToken() public {
     // Arrange
     address recipient = address(0x123);
     address minterContract = address(0x789);
-    uint256 initialNextTokenId = glitch.totalSupply();
+    uint256 tokenId = 5;
 
     // Act
     glitch.setMinterContractAddress(minterContract);
     vm.prank(minterContract);
-    glitch.mint(recipient);
+    glitch.mint(recipient, tokenId);
 
     // Assert
-    assertEq(glitch.totalSupply(), initialNextTokenId + 1, 'Next token ID not incremented');
-    assertEq(glitch.ownerOf(1), recipient, 'Incorrect token owner');
+    assertEq(glitch.ownerOf(tokenId), recipient, 'Incorrect token owner');
   }
   function test_shouldRevertIfRecipientAddressIsInvalid() public {
     // Arrange
@@ -64,46 +51,53 @@ contract GlitchMintTest is PRBTest, StdCheats {
 
     // Act and Assert
     vm.expectRevert('Cannot mint to zero address');
-    glitch.mint(recipient);
+    glitch.mint(recipient, 1);
   }
-  function test_mintingFailsIfMaxSupplyReached() public {
+  function test_mintingFailsIfNftIsMinted() public {
     // Arrange
-    address recipient = address(0x123);
+    address alice = vm.addr(2);
 
     // Act
-    for (uint i = 0; i < 49; i++) {
-      glitch.mint(recipient);
+    for (uint i = 0; i < 50; i++) {
+      glitch.mint(alice, i + 1);
     }
 
+    glitch.setMinterContractAddress(alice);
+
     // Act and Assert
-    vm.expectRevert('Max. supply reached');
-    glitch.mint(recipient);
+    vm.startPrank(alice);
+    vm.expectRevert();
+    glitch.mint(alice, 5);
+    vm.stopPrank();
+
     assertEq(glitch.totalSupply(), 50, 'Incorrect total supply');
   }
   function test_shouldMintSpecifiedAmountOfTokensByAdmin() public {
     // Arrange
     address recipient = address(0x123);
-    uint256 initialNextTokenId = glitch.totalSupply();
     uint256 amountToMint = 5;
+    uint256 startId = 5;
 
     // Act
-    vm.prank(address(this));
-    glitch.adminMint(recipient, amountToMint);
+    for (uint i = 0; i < amountToMint; i++) {
+      vm.prank(address(this));
+      glitch.mint(recipient, i + startId);
+    }
 
     // Assert
-    assertEq(glitch.totalSupply(), initialNextTokenId + amountToMint, 'Next token ID not incremented');
-    assertEq(glitch.ownerOf(initialNextTokenId + 1), recipient, 'Incorrect token owner');
+    for (uint i = 0; i < amountToMint; i++) {
+      assertEq(glitch.ownerOf(i + startId), recipient, 'Incorrect token owner');
+    }
   }
   function test_shouldRevertAdminMintIfItIsNotAdmin() public {
     // Arrange
     address recipient = address(0x123);
-    uint256 amountToMint = 5;
 
     // Act
     vm.prank(address(0x456));
 
     // Assert
-    vm.expectRevert('Only owner');
-    glitch.adminMint(recipient, amountToMint);
+    vm.expectRevert('Only minter can mint');
+    glitch.mint(recipient, 1);
   }
 }

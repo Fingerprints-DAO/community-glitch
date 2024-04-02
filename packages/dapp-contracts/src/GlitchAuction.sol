@@ -244,7 +244,7 @@ contract GlitchAuction is Base {
     for (uint256 i = 0; i < MAX_TOP_BIDS; i++) {
       if (topBids[i].bidder == msg.sender) {
         // erc721Address.safeTransferFrom(address(this), msg.sender, i + 1);
-        erc721Address.mint(msg.sender);
+        erc721Address.mint(msg.sender, i + 1);
         nftsMinted++;
         amountSpent += topBids[i].amount;
         if (topBids[i].discountType != DiscountType.None) {

@@ -36,7 +36,7 @@ contract GlitchTokenVersionTest is PRBTest, StdCheats, Helpers {
     uint256 tokenId = 1;
 
     // Mint a token
-    glitch.mint(recipient);
+    glitch.mint(recipient, tokenId);
 
     // Act
     string memory version = glitch.getTokenVersion(tokenId);
@@ -52,7 +52,7 @@ contract GlitchTokenVersionTest is PRBTest, StdCheats, Helpers {
     uint256 tokenId = 1;
 
     // Mint a token
-    glitch.mint(recipient);
+    glitch.mint(recipient, tokenId);
 
     // Transfer token from recipient to bob
     vm.prank(recipient);
@@ -74,7 +74,7 @@ contract GlitchTokenVersionTest is PRBTest, StdCheats, Helpers {
     address recipient = address(0x1234567890);
     address initialOwner = msg.sender;
 
-    glitch.mint(initialOwner);
+    glitch.mint(initialOwner, tokenId);
 
     vm.prank(initialOwner);
     glitch.transferFrom(initialOwner, recipient, tokenId);
@@ -85,9 +85,9 @@ contract GlitchTokenVersionTest is PRBTest, StdCheats, Helpers {
 
   function test_allTokenVersionsCanBeRetrieved() public {
     // Arrange
-    glitch.mint(msg.sender);
-    glitch.mint(msg.sender);
-    glitch.mint(msg.sender);
+    glitch.mint(msg.sender, 1);
+    glitch.mint(msg.sender, 2);
+    glitch.mint(msg.sender, 3);
 
     // Act
     vm.prank(msg.sender);
@@ -95,18 +95,20 @@ contract GlitchTokenVersionTest is PRBTest, StdCheats, Helpers {
     string[] memory versions = glitch.getAllTokensVersion();
 
     // Assert
-    assertEq(versions.length, 3, 'Incorrect number of token versions');
+    assertEq(versions.length, 50, 'Incorrect number of token versions');
     assertEq(versions[0], 'B', 'Incorrect token version at index 0');
     assertEq(versions[1], 'A', 'Incorrect token version at index 1');
     assertEq(versions[2], 'A', 'Incorrect token version at index 2');
+    assertEq(versions[10], 'A', 'Incorrect token version at index 2');
+    assertEq(versions[49], 'A', 'Incorrect token version at index 2');
   }
 
   // Refresh a token version
   function test_refreshTokenVersionTest() public {
     // Mint a token
-    glitch.mint(msg.sender);
-    address recipient = address(0x1234567890);
     uint256 tokenId = 1;
+    glitch.mint(msg.sender, tokenId);
+    address recipient = address(0x1234567890);
 
     // Get the initial token version
     string memory initialVersion = glitch.getTokenVersion(tokenId);
@@ -127,7 +129,7 @@ contract GlitchTokenVersionTest is PRBTest, StdCheats, Helpers {
     uint256 tokenId = 1;
 
     // Act
-    glitch.mint(recipient);
+    glitch.mint(recipient, tokenId);
     // Transfer token from recipient to bob
     vm.prank(recipient);
     glitch.transferFrom(recipient, bob, tokenId);
