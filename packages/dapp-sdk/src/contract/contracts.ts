@@ -1,4 +1,4 @@
-import { glitchABI } from '@dapp/contracts'
+import { glitchABI, glitchAuctionABI } from '@dapp/contracts'
 import { getContractAddressesForChainOrThrow } from './addresses'
 
 export const getContractsDataForChainOrThrow = async (chainId: number) => {
@@ -7,6 +7,10 @@ export const getContractsDataForChainOrThrow = async (chainId: number) => {
     Glitch: {
       abi: glitchABI,
       address: addresses.Glitch,
+    },
+    GlitchAuction: {
+      abi: glitchAuctionABI,
+      address: addresses.GlitchAuction,
     },
   }
 }
