@@ -16,7 +16,7 @@ contract GlitchMintTest is PRBTest, StdCheats {
   /// @dev A function invoked before each test_ case is run.
   function setUp() public virtual {
     // Instantiate the contract-under-test.
-    glitch = new Glitch(address(this));
+    glitch = new Glitch(address(this), address(this), 'https://google.com/');
   }
 
   // MINT

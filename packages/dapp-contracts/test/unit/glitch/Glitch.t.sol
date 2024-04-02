@@ -16,7 +16,7 @@ contract GlitchTest is PRBTest, StdCheats {
   /// @dev A function invoked before each test_ case is run.
   function setUp() public virtual {
     // Instantiate the contract-under-test.
-    glitch = new Glitch(address(this));
+    glitch = new Glitch(address(this), address(this), 'https://google.com/');
   }
   function tokenVersionToString(TokenVersion version) public pure returns (string memory) {
     return string(abi.encodePacked(version));
@@ -25,7 +25,7 @@ contract GlitchTest is PRBTest, StdCheats {
   // DEPLOY
   function test_deployWithInitialOwner() public {
     address initialOwner = address(0x123);
-    Glitch newGlitch = new Glitch(initialOwner);
+    Glitch newGlitch = new Glitch(initialOwner, address(this), 'https://google.com/');
     assertEq(newGlitch.owner(), initialOwner, 'Incorrect initial owner');
   }
 

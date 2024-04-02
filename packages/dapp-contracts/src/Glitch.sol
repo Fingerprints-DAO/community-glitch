@@ -28,10 +28,12 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, O
   /**
    * @dev Constructor function
    * @param initialOwner The initial owner of the contract
+   * @param _minterContractAddress The address of the minter contract
+   * @param _baseUri The base URI of the contract
    */
-  constructor(address initialOwner) ERC721('glitch', 'GLT') Ownable(initialOwner) {
-    baseURI = 'http://localhost:3000/arts/';
-    minterContractAddress = initialOwner;
+  constructor(address initialOwner, address _minterContractAddress, string memory _baseUri) ERC721('glitch', 'GLT') Ownable(initialOwner) {
+    baseURI = _baseUri;
+    minterContractAddress = _minterContractAddress;
   }
 
   /**

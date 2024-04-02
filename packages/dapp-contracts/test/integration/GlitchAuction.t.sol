@@ -41,7 +41,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
   /// @dev A function invoked before each test_ case is run.
   function setUp() public virtual {
     // Instantiate the contracts-under-test.
-    glitch = new Glitch(owner);
+    glitch = new Glitch(owner, owner, 'https://google.com/');
     auction = new GlitchAuction(owner, address(glitch), owner);
     vm.deal(alice, 1 ether);
 
