@@ -1,3 +1,5 @@
-export { abi as glitchABI } from '../abi/Glitch.json'
-export { abi as glitchAuctionABI } from '../abi/GlitchAuction.json'
+import glitch from '../abi/Glitch.json'
+import glitchAuction from '../abi/GlitchAuction.json'
 export { default as contractAddresses } from '../logs/deploy.json'
+export const GlitchABI = glitch.abi
+export const GlitchAuctionABI = glitchAuction.abi

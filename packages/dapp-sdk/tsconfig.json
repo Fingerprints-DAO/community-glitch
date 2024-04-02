@@ -8,15 +8,17 @@
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
     "composite": true,
-    "lib": ["esnext"],
-    "module": "esnext",
+    "lib": [
+      "es5", "es6", "ESNext", "dom", "dom.iterable"
+    ],
+    "module": "commonjs",
     "moduleResolution": "node",
     "noImplicitThis":true,
     "outDir": "dist",
     "skipLibCheck": true,
     "strict": true,
     "strictNullChecks": true,
-    "target": "es6",
+    "target": "es2020",
     "rootDir": "src"
   },
   "exclude": ["test", "dist"],
