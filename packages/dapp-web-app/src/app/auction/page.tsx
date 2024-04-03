@@ -99,7 +99,7 @@ const TableRow = ({
     textDecor={!index ? 'line-through' : undefined}
   >
     <TableCell width={'35px'} pr={2}>
-      {!index ? '0' : index + '.'}
+      {!index ? '-' : index + '.'}
     </TableCell>
     <TableCell width={'100px'}>
       <Text as={'span'} fontSize={'10px'} mr={2}>
@@ -111,12 +111,12 @@ const TableRow = ({
   </Tr>
 )
 
+const token = tokens[0]
 export default function Auction() {
-  const token = tokens[0]
   return (
     <FullPageTemplate>
       <Box>
-        <Box width={'500px'} mx={'auto'}>
+        <Box width={'450px'} mx={'auto'}>
           <ChakraNextImageLoader
             src={`/arts/A/${token.filename}`}
             alt={`${token.name}`}
@@ -139,7 +139,13 @@ export default function Auction() {
           </Flex>
         </Box>
       </Box>
-      <Flex justifyContent={'space-between'} w="full" gap={10} mt={8}>
+      <Flex
+        flexDir={{ base: 'column-reverse', md: 'row' }}
+        justifyContent={'space-between'}
+        w="full"
+        gap={10}
+        mt={8}
+      >
         <Flex flexDir={'column'} gap={10}>
           <Box as="section">
             <Text as={'h1'} fontSize={'4xl'}>
@@ -171,6 +177,12 @@ export default function Auction() {
                     Bidding start price:
                   </Text>{' '}
                   <Text as={'span'}>0.06 ETH</Text>
+                </ListItem>
+                <ListItem>
+                  <Text as={'span'} fontWeight={'bold'}>
+                    Minimun increase bid:
+                  </Text>{' '}
+                  <Text as={'span'}>0.005 ETH</Text>
                 </ListItem>
                 <ListItem>
                   <Text as={'span'} fontWeight={'bold'}>
@@ -290,7 +302,7 @@ export default function Auction() {
                 Ξ
               </InputLeftAddon>
               <Input
-                placeholder="0.219 or more"
+                placeholder="0.214 or more"
                 size={'md'}
                 colorScheme="blackAlpha"
               />

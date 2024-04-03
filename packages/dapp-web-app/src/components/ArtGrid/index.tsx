@@ -4,7 +4,7 @@ import { tokens } from 'data/tokens'
 import Link from 'next/link'
 
 const divisor = 12
-const randomTokens = tokens.sort(() => Math.random() - 0.5)
+const randomTokens = [...tokens].sort(() => Math.random() - 0.5)
 export const ArtGrid = () => {
   return (
     <Flex
