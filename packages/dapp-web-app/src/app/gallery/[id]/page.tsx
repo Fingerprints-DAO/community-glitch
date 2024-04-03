@@ -15,7 +15,7 @@ import ChakraNextImageLoader from 'components/ChakraNextImageLoader'
 import FullPageTemplate from 'components/Templates/FullPage'
 import { tokens } from 'data/tokens'
 import Link from 'next/link'
-import { redirect, useRouter } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import { getExternalOpenseaUrl } from 'utils/getLink'
 
 export default function Token({ params: { id } }: { params: { id: string } }) {

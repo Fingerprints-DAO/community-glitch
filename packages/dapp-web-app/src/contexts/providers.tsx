@@ -5,14 +5,10 @@ import { ConnectKitProvider } from 'connectkit'
 import { WagmiProvider } from 'wagmi'
 import { ChakraProvider } from '@chakra-ui/react'
 import { CacheProvider } from '@chakra-ui/next-js'
-import duration from 'dayjs/plugin/duration'
-import dayjs from 'dayjs'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { config } from '../settings/wagmi'
 import theme from 'settings/theme'
 import { useEffect } from 'react'
-
-dayjs.extend(duration)
 
 const queryClient = new QueryClient()
 
