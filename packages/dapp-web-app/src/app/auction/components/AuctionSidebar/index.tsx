@@ -26,10 +26,7 @@ import useCountdownTime from 'hooks/use-countdown-timer'
 import Countdown from 'components/Countdown'
 import { useAuctionContext } from 'contexts/AuctionContext'
 import { AuctionState } from 'types/auction'
-import {
-  cleanEmptyBids,
-  ReadAuctionGetTopBidsResult,
-} from 'app/auction/data-handler'
+import { cleanEmptyBids } from 'app/auction/data-handler'
 
 const TableCell = ({
   children,
@@ -114,14 +111,14 @@ export const AuctionSidebar = () => {
             </Text>
           </Box>
 
-          {auctionNotStartedAndNotIdle && (
+          {auctionNotStartedAndNotIdle && topBids.length > 0 && (
             <Flex flexDir={'column'} gap={4}>
               <Text fontWeight={'bold'}>lowest winning bid</Text>
               <Text>
                 <Text as={'span'} fontSize={'xs'}>
                   Ξ
                 </Text>{' '}
-                0.209
+                {formatToEtherStringBN(topBids[topBids.length - 1].amount)}
               </Text>
               <Button
                 variant={'link'}
