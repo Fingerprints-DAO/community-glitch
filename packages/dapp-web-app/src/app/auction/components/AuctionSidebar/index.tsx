@@ -21,12 +21,17 @@ import {
 import Link from 'next/link'
 import { formatToEtherStringBN } from 'utils/price'
 import { shortenAddress } from 'utils/string'
-import { useReadAuctionGetTopBids } from 'web3/contract-functions'
+import {
+  useReadAuctionGetTopBids,
+  useWriteAuctionBid,
+} from 'web3/contract-functions'
 import useCountdownTime from 'hooks/use-countdown-timer'
 import Countdown from 'components/Countdown'
 import { useAuctionContext } from 'contexts/AuctionContext'
 import { AuctionState } from 'types/auction'
 import { cleanEmptyBids } from 'app/auction/data-handler'
+import ForceConnectButton from 'components/ForceConnectButton'
+import { parseEther, ZeroAddress } from 'ethers'
 
 const TableCell = ({
   children,
@@ -76,13 +81,27 @@ const getCountdownText = (state: AuctionState) => {
 }
 
 export const AuctionSidebar = () => {
+  const [bidAmount, setBidAmount] = useState('')
   const { auctionState } = useAuctionContext()
   const { countdownInMili } = useCountdownTime()
   const { data: topBidsResult } = useReadAuctionGetTopBids()
+  const bid = useWriteAuctionBid()
   const topBids = useMemo(() => cleanEmptyBids(topBidsResult), [topBidsResult])
   const auctionNotStartedAndNotIdle =
     auctionState !== AuctionState.IDLE &&
     auctionState !== AuctionState.NOT_STARTED
+  const auctionEnded = auctionState === AuctionState.ENDED
+
+  const onBid = () => {
+    console.log([parseEther(bidAmount), ['0x000000']])
+    bid.writeContractAsync({
+      args: [
+        parseEther(bidAmount),
+        ['0x0000000000000000000000000000000000000000000000000000000000000000'],
+      ],
+      value: parseEther(bidAmount),
+    })
+  }
 
   return (
     <Flex
@@ -106,9 +125,11 @@ export const AuctionSidebar = () => {
             <Text as={'span'} fontWeight={'bold'}>
               {getCountdownText(auctionState)}
             </Text>{' '}
-            <Text as={'span'}>
-              <Countdown timestampInMili={countdownInMili} />
-            </Text>
+            {!auctionEnded && (
+              <Text as={'span'}>
+                <Countdown timestampInMili={countdownInMili} />
+              </Text>
+            )}
           </Box>
 
           {auctionNotStartedAndNotIdle && topBids.length > 0 && (
@@ -135,21 +156,30 @@ export const AuctionSidebar = () => {
           )}
 
           {auctionState === AuctionState.STARTED && (
-            <Flex justifyContent={'space-between'} gap={2}>
-              <InputGroup variant={'unstyled'}>
-                <InputLeftAddon fontSize={'12px'} pt={1}>
-                  Ξ
-                </InputLeftAddon>
-                <Input
-                  placeholder="0.214 or more"
+            <ForceConnectButton buttonText="connect to bid">
+              <Flex justifyContent={'space-between'} gap={2}>
+                <InputGroup variant={'unstyled'}>
+                  <InputLeftAddon fontSize={'12px'} pt={1}>
+                    Ξ
+                  </InputLeftAddon>
+                  <Input
+                    placeholder="0.214 or more"
+                    size={'md'}
+                    colorScheme="blackAlpha"
+                    onChange={(e) => setBidAmount(e.target.value)}
+                  />
+                </InputGroup>
+                <Button
+                  variant={'solid'}
                   size={'md'}
-                  colorScheme="blackAlpha"
-                />
-              </InputGroup>
-              <Button variant={'solid'} size={'md'} px={8}>
-                place bid
-              </Button>
-            </Flex>
+                  px={8}
+                  onClick={onBid}
+                  disabled={!bidAmount}
+                >
+                  place bid
+                </Button>
+              </Flex>
+            </ForceConnectButton>
           )}
           {auctionNotStartedAndNotIdle && (
             <>

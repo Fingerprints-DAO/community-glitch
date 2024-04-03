@@ -1,4 +1,5 @@
 import { Box, Flex, Grid, GridItem, Text } from '@chakra-ui/react'
+import Wallet from 'components/Wallet'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -71,6 +72,7 @@ const Header = ({ isDrawer = false }) => {
                 </Box>
               )
             })}
+            <Wallet buttonWidth={'auto'} ml={6} isDrawer={isDrawer} />
           </Flex>
         </GridItem>
       </Grid>

@@ -1,3 +1,4 @@
+'use client'
 import { getDefaultConfig } from 'connectkit'
 import { createConfig } from 'wagmi'
 import { wagmiPlainConfig } from './wagmiConfig'
@@ -22,11 +23,7 @@ export const config = createConfig(
       '5e9390a7f8281ac44f6cf4348e74bdc5',
 
     // Required App Info
-    appName: 'Your App Name',
-
-    appDescription: 'Your App Description',
-    appUrl: 'https://family.co', // your app's url
-    appIcon: 'https://family.co/logo.png', // your app's icon, no bigger than 1024x1024px (max. 1MB)
+    appName: 'glitch',
   }),
 )
 

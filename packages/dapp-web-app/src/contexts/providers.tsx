@@ -1,19 +1,19 @@
 'use client'
 
 import * as React from 'react'
-import { ConnectKitProvider } from 'connectkit'
+import { useEffect, useState } from 'react'
 import { WagmiProvider } from 'wagmi'
 import { ChakraProvider } from '@chakra-ui/react'
 import { CacheProvider } from '@chakra-ui/next-js'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { config } from '../settings/wagmi'
+import { ConnectKitProvider } from 'connectkit'
 import theme from 'settings/theme'
-import { useEffect } from 'react'
+import { config } from 'settings/wagmi'
 
 const queryClient = new QueryClient()
 
 function Providers({ children }: { children: React.ReactNode }) {
-  const [mounted, setMounted] = React.useState(false)
+  const [mounted, setMounted] = useState(false)
   useEffect(() => {
     setMounted(true)
     if (window.location.hash) {
@@ -32,11 +32,10 @@ function Providers({ children }: { children: React.ReactNode }) {
       <ChakraProvider theme={theme}>
         <WagmiProvider config={config}>
           <QueryClientProvider client={queryClient}>
-            {!mounted && <p>Loading</p>}
-            {mounted && children}
-            {/* <ConnectKitProvider>
+            <ConnectKitProvider>
+              {!mounted && <p>Loading</p>}
               {mounted && children}
-              </ConnectKitProvider> */}
+            </ConnectKitProvider>
           </QueryClientProvider>
         </WagmiProvider>
       </ChakraProvider>
