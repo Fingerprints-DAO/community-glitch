@@ -11,9 +11,7 @@ import {
   Button,
   Input,
   InputGroup,
-  InputRightAddon,
   Table,
-  TableCaption,
   TableContainer,
   Tbody,
   Td,
@@ -26,8 +24,13 @@ import ChakraNextImageLoader from 'components/ChakraNextImageLoader'
 import FullPageTemplate from 'components/Templates/FullPage'
 import { tokens } from 'data/tokens'
 import { getExternalOpenseaUrl } from 'utils/getLink'
-import { auctionAddress } from 'web3/contract-functions'
+import {
+  auctionAddress,
+  useReadAuctionGetTopBids,
+} from 'web3/contract-functions'
 import { ReactNode } from 'react'
+import { formatToEtherStringBN } from 'utils/price'
+import { shortenAddress } from 'utils/string'
 
 const TextSection = ({
   title,
@@ -42,7 +45,7 @@ const TextSection = ({
     <Text as={'h2'} fontSize={'xl'} fontWeight={'bold'} {...props}>
       {title}
     </Text>
-    <Text>{children}</Text>
+    <Text as={'div'}>{children}</Text>
   </>
 )
 
@@ -90,7 +93,7 @@ const TableRow = ({
   isHighlighted,
 }: {
   index?: number
-  amount: number
+  amount: string
   address: string
   isHighlighted?: boolean
 }) => (
@@ -101,7 +104,7 @@ const TableRow = ({
     <TableCell width={'35px'} pr={2}>
       {!index ? '-' : index + '.'}
     </TableCell>
-    <TableCell width={'100px'}>
+    <TableCell width={'100px'} pr={4}>
       <Text as={'span'} fontSize={'10px'} mr={2}>
         Ξ
       </Text>
@@ -113,6 +116,8 @@ const TableRow = ({
 
 const token = tokens[0]
 export default function Auction() {
+  // const { data: config } = useReadAuctionGetConfig()
+  const { data: topBids } = useReadAuctionGetTopBids()
   return (
     <FullPageTemplate>
       <Box>
@@ -132,7 +137,7 @@ export default function Auction() {
             <ChakraLink
               as={Link}
               target="_blank"
-              href={getExternalOpenseaUrl(auctionAddress, token.id.toString())}
+              href={getExternalOpenseaUrl(auctionAddress)}
             >
               view collection
             </ChakraLink>
@@ -316,25 +321,14 @@ export default function Auction() {
             <TableContainer mt={1} maxH={'260px'} overflowY={'auto'}>
               <Table variant="simple" size={'sm'} textColor={'gray.500'}>
                 <Tbody>
-                  <TableRow index={1} amount={6.699} address={'punk5273'} />
-                  <TableRow
-                    index={2}
-                    amount={3.02}
-                    address={'you'}
-                    isHighlighted
-                  />
-                  <TableRow index={3} amount={2.0} address={'thearod.eth'} />
-                  <TableRow
-                    index={4}
-                    amount={0.699}
-                    address={'arodstudio.eth'}
-                  />
-                  <TableRow
-                    index={5}
-                    amount={0.1}
-                    address={'you'}
-                    isHighlighted
-                  />
+                  {topBids?.map((bid, index) => (
+                    <TableRow
+                      key={index}
+                      index={index + 1}
+                      amount={formatToEtherStringBN(bid.amount)}
+                      address={shortenAddress(bid.bidder, 5, 6)}
+                    />
+                  ))}
                 </Tbody>
               </Table>
             </TableContainer>

@@ -747,7 +747,7 @@ export const glitchAbi = [
 ] as const
 
 export const glitchAddress =
-  '0xc49d27C4A520a71fF899de7aca9FB56794Bb0f1e' as const
+  '0x5FbDB2315678afecb367f032d93F642f64180aa3' as const
 
 export const glitchConfig = { address: glitchAddress, abi: glitchAbi } as const
 
