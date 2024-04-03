@@ -1,9 +1,10 @@
 import { Heading, defineStyle, defineStyleConfig } from '@chakra-ui/react'
+import { inputTheme } from './input'
 
 const blackButton = {
   bgColor: 'black',
   color: 'white',
-  borderColor: 'white',
+  borderColor: 'black',
 }
 const outlineButton = {
   bgColor: 'white',
@@ -19,13 +20,7 @@ const components = {
       pb: 4,
     },
   }),
-  Input: defineStyleConfig({
-    baseStyle: {
-      borderRadius: 0,
-      rounded: 'none',
-      borderColor: 'gray.900',
-    },
-  }),
+  Input: inputTheme,
   Button: defineStyleConfig({
     variants: {
       solid: defineStyle(({ colorScheme }) => ({

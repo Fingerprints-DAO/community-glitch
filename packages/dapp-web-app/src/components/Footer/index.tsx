@@ -64,7 +64,7 @@ const Footer = () => {
                 target="_blank"
                 p={2}
                 color="gray.300"
-                _hover={{ color: 'gray.200' }}
+                _hover={{ color: 'gray.800' }}
                 transition="ease"
                 transitionProperty="color"
                 transitionDuration="0.2s"
@@ -82,7 +82,7 @@ const Footer = () => {
                 target="_blank"
                 p={2}
                 color="gray.300"
-                _hover={{ color: 'gray.200' }}
+                _hover={{ color: 'gray.800' }}
                 transition="ease"
                 transitionProperty="color"
                 transitionDuration="0.2s"
@@ -100,7 +100,7 @@ const Footer = () => {
                     target="_blank"
                     p={2}
                     color="gray.300"
-                    _hover={{ color: 'gray.200' }}
+                    _hover={{ color: 'gray.800' }}
                     transition="ease"
                     transitionProperty="color"
                     transitionDuration="0.2s"
@@ -119,7 +119,7 @@ const Footer = () => {
                     target="_blank"
                     p={2}
                     color="gray.300"
-                    _hover={{ color: 'gray.200' }}
+                    _hover={{ color: 'gray.800' }}
                     transition="ease"
                     transitionProperty="color"
                     transitionDuration="0.2s"
