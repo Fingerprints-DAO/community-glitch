@@ -350,8 +350,8 @@ export default function Auction() {
             <TableContainer mt={1} maxH={'260px'} overflowY={'auto'}>
               <Table variant="simple" size={'sm'} textColor={'gray.500'}>
                 <Tbody>
-                  <TableRow index={2} amount={3.02} address={'you'} />
-                  <TableRow amount={0.1} address={'you'} />
+                  <TableRow index={2} amount={'3.02'} address={'you'} />
+                  <TableRow amount={'0.1'} address={'you'} />
                 </Tbody>
               </Table>
             </TableContainer>
