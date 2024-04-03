@@ -32,6 +32,7 @@ import { AuctionState } from 'types/auction'
 import { cleanEmptyBids } from 'app/auction/data-handler'
 import ForceConnectButton from 'components/ForceConnectButton'
 import { parseEther, ZeroAddress } from 'ethers'
+import { useAccount } from 'wagmi'
 
 const TableCell = ({
   children,
@@ -80,12 +81,16 @@ const getCountdownText = (state: AuctionState) => {
   return 'auction ended.'
 }
 
+const isUserAddress = (userAddress: string, address: string) =>
+  userAddress.toLowerCase() === address.toLowerCase()
+
 export const AuctionSidebar = () => {
   const [bidAmount, setBidAmount] = useState('')
   const { auctionState } = useAuctionContext()
   const { countdownInMili } = useCountdownTime()
   const { data: topBidsResult } = useReadAuctionGetTopBids()
   const bid = useWriteAuctionBid()
+  const userAccount = useAccount()
   const topBids = useMemo(() => cleanEmptyBids(topBidsResult), [topBidsResult])
   const auctionNotStartedAndNotIdle =
     auctionState !== AuctionState.IDLE &&
@@ -204,7 +209,18 @@ export const AuctionSidebar = () => {
                               key={index}
                               index={index + 1}
                               amount={formatToEtherStringBN(bid.amount)}
-                              address={shortenAddress(bid.bidder, 5, 6)}
+                              address={
+                                isUserAddress(
+                                  userAccount?.address as string,
+                                  bid.bidder,
+                                )
+                                  ? 'you'
+                                  : shortenAddress(bid.bidder, 5, 6)
+                              }
+                              isHighlighted={isUserAddress(
+                                userAccount?.address as string,
+                                bid.bidder,
+                              )}
                             />
                           ))}
                         </Tbody>
