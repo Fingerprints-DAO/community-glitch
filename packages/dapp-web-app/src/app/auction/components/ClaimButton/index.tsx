@@ -1,10 +1,11 @@
 'use client'
 import { Button, Text } from '@chakra-ui/react'
 import { EtherSymbol } from 'components/EtherSymbol'
-import { useMemo } from 'react'
+import useTxToast from 'hooks/use-tx-toast'
+import { useEffect, useMemo } from 'react'
 import { formatToEtherStringBN } from 'utils/price'
 import { pluralize } from 'utils/string'
-import { useAccount } from 'wagmi'
+import { useAccount, useWaitForTransactionReceipt } from 'wagmi'
 import {
   useReadAuctionBidBalances,
   useReadAuctionClaimed,
@@ -28,8 +29,13 @@ export const ClaimButton = ({
   const { data: alreadyClaimed } = useReadAuctionClaimed({
     args: [userAddress!],
   })
-  const { writeContract } = useWriteAuctionClaimAll()
+  const claimAll = useWriteAuctionClaimAll()
   const { data: settledPrice = 0n } = useReadAuctionGetSettledPrice()
+  const { showTxSentToast, showTxErrorToast, showTxExecutedToast } =
+    useTxToast()
+  const claimAllTx = useWaitForTransactionReceipt({
+    hash: claimAll?.data,
+  })
   const refundToClaim = useMemo(() => {
     if (nftsToClaim < 1) return 0n
     const baseCosts = BigInt(nftsToClaim) * settledPrice
@@ -38,9 +44,34 @@ export const ClaimButton = ({
   const isAbleToClaim = nftsToClaim > 0 || balance > 0
 
   const onClick = () => {
-    console.log('claim')
-    writeContract({})
+    claimAll.writeContract(
+      {},
+      {
+        onSuccess: (data) => {
+          showTxSentToast('claim-sent', data)
+        },
+        onError: (error) => {
+          showTxErrorToast(error ?? `Tx could not be sent`)
+        },
+      },
+    )
   }
+
+  useEffect(() => {
+    if (claimAll.data && claimAllTx.isSuccess) {
+      showTxExecutedToast({ id: 'claim-executed', txHash: claimAll.data })
+      claimAll.reset()
+    }
+    if (claimAll.data && claimAllTx.isError)
+      showTxErrorToast(claimAllTx?.failureReason ?? `Tx failed`)
+  }, [
+    claimAll,
+    claimAllTx?.failureReason,
+    claimAllTx.isError,
+    claimAllTx.isSuccess,
+    showTxErrorToast,
+    showTxExecutedToast,
+  ])
 
   if (!isAbleToClaim) return null
 

@@ -5,14 +5,18 @@ import { useReadAuctionGetTopBids } from 'web3/contract-functions'
 
 const useGetTopBids = () => {
   const { address: userAddress } = useAccount()
-  const { data: topBidsResult } = useReadAuctionGetTopBids()
+  const { data: topBidsResult, refetch } = useReadAuctionGetTopBids()
   const topBids = useMemo(() => cleanEmptyBids(topBidsResult), [topBidsResult])
   const myBids = useMemo(
     () => filterMyBids(userAddress, topBids),
     [topBids, userAddress],
   )
 
-  return { topBids, myBids }
+  const refetchBids = () => {
+    refetch()
+  }
+
+  return { topBids, myBids, refetchBids }
 }
 
 export default useGetTopBids

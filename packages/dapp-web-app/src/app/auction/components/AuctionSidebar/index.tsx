@@ -25,7 +25,11 @@ import { useAuctionContext } from 'contexts/AuctionContext'
 import { AuctionState, BidLogsType } from 'types/auction'
 import ForceConnectButton from 'components/ForceConnectButton'
 import { parseEther } from 'ethers'
-import { useAccount, usePublicClient } from 'wagmi'
+import {
+  useAccount,
+  usePublicClient,
+  useWaitForTransactionReceipt,
+} from 'wagmi'
 import { getContractAddressesForChainOrThrow } from '@dapp/sdk'
 import { getChainId } from 'utils/chain'
 import { InfoTooltip } from 'components/InfoTooltip'
@@ -35,6 +39,7 @@ import BidsModal from 'components/BidsModal'
 import { TopBids } from '../TopBids'
 import useGetTopBids from 'hooks/use-get-top-bids'
 import { ClaimButton } from '../ClaimButton'
+import useTxToast from 'hooks/use-tx-toast'
 
 const getCountdownText = (state: AuctionState) => {
   if (state === AuctionState.IDLE || state === AuctionState.NOT_STARTED) {
@@ -49,31 +54,50 @@ const getCountdownText = (state: AuctionState) => {
 const auctionContract = getContractAddressesForChainOrThrow(getChainId())
 
 export const AuctionSidebar = () => {
-  const [bidAmount, setBidAmount] = useState('')
   const { auctionState } = useAuctionContext()
-  const { data: minimunBid } = useReadAuctionGetMinimumBid()
-  const { countdownInMili } = useCountdownTime()
-  const { topBids, myBids } = useGetTopBids()
-  const bid = useWriteAuctionBid()
-  const userAccount = useAccount()
-  const [outbids, setOutbids] = useState<BidLogsType>([])
-  const [allBids, setAllBids] = useState<BidLogsType>([])
+  const [bidAmount, setBidAmount] = useState('')
   const publicClient = usePublicClient()
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const { data: minimunBid, refetch: refetchMinimumBid } =
+    useReadAuctionGetMinimumBid()
+  const { countdownInMili } = useCountdownTime()
+  const { topBids, myBids, refetchBids } = useGetTopBids()
+  const bid = useWriteAuctionBid()
+  const bidTx = useWaitForTransactionReceipt({
+    hash: bid?.data,
+  })
+  const userAccount = useAccount()
+  const { showTxSentToast, showTxErrorToast, showTxExecutedToast } =
+    useTxToast()
+  const [outbids, setOutbids] = useState<BidLogsType>([])
+  const [allBids, setAllBids] = useState<BidLogsType>([])
 
   const auctionNotStartedAndNotIdle =
     auctionState !== AuctionState.IDLE &&
     auctionState !== AuctionState.NOT_STARTED
   const auctionEnded = auctionState === AuctionState.ENDED
 
-  const onBid = () => {
-    bid.writeContractAsync({
-      args: [
-        parseEther(bidAmount),
-        ['0x0000000000000000000000000000000000000000000000000000000000000000'],
-      ],
-      value: parseEther(bidAmount),
-    })
+  const onBid = async () => {
+    await bid.writeContractAsync(
+      {
+        args: [
+          parseEther(bidAmount),
+          [
+            '0x0000000000000000000000000000000000000000000000000000000000000000',
+          ],
+        ],
+        value: parseEther(bidAmount),
+      },
+      {
+        onSuccess: (data) => {
+          showTxSentToast('bid-sent', data)
+          setBidAmount('')
+        },
+        onError: (error) => {
+          showTxErrorToast(error ?? `Tx could not be sent`)
+        },
+      },
+    )
   }
 
   useEffect(() => {
@@ -92,7 +116,7 @@ export const AuctionSidebar = () => {
     }
 
     getOutbids()
-  }, [publicClient, userAccount.address])
+  }, [publicClient, userAccount.address, bidTx.isSuccess])
 
   useEffect(() => {
     async function getAllBids() {
@@ -107,7 +131,27 @@ export const AuctionSidebar = () => {
     }
 
     getAllBids()
-  }, [publicClient, userAccount.address])
+  }, [publicClient, userAccount.address, bidTx.isSuccess])
+
+  useEffect(() => {
+    if (bid.data && bidTx.isSuccess) {
+      showTxExecutedToast({ id: 'bid-executed', txHash: bid.data })
+      bid.reset()
+      refetchBids()
+      refetchMinimumBid()
+    }
+    if (bid.data && bidTx.isError)
+      showTxErrorToast(bidTx?.failureReason ?? `Tx failed`)
+  }, [
+    bid,
+    bidTx?.failureReason,
+    bidTx.isError,
+    bidTx.isSuccess,
+    refetchBids,
+    refetchMinimumBid,
+    showTxErrorToast,
+    showTxExecutedToast,
+  ])
 
   return (
     <Flex
@@ -178,6 +222,7 @@ export const AuctionSidebar = () => {
                       colorScheme="blackAlpha"
                       type="number"
                       onChange={(e) => setBidAmount(e.target.value)}
+                      value={bidAmount}
                     />
                   </InputGroup>
                   <Button
@@ -186,14 +231,24 @@ export const AuctionSidebar = () => {
                     px={8}
                     onClick={onBid}
                     isDisabled={
+                      bid.isPending ||
                       Number(bidAmount) <
-                      Number(formatToEtherStringBN(minimunBid))
+                        Number(formatToEtherStringBN(minimunBid))
                     }
+                    isLoading={bid.isPending}
                   >
                     place bid
                   </Button>
                 </Flex>
-                <Text mt={2} fontSize={'sm'} as={'div'}>
+                <Text
+                  mt={2}
+                  fontSize={'sm'}
+                  as={'div'}
+                  onClick={() =>
+                    setBidAmount(formatToEtherStringBN(minimunBid))
+                  }
+                  _hover={{ cursor: 'pointer' }}
+                >
                   minimun bid is{' '}
                   <Text fontSize={'9px'} as={'span'}>
                     Ξ
