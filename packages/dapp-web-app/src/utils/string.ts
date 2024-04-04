@@ -2,8 +2,8 @@ const TRUNCATED_NAME_CHAR_LIMIT = 11
 
 export const pluralize = (
   quantity: number,
-  plural: string,
   singular: string,
+  plural: string,
 ): string => `${quantity} ${quantity === 1 ? singular : plural}`
 
 export const shortenAddress = (address = '', startCount = 5, lastCount = 3) => {

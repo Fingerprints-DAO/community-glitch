@@ -1,11 +1,18 @@
 import { InfoOutlineIcon } from '@chakra-ui/icons'
-import { Tooltip, TooltipProps } from '@chakra-ui/react'
+import { IconProps, Tooltip, TooltipProps } from '@chakra-ui/react'
 
-export const InfoTooltip = ({ ...props }: Omit<TooltipProps, 'children'>) => {
+type InfoTooltipType = TooltipProps & {
+  iconProps?: IconProps
+}
+
+export const InfoTooltip = ({
+  iconProps,
+  ...props
+}: Omit<InfoTooltipType, 'children'>) => {
   if (!props.label) return null
   return (
     <Tooltip hasArrow bg="gray.300" color="black" {...props}>
-      <InfoOutlineIcon w={3} />
+      <InfoOutlineIcon w={3} {...iconProps} />
     </Tooltip>
   )
 }

@@ -34,6 +34,9 @@ const components = {
           //   borderColor: `${colorScheme}.900`,
           //   borderStyle: 'solid',
           // },
+          _disabled: {
+            ...blackButton,
+          },
         },
         _active: {
           ...outlineButton,

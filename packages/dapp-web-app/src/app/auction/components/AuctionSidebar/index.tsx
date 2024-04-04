@@ -140,7 +140,9 @@ export const AuctionSidebar = () => {
 
           {auctionNotStartedAndNotIdle && topBids.length > 0 && (
             <Flex flexDir={'column'} gap={4}>
-              <Text fontWeight={'bold'}>lowest winning bid</Text>
+              <Text fontWeight={'bold'}>
+                {auctionEnded ? 'settled price' : 'lowest winning bid'}
+              </Text>
               <Text>
                 <Text as={'span'} fontSize={'xs'}>
                   Ξ
@@ -171,7 +173,7 @@ export const AuctionSidebar = () => {
                       Ξ
                     </InputLeftAddon>
                     <Input
-                      placeholder="0.214 or more"
+                      placeholder={`${formatToEtherStringBN(minimunBid)} or more`}
                       size={'md'}
                       colorScheme="blackAlpha"
                       type="number"
@@ -197,7 +199,10 @@ export const AuctionSidebar = () => {
                     Ξ
                   </Text>
                   {formatToEtherStringBN(minimunBid)}
-                  <InfoTooltip label="Bid at least this amount to be in top 50 and be able to mint" />
+                  <InfoTooltip
+                    label="Bid at least this amount to be in top 50 and be able to mint"
+                    iconProps={{ mt: '-1px', ml: 1 }}
+                  />
                 </Text>
               </Box>
             </ForceConnectButton>
@@ -233,9 +238,14 @@ export const AuctionSidebar = () => {
               )}
             </>
           )}
-          <Box>
-            <ClaimButton nftsToClaim={myBids.length} />
-          </Box>
+          {auctionEnded && (
+            <Box>
+              <ClaimButton
+                nftsToClaim={myBids.length}
+                bidSpended={myBids.reduce((a, b) => a + b.amount, 0n)}
+              />
+            </Box>
+          )}
           <Text as={'div'} fontSize={'xs'}>
             Refund, rebate and artwork claims will start after auction ends.{' '}
             <ChakraLink as={Link} href={'/about#faq'}>
