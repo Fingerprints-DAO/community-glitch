@@ -46,6 +46,12 @@ error InvalidStartEndTime(uint256 startTime, uint256 endTime);
 /// @dev Emitted when a config-related operation is attempted before the config has been set.
 error ConfigNotSet();
 
+// @dev Emitted when a bid is placed.
+event BidPlaced(address indexed bidder, uint256 amount);
+
+// @dev Emitted when a bid is outbid.
+event Outbid(address indexed bidder, uint256 amount, uint256 lastBidPosition);
+
 contract GlitchAuction is Base {
   /**
    * @notice MAX_TOP_BIDS represents the maximum number of top bids that can be stored.
@@ -210,6 +216,8 @@ contract GlitchAuction is Base {
       topBids[i] = topBids[i - 1];
     }
     topBids[position] = Bid(bidder, amount, discountType);
+    emit BidPlaced(bidder, amount);
+    emit Outbid(outbid.bidder, outbid.amount, position);
   }
 
   function _getLastBidPosition() internal view returns (uint256 lastBidPosition) {

@@ -13,3 +13,6 @@ export const shortenAddress = (address = '', startCount = 5, lastCount = 3) => {
 
   return `${address.slice(0, startCount)}...${address.slice(-lastCount)}`
 }
+
+export const isUserAddress = (userAddress = '', address = '') =>
+  userAddress.toLowerCase() === address.toLowerCase()

@@ -1,3 +1,5 @@
+import { GetFilterLogsReturnType } from 'viem/actions'
+
 export enum AuctionState {
   IDLE,
   NOT_STARTED,
@@ -17,3 +19,7 @@ export type AuctionData = {
   minted: bigint
   maxSupply: bigint
 }
+
+export type BidLogsType = (GetFilterLogsReturnType[0] & {
+  args: { amount: bigint; bidder: string }
+})[]

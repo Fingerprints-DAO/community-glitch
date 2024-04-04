@@ -23,6 +23,7 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, O
   uint16 private constant MAX_SUPPLY = 50;
   address public minterContractAddress;
   string public baseURI;
+  event Minted(address indexed recipient, uint256 indexed tokenId);
   mapping(uint256 tokenId => TokenVersion version) private _tokenVersionMap;
 
   /**
@@ -60,6 +61,7 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, O
     require(recipient != address(0), 'Cannot mint to zero address');
     require(_id <= MAX_SUPPLY && _id > 0, 'Id out of bounds');
     _safeMint(recipient, _id);
+    emit Minted(recipient, _id);
   }
 
   /**

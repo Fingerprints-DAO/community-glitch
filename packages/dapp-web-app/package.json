@@ -17,9 +17,10 @@
     "@wagmi/cli": "^2.1.1",
     "eslint": "8.44.0",
     "eslint-config-next": "^14.1.1",
-    "typescript": "5.1.6"
+    "typescript": "^5.2"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/next-js": "^2.1.4",
     "@chakra-ui/react": "^2.7.1",
     "@dapp/sdk": "^1.0.0",

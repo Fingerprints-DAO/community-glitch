@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import { formatEther } from 'ethers'
-import { AuctionConfig } from 'types/auction'
+import { AuctionConfig, BidLogsType } from 'types/auction'
 import {
   readAuctionGetTopBids,
   readAuctionTopBids,
@@ -51,4 +51,18 @@ export type ReadAuctionGetTopBidsResult =
 
 export const cleanEmptyBids = (bids: ReadAuctionGetTopBidsResult = []) => {
   return bids.filter((bid) => bid.amount > 0n)
+}
+
+export const filterMyBids = (
+  myAddress?: string,
+  bids: ReturnType<typeof cleanEmptyBids> = [],
+) => {
+  if (!myAddress) return []
+  return bids
+    .map((bid, index) => ({ ...bid, index: index + 1 }))
+    .filter((bid) => bid.bidder.toLowerCase() === myAddress.toLowerCase())
+}
+
+export const orderBidsByAmount = (bids: BidLogsType = []) => {
+  return bids.sort((a, b) => Number(b.args.amount) - Number(a.args.amount))
 }

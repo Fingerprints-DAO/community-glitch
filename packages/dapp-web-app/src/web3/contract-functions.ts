@@ -274,6 +274,50 @@ export const auctionAbi = [
     anonymous: false,
     inputs: [
       {
+        name: 'bidder',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'BidPlaced',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'bidder',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'lastBidPosition',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'Outbid',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
         name: 'previousOwner',
         internalType: 'address',
         type: 'address',
@@ -643,6 +687,25 @@ export const glitchAbi = [
       },
     ],
     name: 'MetadataUpdate',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'recipient',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'tokenId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+    ],
+    name: 'Minted',
   },
   {
     type: 'event',
@@ -1110,6 +1173,26 @@ export const useWatchAuctionEvent = /*#__PURE__*/ createUseWatchContractEvent({
 })
 
 /**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link auctionAbi}__ and `eventName` set to `"BidPlaced"`
+ */
+export const useWatchAuctionBidPlacedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: auctionAbi,
+    address: auctionAddress,
+    eventName: 'BidPlaced',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link auctionAbi}__ and `eventName` set to `"Outbid"`
+ */
+export const useWatchAuctionOutbidEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: auctionAbi,
+    address: auctionAddress,
+    eventName: 'Outbid',
+  })
+
+/**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link auctionAbi}__ and `eventName` set to `"OwnershipTransferred"`
  */
 export const useWatchAuctionOwnershipTransferredEvent =
@@ -1548,6 +1631,16 @@ export const useWatchGlitchMetadataUpdateEvent =
   })
 
 /**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link glitchAbi}__ and `eventName` set to `"Minted"`
+ */
+export const useWatchGlitchMintedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: glitchAbi,
+    address: glitchAddress,
+    eventName: 'Minted',
+  })
+
+/**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link glitchAbi}__ and `eventName` set to `"OwnershipTransferred"`
  */
 export const useWatchGlitchOwnershipTransferredEvent =
@@ -1917,6 +2010,25 @@ export const simulateAuctionWithdraw = /*#__PURE__*/ createSimulateContract({
 export const watchAuctionEvent = /*#__PURE__*/ createWatchContractEvent({
   abi: auctionAbi,
   address: auctionAddress,
+})
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link auctionAbi}__ and `eventName` set to `"BidPlaced"`
+ */
+export const watchAuctionBidPlacedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: auctionAbi,
+    address: auctionAddress,
+    eventName: 'BidPlaced',
+  })
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link auctionAbi}__ and `eventName` set to `"Outbid"`
+ */
+export const watchAuctionOutbidEvent = /*#__PURE__*/ createWatchContractEvent({
+  abi: auctionAbi,
+  address: auctionAddress,
+  eventName: 'Outbid',
 })
 
 /**
@@ -2349,6 +2461,15 @@ export const watchGlitchMetadataUpdateEvent =
     address: glitchAddress,
     eventName: 'MetadataUpdate',
   })
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link glitchAbi}__ and `eventName` set to `"Minted"`
+ */
+export const watchGlitchMintedEvent = /*#__PURE__*/ createWatchContractEvent({
+  abi: glitchAbi,
+  address: glitchAddress,
+  eventName: 'Minted',
+})
 
 /**
  * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link glitchAbi}__ and `eventName` set to `"OwnershipTransferred"`

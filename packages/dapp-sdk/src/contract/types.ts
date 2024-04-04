@@ -1,6 +1,8 @@
 export interface ContractAddress {
   Glitch: string
   GlitchAuction: string
+  startBlock: number
+  endBlock: number
   chainId: number
 }
 
