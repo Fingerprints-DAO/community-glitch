@@ -5,6 +5,8 @@ import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol';
 import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
 import {MerkleProof} from '@openzeppelin/contracts/utils/cryptography/MerkleProof.sol';
+import {ReentrancyGuard} from '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
+import {Pausable} from '@openzeppelin/contracts/utils/Pausable.sol';
 import {Base} from './Base.sol';
 import {IGlitch} from './IGlitch.sol';
 import {console2} from 'forge-std/src/console2.sol';
@@ -52,7 +54,7 @@ event BidPlaced(address indexed bidder, uint256 amount);
 // @dev Emitted when a bid is outbid.
 event Outbid(address indexed bidder, uint256 amount, uint256 lastBidPosition);
 
-contract GlitchAuction is Base {
+contract GlitchAuction is Base, ReentrancyGuard, Pausable {
   /**
    * @notice MAX_TOP_BIDS represents the maximum number of top bids that can be stored.
    */
@@ -141,13 +143,29 @@ contract GlitchAuction is Base {
     treasuryWallet = payable(_treasuryWallet);
   }
 
-  /// @notice Sets the configuration parameters for the auction.
-  /// @dev This function can only be called by an admin. It can be used to set the start time, end time,
-  /// minimum bid increment in WEI, and starting bid amount.
-  /// @param _startTime Auction start time
-  /// @param _endTime Auction end time
-  /// @param _minBidIncrementInWei Auction minimum bid increment in WEI
-  /// @param _startAmountInWei Auction starting bid
+  /**
+   * @dev Allows the owner to pause the auction.
+   */
+  function pause() external onlyOwner {
+    _pause();
+  }
+
+  /**
+   * @dev Allows the owner to unpause the auction.
+   */
+  function unpause() external onlyOwner {
+    _unpause();
+  }
+
+  /**
+   * @notice Sets the configuration parameters for the auction.
+   * @dev This function can only be called by an admin. It can be used to set the start time, end time,
+   *  minimum bid increment in WEI, and starting bid amount.
+   * @param _startTime Auction start time
+   * @param _endTime Auction end time
+   * @param _minBidIncrementInWei Auction minimum bid increment in WEI
+   * @param _startAmountInWei Auction starting bid
+   */
   function setConfig(uint256 _startTime, uint256 _endTime, uint256 _minBidIncrementInWei, uint256 _startAmountInWei) external _onlyOwner {
     if (_startTime == 0 || _startTime >= _endTime) revert InvalidStartEndTime(_startTime, _endTime);
     if (_startAmountInWei == 0) revert InvalidAmountInWei();
@@ -182,7 +200,7 @@ contract GlitchAuction is Base {
    * @dev Allows users to place bids on the auction.
    * @param bidAmount The amount of the bid.
    */
-  function bid(uint256 bidAmount, bytes32[] calldata merkleProof) public payable validConfig validTime {
+  function bid(uint256 bidAmount, bytes32[] calldata merkleProof) public payable validConfig validTime whenNotPaused nonReentrant {
     require(bidAmount >= getMinimumBid(), 'Bid too low');
     uint256 totalBidAmount = bidBalances[msg.sender] + msg.value;
     require(totalBidAmount >= bidAmount, 'Insufficient funds for bid');
@@ -209,7 +227,10 @@ contract GlitchAuction is Base {
 
     // Remove the old top bid
     Bid memory outbid = topBids[MAX_TOP_BIDS - 1];
-    bidBalances[outbid.bidder] = bidBalances[outbid.bidder] + outbid.amount;
+    if (outbid.bidder != address(0)) {
+      bidBalances[outbid.bidder] = bidBalances[outbid.bidder] + outbid.amount;
+      emit Outbid(outbid.bidder, outbid.amount, position);
+    }
 
     // Insert the new bid
     for (uint256 i = MAX_TOP_BIDS - 1; i > position; i--) {
@@ -217,21 +238,12 @@ contract GlitchAuction is Base {
     }
     topBids[position] = Bid(bidder, amount, discountType);
     emit BidPlaced(bidder, amount);
-    emit Outbid(outbid.bidder, outbid.amount, position);
-  }
-
-  function _getLastBidPosition() internal view returns (uint256 lastBidPosition) {
-    for (lastBidPosition = MAX_TOP_BIDS - 1; lastBidPosition >= 0; lastBidPosition--) {
-      if (topBids[lastBidPosition].amount != 0) {
-        break;
-      }
-    }
   }
 
   /**
    * @dev Allows users to claim their NFTs and any refunds after the auction ends.
    */
-  function claimAll() public validConfig {
+  function claimAll() public validConfig whenNotPaused nonReentrant {
     require(block.timestamp > _config.endTime, 'Auction not ended');
     require(!claimed[msg.sender], 'Already claimed');
 
@@ -271,7 +283,7 @@ contract GlitchAuction is Base {
   /**
    * @dev Allows the owner to withdraw the sales amount after the auction ends.
    */
-  function withdraw() public _onlyOwner {
+  function withdraw() public _onlyOwner nonReentrant {
     require(block.timestamp > _config.endTime, 'Auction not ended');
     require(!withdrawn, 'Already withdrawn');
     withdrawn = true;
@@ -295,6 +307,11 @@ contract GlitchAuction is Base {
     require(success, 'Transfer failed.');
   }
 
+  /**
+   * @dev Returns the tier discount type of an address.
+   * @param addressToCheck The address to check.
+   * @return The tier discount type.
+   */
   function _getTierDiscount(bytes32[] calldata merkleProof, address addressToCheck) private view returns (DiscountType) {
     if (merkleProof.length == 0) {
       return DiscountType.None;
@@ -307,6 +324,18 @@ contract GlitchAuction is Base {
     }
 
     return DiscountType.None;
+  }
+
+  /**
+   * @dev Returns the last bid position.
+   * @return lastBidPosition The last bid position.
+   */
+  function _getLastBidPosition() internal view returns (uint256 lastBidPosition) {
+    for (lastBidPosition = MAX_TOP_BIDS - 1; lastBidPosition >= 0; lastBidPosition--) {
+      if (topBids[lastBidPosition].amount != 0) {
+        break;
+      }
+    }
   }
 
   /**

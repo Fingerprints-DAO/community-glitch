@@ -26,9 +26,10 @@ export const ClaimButton = ({
   const { data: balance = 0n } = useReadAuctionBidBalances({
     args: [userAddress!],
   })
-  const { data: alreadyClaimed } = useReadAuctionClaimed({
-    args: [userAddress!],
-  })
+  const { data: alreadyClaimed, refetch: refetchClaimed } =
+    useReadAuctionClaimed({
+      args: [userAddress!],
+    })
   const claimAll = useWriteAuctionClaimAll()
   const { data: settledPrice = 0n } = useReadAuctionGetSettledPrice()
   const { showTxSentToast, showTxErrorToast, showTxExecutedToast } =
@@ -61,6 +62,7 @@ export const ClaimButton = ({
     if (claimAll.data && claimAllTx.isSuccess) {
       showTxExecutedToast({ id: 'claim-executed', txHash: claimAll.data })
       claimAll.reset()
+      refetchClaimed()
     }
     if (claimAll.data && claimAllTx.isError)
       showTxErrorToast(claimAllTx?.failureReason ?? `Tx failed`)
@@ -69,15 +71,26 @@ export const ClaimButton = ({
     claimAllTx?.failureReason,
     claimAllTx.isError,
     claimAllTx.isSuccess,
+    refetchClaimed,
     showTxErrorToast,
     showTxExecutedToast,
   ])
 
-  if (!isAbleToClaim) return null
+  if (!isAbleToClaim)
+    return (
+      <Text fontSize={'xs'} mt={1}>
+        No arts or ether to claim. Try another account.
+      </Text>
+    )
 
   return (
     <>
-      <Button w={'full'} isDisabled={alreadyClaimed} onClick={onClick}>
+      <Button
+        w={'full'}
+        isDisabled={alreadyClaimed || claimAll.isPending}
+        isLoading={claimAll.isPending}
+        onClick={onClick}
+      >
         {alreadyClaimed ? 'claimed' : 'claim all'}
       </Button>
       {!alreadyClaimed && (

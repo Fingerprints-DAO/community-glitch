@@ -48,7 +48,7 @@ const getCountdownText = (state: AuctionState) => {
   if (state === AuctionState.STARTED) {
     return 'remaining time: '
   }
-  return 'auction ended.'
+  return 'auction ended'
 }
 
 const auctionContract = getContractAddressesForChainOrThrow(getChainId())
@@ -185,7 +185,7 @@ export const AuctionSidebar = () => {
           {auctionNotStartedAndNotIdle && topBids.length > 0 && (
             <Flex flexDir={'column'} gap={4}>
               <Text fontWeight={'bold'}>
-                {auctionEnded ? 'settled price' : 'lowest winning bid'}
+                {auctionEnded ? 'final price' : 'lowest winning bid'}
               </Text>
               <Text>
                 <Text as={'span'} fontSize={'xs'}>
@@ -295,10 +295,12 @@ export const AuctionSidebar = () => {
           )}
           {auctionEnded && (
             <Box>
-              <ClaimButton
-                nftsToClaim={myBids.length}
-                bidSpended={myBids.reduce((a, b) => a + b.amount, 0n)}
-              />
+              <ForceConnectButton buttonText="connect to claim">
+                <ClaimButton
+                  nftsToClaim={myBids.length}
+                  bidSpended={myBids.reduce((a, b) => a + b.amount, 0n)}
+                />
+              </ForceConnectButton>
             </Box>
           )}
           <Text as={'div'} fontSize={'xs'}>

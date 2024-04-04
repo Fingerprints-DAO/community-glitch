@@ -85,8 +85,9 @@ export default function Auction() {
               <Text>{token.name}</Text>
               <ChakraLink
                 as={Link}
-                target="_blank"
-                href={getExternalOpenseaUrl(auctionAddress)}
+                href={'/'}
+                // target="_blank"
+                // href={getExternalOpenseaUrl(auctionAddress)}
               >
                 view collection
               </ChakraLink>
