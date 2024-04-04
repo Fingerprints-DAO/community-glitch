@@ -1,0 +1,37 @@
+{
+  "name": "forget me not",
+  "background_color": "ffffff",
+  "image": "http://localhost:3000/edition/arts/forget-me-not_A.gif",
+  "external_url": "http://localhost:3000/edition/arts/forget-me-not_A.gif",
+  "description": "",
+  "attributes": [
+    {
+      "trait_type": "seconds",
+      "value": "5"
+    },
+    {
+      "trait_type": "frames",
+      "value": "4"
+    },
+    {
+      "trait_type": "face",
+      "value": "true"
+    },
+    {
+      "trait_type": "text",
+      "value": "false"
+    },
+    {
+      "trait_type": "symbol",
+      "value": "false"
+    },
+    {
+      "trait_type": "love",
+      "value": "false"
+    },
+    {
+      "trait_type": "decay",
+      "value": "0%"
+    }
+  ]
+}

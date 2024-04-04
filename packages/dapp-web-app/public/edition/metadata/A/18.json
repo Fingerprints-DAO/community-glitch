@@ -1,0 +1,37 @@
+{
+  "name": "grind rise learn",
+  "background_color": "ffffff",
+  "image": "http://localhost:3000/edition/arts/grind-rise-learn_A.gif",
+  "external_url": "http://localhost:3000/edition/arts/grind-rise-learn_A.gif",
+  "description": "",
+  "attributes": [
+    {
+      "trait_type": "seconds",
+      "value": "18"
+    },
+    {
+      "trait_type": "frames",
+      "value": "3"
+    },
+    {
+      "trait_type": "face",
+      "value": "false"
+    },
+    {
+      "trait_type": "text",
+      "value": "true"
+    },
+    {
+      "trait_type": "symbol",
+      "value": "false"
+    },
+    {
+      "trait_type": "love",
+      "value": "false"
+    },
+    {
+      "trait_type": "decay",
+      "value": "0%"
+    }
+  ]
+}

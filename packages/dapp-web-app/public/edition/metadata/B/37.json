@@ -1,0 +1,37 @@
+{
+  "name": "shadow portal escape",
+  "background_color": "ffffff",
+  "image": "http://localhost:3000/edition/arts/shadow-portal-escape_B.gif",
+  "external_url": "http://localhost:3000/edition/arts/shadow-portal-escape_B.gif",
+  "description": "",
+  "attributes": [
+    {
+      "trait_type": "seconds",
+      "value": "0"
+    },
+    {
+      "trait_type": "frames",
+      "value": "1"
+    },
+    {
+      "trait_type": "face",
+      "value": "FALSE"
+    },
+    {
+      "trait_type": "text",
+      "value": "FALSE"
+    },
+    {
+      "trait_type": "symbol",
+      "value": "FALSE"
+    },
+    {
+      "trait_type": "love",
+      "value": "FALSE"
+    },
+    {
+      "trait_type": "decay",
+      "value": "25%"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "name": "healing through abandonment",
+  "background_color": "ffffff",
+  "image": "http://localhost:3000/edition/arts/healing-through-abandonment_A.gif",
+  "external_url": "http://localhost:3000/edition/arts/healing-through-abandonment_A.gif",
+  "description": "",
+  "attributes": [
+    {
+      "trait_type": "seconds",
+      "value": "10"
+    },
+    {
+      "trait_type": "frames",
+      "value": "3"
+    },
+    {
+      "trait_type": "face",
+      "value": "true"
+    },
+    {
+      "trait_type": "text",
+      "value": "true"
+    },
+    {
+      "trait_type": "symbol",
+      "value": "true"
+    },
+    {
+      "trait_type": "love",
+      "value": "true"
+    },
+    {
+      "trait_type": "decay",
+      "value": "0%"
+    }
+  ]
+}
