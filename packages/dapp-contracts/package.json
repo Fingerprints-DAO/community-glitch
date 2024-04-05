@@ -9,6 +9,7 @@
     "build-local": "forge build && yarn build:ts && cp out/Glitch.sol/Glitch.json abi/Glitch.json && cp out/GlitchAuction.sol/GlitchAuction.json abi/GlitchAuction.json",
     "build:ts": "tsc -p tsconfig.json",
     "deploy:localhost": "./node_modules_link/.bin/env-cmd -x forge script DeployLocal --rpc-url http://localhost:8545 --memory-limit 256000000 --broadcast --private-key $LOCAL_PRIVATE_KEY",
+    "deploy:sepolia": "./node_modules_link/.bin/env-cmd -x forge script DeploySepolia --rpc-url https://sepolia.infura.io/v3/27f2653681924dc880f3c24ed0f1c6de --broadcast",
     "makeBids:localhost": "env-cmd -x forge script MakeBids --rpc-url http://localhost:8545 --memory-limit 256000000 --broadcast --private-key $LOCAL_PRIVATE_KEY",
     "claimAll:localhost": "env-cmd -x forge script ClaimAll --rpc-url http://localhost:8545 --memory-limit 256000000 --broadcast --private-key $LOCAL_PRIVATE_KEY",
     "lint": "yarn run lint:sol && yarn run prettier:check",

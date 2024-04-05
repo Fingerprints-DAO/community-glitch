@@ -1,8 +1,8 @@
 {
   "name": "forget me not",
   "background_color": "ffffff",
-  "image": "http://localhost:3000/edition/arts/forget-me-not_B.gif",
-  "external_url": "http://localhost:3000/edition/arts/forget-me-not_B.gif",
+  "image": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/forget-me-not_B.gif",
+  "external_url": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/forget-me-not_B.gif",
   "description": "",
   "attributes": [
     {

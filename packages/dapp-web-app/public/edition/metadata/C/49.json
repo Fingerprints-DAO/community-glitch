@@ -1,8 +1,8 @@
 {
   "name": "whispers fade away",
   "background_color": "ffffff",
-  "image": "http://localhost:3000/edition/arts/whispers-fade-away_C.gif",
-  "external_url": "http://localhost:3000/edition/arts/whispers-fade-away_C.gif",
+  "image": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/whispers-fade-away_C.gif",
+  "external_url": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/whispers-fade-away_C.gif",
   "description": "",
   "attributes": [
     {

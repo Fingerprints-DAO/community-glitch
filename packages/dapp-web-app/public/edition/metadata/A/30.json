@@ -1,8 +1,8 @@
 {
   "name": "preserve the untold",
   "background_color": "ffffff",
-  "image": "http://localhost:3000/edition/arts/preserve-the-untold_A.gif",
-  "external_url": "http://localhost:3000/edition/arts/preserve-the-untold_A.gif",
+  "image": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/preserve-the-untold_A.gif",
+  "external_url": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/preserve-the-untold_A.gif",
   "description": "",
   "attributes": [
     {

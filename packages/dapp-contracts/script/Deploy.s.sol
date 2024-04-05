@@ -42,3 +42,20 @@ contract DeployLocal is BaseScript {
     vm.stopBroadcast();
   }
 }
+
+contract DeploySepolia is BaseScript {
+  function run() public returns (Glitch glitch, GlitchAuction auction) {
+    address deployer = broadcaster;
+    address minter = broadcaster;
+    string memory baseURI = 'https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/';
+    uint256 startTime = block.timestamp + (3600 * 5);
+    uint256 endTime = startTime + (3600 * 10);
+    uint256 minBidIncrementInWei = 0.005 ether;
+    uint256 startAmountInWei = 0.006 ether;
+
+    vm.startBroadcast();
+    glitch = _deployGlitch(deployer, minter, baseURI);
+    auction = _deployAuction(address(glitch), deployer, startTime, endTime, minBidIncrementInWei, startAmountInWei);
+    vm.stopBroadcast();
+  }
+}

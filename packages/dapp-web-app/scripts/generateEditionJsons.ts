@@ -5,7 +5,8 @@ const path = require('path')
 const csvFilePath = './scripts/data/edition.csv' // Caminho para o arquivo CSV
 const outputPath = '../public/edition/metadata'
 const outputDirs = ['A', 'B', 'C', 'D'] // Nomes das pastas de saída
-const imagePath = 'http://localhost:3000/edition/arts/'
+const imagePath =
+  'https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/'
 
 interface CsvRow {
   title: string

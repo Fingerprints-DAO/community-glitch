@@ -1,8 +1,8 @@
 {
   "name": "sow love dogma",
   "background_color": "ffffff",
-  "image": "http://localhost:3000/edition/arts/sow-love-dogma_C.gif",
-  "external_url": "http://localhost:3000/edition/arts/sow-love-dogma_C.gif",
+  "image": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/sow-love-dogma_C.gif",
+  "external_url": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/sow-love-dogma_C.gif",
   "description": "",
   "attributes": [
     {

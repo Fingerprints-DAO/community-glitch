@@ -1,8 +1,8 @@
 {
   "name": "create with pain",
   "background_color": "ffffff",
-  "image": "http://localhost:3000/edition/arts/create-with-pain_B.gif",
-  "external_url": "http://localhost:3000/edition/arts/create-with-pain_B.gif",
+  "image": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/create-with-pain_B.gif",
+  "external_url": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/create-with-pain_B.gif",
   "description": "",
   "attributes": [
     {

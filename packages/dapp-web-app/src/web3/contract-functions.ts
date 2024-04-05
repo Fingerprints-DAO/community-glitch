@@ -182,6 +182,20 @@ export const auctionAbi = [
   {
     type: 'function',
     inputs: [],
+    name: 'pause',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'paused',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
     name: 'renounceOwnership',
     outputs: [],
     stateMutability: 'nonpayable',
@@ -254,6 +268,13 @@ export const auctionAbi = [
     name: 'treasuryWallet',
     outputs: [{ name: '', internalType: 'address payable', type: 'address' }],
     stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'unpause',
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
     type: 'function',
@@ -332,7 +353,35 @@ export const auctionAbi = [
     ],
     name: 'OwnershipTransferred',
   },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'account',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'Paused',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'account',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'Unpaused',
+  },
   { type: 'error', inputs: [], name: 'ConfigNotSet' },
+  { type: 'error', inputs: [], name: 'EnforcedPause' },
+  { type: 'error', inputs: [], name: 'ExpectedPause' },
   { type: 'error', inputs: [], name: 'InvalidAmountInWei' },
   { type: 'error', inputs: [], name: 'InvalidMinBidIncrementValue' },
   {
@@ -353,10 +402,11 @@ export const auctionAbi = [
     inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
     name: 'OwnableUnauthorizedAccount',
   },
+  { type: 'error', inputs: [], name: 'ReentrancyGuardReentrantCall' },
 ] as const
 
 export const auctionAddress =
-  '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512' as const
+  '0x63653E2dBb4F010825fD886a4E27a919aAF5A12F' as const
 
 export const auctionConfig = {
   address: auctionAddress,
@@ -810,7 +860,7 @@ export const glitchAbi = [
 ] as const
 
 export const glitchAddress =
-  '0x5FbDB2315678afecb367f032d93F642f64180aa3' as const
+  '0xA0852eB72B856DF132679E389c2B789557f51d08' as const
 
 export const glitchConfig = { address: glitchAddress, abi: glitchAbi } as const
 
@@ -939,6 +989,15 @@ export const useReadAuctionOwner = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"paused"`
+ */
+export const useReadAuctionPaused = /*#__PURE__*/ createUseReadContract({
+  abi: auctionAbi,
+  address: auctionAddress,
+  functionName: 'paused',
+})
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"secondTierMerkleRoot"`
  */
 export const useReadAuctionSecondTierMerkleRoot =
@@ -1010,6 +1069,15 @@ export const useWriteAuctionClaimAll = /*#__PURE__*/ createUseWriteContract({
 })
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"pause"`
+ */
+export const useWriteAuctionPause = /*#__PURE__*/ createUseWriteContract({
+  abi: auctionAbi,
+  address: auctionAddress,
+  functionName: 'pause',
+})
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"renounceOwnership"`
  */
 export const useWriteAuctionRenounceOwnership =
@@ -1059,6 +1127,15 @@ export const useWriteAuctionTransferOwnership =
   })
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"unpause"`
+ */
+export const useWriteAuctionUnpause = /*#__PURE__*/ createUseWriteContract({
+  abi: auctionAbi,
+  address: auctionAddress,
+  functionName: 'unpause',
+})
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"withdraw"`
  */
 export const useWriteAuctionWithdraw = /*#__PURE__*/ createUseWriteContract({
@@ -1103,6 +1180,15 @@ export const useSimulateAuctionClaimAll =
     address: auctionAddress,
     functionName: 'claimAll',
   })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"pause"`
+ */
+export const useSimulateAuctionPause = /*#__PURE__*/ createUseSimulateContract({
+  abi: auctionAbi,
+  address: auctionAddress,
+  functionName: 'pause',
+})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"renounceOwnership"`
@@ -1155,6 +1241,16 @@ export const useSimulateAuctionTransferOwnership =
   })
 
 /**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"unpause"`
+ */
+export const useSimulateAuctionUnpause =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: auctionAbi,
+    address: auctionAddress,
+    functionName: 'unpause',
+  })
+
+/**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"withdraw"`
  */
 export const useSimulateAuctionWithdraw =
@@ -1200,6 +1296,26 @@ export const useWatchAuctionOwnershipTransferredEvent =
     abi: auctionAbi,
     address: auctionAddress,
     eventName: 'OwnershipTransferred',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link auctionAbi}__ and `eventName` set to `"Paused"`
+ */
+export const useWatchAuctionPausedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: auctionAbi,
+    address: auctionAddress,
+    eventName: 'Paused',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link auctionAbi}__ and `eventName` set to `"Unpaused"`
+ */
+export const useWatchAuctionUnpausedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: auctionAbi,
+    address: auctionAddress,
+    eventName: 'Unpaused',
   })
 
 /**
@@ -1782,6 +1898,15 @@ export const readAuctionOwner = /*#__PURE__*/ createReadContract({
 })
 
 /**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"paused"`
+ */
+export const readAuctionPaused = /*#__PURE__*/ createReadContract({
+  abi: auctionAbi,
+  address: auctionAddress,
+  functionName: 'paused',
+})
+
+/**
  * Wraps __{@link readContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"secondTierMerkleRoot"`
  */
 export const readAuctionSecondTierMerkleRoot = /*#__PURE__*/ createReadContract(
@@ -1857,6 +1982,15 @@ export const writeAuctionClaimAll = /*#__PURE__*/ createWriteContract({
 })
 
 /**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"pause"`
+ */
+export const writeAuctionPause = /*#__PURE__*/ createWriteContract({
+  abi: auctionAbi,
+  address: auctionAddress,
+  functionName: 'pause',
+})
+
+/**
  * Wraps __{@link writeContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"renounceOwnership"`
  */
 export const writeAuctionRenounceOwnership = /*#__PURE__*/ createWriteContract({
@@ -1902,6 +2036,15 @@ export const writeAuctionTransferOwnership = /*#__PURE__*/ createWriteContract({
 })
 
 /**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"unpause"`
+ */
+export const writeAuctionUnpause = /*#__PURE__*/ createWriteContract({
+  abi: auctionAbi,
+  address: auctionAddress,
+  functionName: 'unpause',
+})
+
+/**
  * Wraps __{@link writeContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"withdraw"`
  */
 export const writeAuctionWithdraw = /*#__PURE__*/ createWriteContract({
@@ -1944,6 +2087,15 @@ export const simulateAuctionClaimAll = /*#__PURE__*/ createSimulateContract({
   abi: auctionAbi,
   address: auctionAddress,
   functionName: 'claimAll',
+})
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"pause"`
+ */
+export const simulateAuctionPause = /*#__PURE__*/ createSimulateContract({
+  abi: auctionAbi,
+  address: auctionAddress,
+  functionName: 'pause',
 })
 
 /**
@@ -1996,6 +2148,15 @@ export const simulateAuctionTransferOwnership =
   })
 
 /**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"unpause"`
+ */
+export const simulateAuctionUnpause = /*#__PURE__*/ createSimulateContract({
+  abi: auctionAbi,
+  address: auctionAddress,
+  functionName: 'unpause',
+})
+
+/**
  * Wraps __{@link simulateContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"withdraw"`
  */
 export const simulateAuctionWithdraw = /*#__PURE__*/ createSimulateContract({
@@ -2040,6 +2201,22 @@ export const watchAuctionOwnershipTransferredEvent =
     address: auctionAddress,
     eventName: 'OwnershipTransferred',
   })
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link auctionAbi}__ and `eventName` set to `"Paused"`
+ */
+export const watchAuctionPausedEvent = /*#__PURE__*/ createWatchContractEvent({
+  abi: auctionAbi,
+  address: auctionAddress,
+  eventName: 'Paused',
+})
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link auctionAbi}__ and `eventName` set to `"Unpaused"`
+ */
+export const watchAuctionUnpausedEvent = /*#__PURE__*/ createWatchContractEvent(
+  { abi: auctionAbi, address: auctionAddress, eventName: 'Unpaused' },
+)
 
 /**
  * Wraps __{@link readContract}__ with `abi` set to __{@link glitchAbi}__

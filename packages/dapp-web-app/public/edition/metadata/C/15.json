@@ -1,8 +1,8 @@
 {
   "name": "fading pain canvas",
   "background_color": "ffffff",
-  "image": "http://localhost:3000/edition/arts/fading-pain-canvas_C.gif",
-  "external_url": "http://localhost:3000/edition/arts/fading-pain-canvas_C.gif",
+  "image": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/fading-pain-canvas_C.gif",
+  "external_url": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/fading-pain-canvas_C.gif",
   "description": "",
   "attributes": [
     {
