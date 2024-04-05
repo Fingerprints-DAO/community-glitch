@@ -5,8 +5,9 @@ const path = require('path')
 const csvFilePath = './scripts/data/edition.csv' // Caminho para o arquivo CSV
 const outputPath = '../public/edition/metadata'
 const outputDirs = ['A', 'B', 'C', 'D'] // Nomes das pastas de saída
-const imagePath =
-  'https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/metadata/'
+const website =
+  'https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app'
+const imagePath = `${website}/edition/metadata/`
 
 interface CsvRow {
   title: string
@@ -63,7 +64,7 @@ async function createJsonFiles() {
         name: row.title,
         background_color: 'ffffff',
         image: `${imagePath}${image}_${dir}.gif`,
-        external_url: `${imagePath}${image}_${dir}.gif`,
+        external_url: website,
         description: '',
         attributes: [
           { trait_type: 'seconds', value: row.seconds },
@@ -84,7 +85,6 @@ async function createJsonFiles() {
         content = {
           ...content,
           image: dir === 'D' ? '' : content.image,
-          external_url: dir === 'D' ? '' : content.image,
           attributes: [
             { trait_type: 'seconds', value: '0' },
             {
