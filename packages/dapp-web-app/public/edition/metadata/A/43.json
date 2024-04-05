@@ -7,13 +7,11 @@
   "attributes": [
     {
       "trait_type": "seconds",
-      "value": "14",
-      "display_type": "number"
+      "value": "14"
     },
     {
       "trait_type": "frames",
-      "value": "6",
-      "display_type": "number"
+      "value": "6"
     },
     {
       "trait_type": "face",
@@ -22,15 +20,18 @@
     },
     {
       "trait_type": "text",
-      "value": "false"
+      "value": "false",
+      "display_type": "boolean"
     },
     {
       "trait_type": "symbol",
-      "value": "false"
+      "value": "false",
+      "display_type": "boolean"
     },
     {
       "trait_type": "love",
-      "value": "false"
+      "value": "false",
+      "display_type": "boolean"
     },
     {
       "trait_type": "decay",
