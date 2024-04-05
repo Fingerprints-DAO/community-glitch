@@ -23,7 +23,7 @@ contract ClaimAll is BaseScript {
     for (uint256 i = 0; i < qty; i++) {
       VmSafe.Wallet memory user = vm.createWallet(i + 10);
       vm.startBroadcast(user.privateKey);
-      GlitchAuction(auctionAddress).claimAll();
+      GlitchAuction(auctionAddress).claimAll(user.addr);
       vm.stopBroadcast();
     }
   }

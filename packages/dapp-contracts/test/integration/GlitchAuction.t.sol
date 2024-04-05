@@ -96,7 +96,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     vm.warp(endTime + 1);
     // Act
     // alice claim the nfts and refund
-    auction.claimAll();
+    auction.claimAll(alice);
     vm.stopPrank();
 
     // Assert
@@ -120,7 +120,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
 
     // Assert
     vm.expectRevert('Auction not ended');
-    auction.claimAll();
+    auction.claimAll(alice);
     vm.stopPrank();
   }
   function test_revertWhenClaimingTwice() public {
@@ -139,10 +139,10 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     vm.warp(endTime + 1);
     // Act
     // alice claim the nfts and refund
-    auction.claimAll();
+    auction.claimAll(alice);
     // Assert
     vm.expectRevert('Already claimed');
-    auction.claimAll();
+    auction.claimAll(alice);
     vm.stopPrank();
   }
 
@@ -169,7 +169,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     vm.warp(endTime + 1);
     // Act
     // alice claim the nfts and refund
-    auction.claimAll();
+    auction.claimAll(alice);
     vm.stopPrank();
 
     // Assert
@@ -213,7 +213,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     // Act
     // alice claim the nfts and refund
     vm.prank(alice);
-    auction.claimAll();
+    auction.claimAll(alice);
 
     // Assert
     assert(auction.claimed(alice));
@@ -247,7 +247,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     // Act
     // alice claim the nfts and refund
     vm.prank(alice);
-    auction.claimAll();
+    auction.claimAll(alice);
 
     // Assert
     assert(auction.claimed(alice));
@@ -277,7 +277,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
 
     uint256 aliceBalance = alice.balance;
     vm.prank(alice);
-    auction.claimAll();
+    auction.claimAll(alice);
 
     // Assert
     assertEq(alice.balance, aliceBalance + aliceBid + aliceSecondBid, 'Alice balance should have been refunded correctly');
@@ -300,6 +300,29 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     // Assert
     assertEq(owner.balance, ownerBalance + settledPrice * MAX_TOP_BIDS, '');
   }
+
+  function test_withdrawCorrectValueWith5Bids() public {
+    // Arrange
+    // fill top bids
+    vm.warp(startTime + 1);
+    for (uint256 i = 0; i < 5; i++) {
+      vm.startPrank(addresses[i]);
+      vm.deal(addresses[i], 1 ether);
+      auction.bid{value: 0.1 ether}(0.1 ether, new bytes32[](1));
+      vm.stopPrank();
+    }
+    vm.warp(endTime + 1);
+    uint256 settledPrice = auction.getSettledPrice();
+    uint256 ownerBalance = owner.balance;
+
+    // Act
+    vm.prank(owner);
+    auction.withdraw();
+
+    // Assert
+    assertEq(owner.balance, ownerBalance + settledPrice * 5, '');
+  }
+
   function test_revertWhenWithdrawingTwice() public {
     // Arrange
     // fill top bids
@@ -393,10 +416,50 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     uint256 contractBalanceAfterAuction = address(auction).balance;
     for (uint256 i = 0; i < addresses.length; i++) {
       vm.prank(addresses[i]);
-      auction.claimAll();
+      auction.claimAll(addresses[i]);
     }
     vm.prank(owner);
     auction.withdraw();
+
+    assertNotEq(contractBalanceAfterAuction, 0, 'Contract balance before withdraw and claim should be not zero');
+    assertEq(address(auction).balance, 0, 'Contract balance after withdraw and claim should be zero');
+  }
+  function test_afterWithdrawnUsersCanClaimCorrectly() public {
+    vm.warp(startTime + 1);
+    fillTopBids();
+    vm.warp(endTime + 1);
+
+    vm.prank(owner);
+    auction.withdraw();
+
+    uint256 contractBalanceAfterAuction = address(auction).balance;
+    for (uint256 i = 0; i < addresses.length; i++) {
+      vm.prank(addresses[i]);
+      auction.claimAll(addresses[i]);
+    }
+
+    assertNotEq(contractBalanceAfterAuction, 0, 'Contract balance before withdraw and claim should be not zero');
+    assertEq(address(auction).balance, 0, 'Contract balance after withdraw and claim should be zero');
+  }
+  function test_afterWithdrawnUsersCanClaimCorrectlyWith5Bids() public {
+    vm.warp(startTime + 1);
+
+    for (uint256 i = 0; i < 5; i++) {
+      vm.startPrank(addresses[i]);
+      vm.deal(addresses[i], 1 ether);
+      auction.bid{value: 0.1 ether}(0.1 ether, new bytes32[](1));
+      vm.stopPrank();
+    }
+    vm.warp(endTime + 1);
+
+    uint256 contractBalanceAfterAuction = address(auction).balance;
+
+    vm.prank(owner);
+    auction.withdraw();
+
+    for (uint256 i = 0; i < 5; i++) {
+      auction.claimAll(addresses[i]);
+    }
 
     assertNotEq(contractBalanceAfterAuction, 0, 'Contract balance before withdraw and claim should be not zero');
     assertEq(address(auction).balance, 0, 'Contract balance after withdraw and claim should be zero');
@@ -429,7 +492,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
 
     uint256 aliceBalanceBeforeClaim = alice.balance;
     vm.prank(alice);
-    auction.claimAll();
+    auction.claimAll(alice);
 
     // Assert
     uint256 settledPriceWithDiscount = (auction.getSettledPrice() * 80) / 100;
@@ -463,7 +526,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
 
     uint256 aliceBalanceBeforeClaim = alice.balance;
     vm.prank(alice);
-    auction.claimAll();
+    auction.claimAll(alice);
 
     // Assert
     uint256 settledPriceWithDiscount = (auction.getSettledPrice() * 85) / 100;
@@ -519,14 +582,14 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     uint256 salesAmount = settledPrice * (MAX_TOP_BIDS - discountedNfts) + settledPriceWithTierOneDiscount + settledPriceWithTierTwoDiscount;
     uint256 ownerBalance = owner.balance;
 
-    vm.prank(alice);
-    auction.claimAll();
     vm.prank(bob);
-    auction.claimAll();
+    auction.claimAll(alice);
+    vm.prank(alice);
+    auction.claimAll(bob);
 
     for (uint256 i = 0; i < addresses.length; i++) {
       vm.prank(addresses[i]);
-      auction.claimAll();
+      auction.claimAll(addresses[i]);
     }
 
     vm.prank(owner);
@@ -554,9 +617,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     vm.warp(endTime + 1);
 
     for (uint256 i = 0; i < bidsCounter; i++) {
-      vm.startPrank(addresses[i]);
-      auction.claimAll();
-      vm.stopPrank();
+      auction.claimAll(addresses[i]);
     }
 
     vm.startPrank(owner);

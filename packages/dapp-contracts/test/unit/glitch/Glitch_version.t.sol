@@ -115,8 +115,14 @@ contract GlitchTokenVersionTest is PRBTest, StdCheats, Helpers {
 
     vm.prank(msg.sender);
     glitch.transferFrom(msg.sender, recipient, tokenId);
+
+    vm.prank(address(this));
+    glitch.setFundsReceiverAddress(recipient);
+
+    vm.startPrank(msg.sender);
     // Refresh the token version
-    glitch.refreshToken(tokenId);
+    glitch.refreshToken{value: glitch.refreshTokenPrice()}(tokenId);
+    vm.stopPrank();
 
     // Assert that the token version has been refreshed
     assertNotEq(initialVersion, tokenVersionToString(TokenVersion.A), 'Token version not refreshed to A');

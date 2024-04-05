@@ -242,18 +242,19 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
 
   /**
    * @dev Allows users to claim their NFTs and any refunds after the auction ends.
+   * @param _to The claimer address.
    */
-  function claimAll() public validConfig whenNotPaused nonReentrant {
+  function claimAll(address _to) public validConfig whenNotPaused nonReentrant {
     require(block.timestamp > _config.endTime, 'Auction not ended');
-    require(!claimed[msg.sender], 'Already claimed');
+    require(!claimed[_to], 'Already claimed');
 
     uint256 nftsMinted = 0;
     uint256 amountSpent = 0;
     DiscountType discountType = DiscountType.None;
-    claimed[msg.sender] = true;
+    claimed[_to] = true;
     for (uint256 i = 0; i < MAX_TOP_BIDS; i++) {
-      if (topBids[i].bidder == msg.sender) {
-        erc721Address.mint(msg.sender, i + 1);
+      if (topBids[i].bidder == _to) {
+        erc721Address.mint(_to, i + 1);
         nftsMinted++;
         amountSpent += topBids[i].amount;
         if (topBids[i].discountType != DiscountType.None) {
@@ -264,13 +265,14 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
 
     uint256 refundAmount = bidBalances[msg.sender] + (amountSpent - (nftsMinted * getSettledPriceWithDiscount(discountType)));
     if (refundAmount > 0) {
-      bidBalances[msg.sender] = 0;
-      payable(msg.sender).transfer(refundAmount);
+      bidBalances[_to] = 0;
+      payable(_to).transfer(refundAmount);
     }
   }
 
   /**
    * @dev Allows the owner to mint the remaining NFTs after the auction ends.
+   * @param _recipient The recipient address.
    */
   function adminMintRemaining(address _recipient) public _onlyOwner validConfig {
     require(block.timestamp > _config.endTime, 'Auction not ended');
@@ -289,12 +291,18 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
     withdrawn = true;
     uint256 givenFirstTierDiscount = 0;
     uint256 givenSecondTierDiscount = 0;
+    uint256 salesAmountWithoutDiscount = 0;
 
     for (uint256 i = 0; i < MAX_TOP_BIDS; i++) {
+      if (topBids[i].bidder == address(0)) {
+        break;
+      }
       if (topBids[i].discountType == DiscountType.FirstTier) {
         givenFirstTierDiscount++;
       } else if (topBids[i].discountType == DiscountType.SecondTier) {
         givenSecondTierDiscount++;
+      } else {
+        salesAmountWithoutDiscount++;
       }
     }
 
@@ -302,7 +310,7 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
       givenFirstTierDiscount +
       getSettledPriceWithDiscount(DiscountType.SecondTier) *
       givenSecondTierDiscount;
-    uint256 salesAmount = getSettledPrice() * (MAX_TOP_BIDS - givenFirstTierDiscount - givenSecondTierDiscount);
+    uint256 salesAmount = getSettledPrice() * salesAmountWithoutDiscount;
     (bool success, ) = treasuryWallet.call{value: salesAmountWithDiscount + salesAmount, gas: FUNDS_SEND_GAS_LIMIT}('');
     require(success, 'Transfer failed.');
   }

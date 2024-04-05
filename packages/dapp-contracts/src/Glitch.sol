@@ -6,6 +6,7 @@ import {ERC721, IERC721} from '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import {ERC721Enumerable} from '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol';
 import {ERC721URIStorage} from '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
 import {ERC721Burnable} from '@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol';
+import {ReentrancyGuard} from '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
 import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
 
 enum TokenVersion {
@@ -19,11 +20,14 @@ enum TokenVersion {
  * @title Glitch
  * @dev ERC721 token contract representing a collection of digital artworks
  */
-contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, Ownable {
-  uint16 private constant MAX_SUPPLY = 50;
-  address public minterContractAddress;
-  string public baseURI;
+contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, Ownable, ReentrancyGuard {
   event Minted(address indexed recipient, uint256 indexed tokenId);
+
+  uint16 private constant MAX_SUPPLY = 50;
+  uint256 public refreshTokenPrice = 0.025 ether;
+  address public minterContractAddress;
+  address payable public fundsReceiverAddress;
+  string public baseURI;
   mapping(uint256 tokenId => TokenVersion version) private _tokenVersionMap;
 
   /**
@@ -35,6 +39,7 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, O
   constructor(address initialOwner, address _minterContractAddress, string memory _baseUri) ERC721('glitch', 'GLT') Ownable(initialOwner) {
     baseURI = _baseUri;
     minterContractAddress = _minterContractAddress;
+    fundsReceiverAddress = payable(initialOwner);
   }
 
   /**
@@ -65,21 +70,70 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, O
   }
 
   /**
-   * @dev Returns the URI of a specific token
+   * @dev Updates the version of a specific token
    * @param tokenId The ID of the token
-   * @return The URI of the token
    */
-  function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
-    _requireOwned(tokenId);
-    return string(abi.encodePacked(baseURI, getTokenVersion(tokenId), '/', Strings.toString(tokenId)));
+  function _updateTokenVersion(uint256 tokenId) internal {
+    TokenVersion nextVersion = _tokenVersionMap[tokenId];
+
+    if (nextVersion == TokenVersion.D) {
+      return;
+    }
+
+    if (nextVersion == TokenVersion.A) {
+      nextVersion = TokenVersion.B;
+    } else if (nextVersion == TokenVersion.B) {
+      nextVersion = TokenVersion.C;
+    } else if (nextVersion == TokenVersion.C) {
+      nextVersion = TokenVersion.D;
+    }
+
+    _tokenVersionMap[tokenId] = nextVersion;
+    emit MetadataUpdate(tokenId);
   }
 
   /**
-   * @dev Returns the total number of tokens minted
-   * @return The total supply of tokens
+   * @dev Refreshes the version of a specific token
+   * @param _tokenId The ID of the token
    */
-  function totalSupply() public pure override(ERC721Enumerable) returns (uint256) {
-    return MAX_SUPPLY;
+  function refreshToken(uint256 _tokenId) external payable nonReentrant {
+    require(msg.value >= refreshTokenPrice, 'Not enough ETH');
+
+    (bool success, ) = fundsReceiverAddress.call{value: msg.value}('');
+    require(success, 'Transfer failed.');
+
+    _tokenVersionMap[_tokenId] = TokenVersion.A;
+    emit MetadataUpdate(_tokenId);
+  }
+
+  /**
+   * @dev Sets the address of the minter contract
+   * @param newMinterContractAddress The address of the minter contract
+   */
+  function setMinterContractAddress(address newMinterContractAddress) public _onlyOwner {
+    minterContractAddress = newMinterContractAddress;
+  }
+
+  /**
+   * @dev Sets the base URI for token URIs
+   * @param newBaseURI The new base URI
+   */
+  function setBaseURI(string memory newBaseURI) public _onlyOwner {
+    baseURI = newBaseURI;
+  }
+
+  /**
+   * @dev Sets the address of the funds receiver
+   * @param newFundsReceiverAddress The address of the funds receiver
+   */
+  function setFundsReceiverAddress(address newFundsReceiverAddress) public _onlyOwner {
+    require(newFundsReceiverAddress != address(0), 'Cannot set zero address');
+    fundsReceiverAddress = payable(newFundsReceiverAddress);
+  }
+
+  function setRefreshTokenPrice(uint256 newRefreshTokenPriceInWei) public _onlyOwner {
+    require(newRefreshTokenPriceInWei > 0, 'Invalid price');
+    refreshTokenPrice = newRefreshTokenPriceInWei;
   }
 
   /**
@@ -111,51 +165,22 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, O
       versions[i] = getTokenVersion(i + 1);
     }
   }
-
   /**
-   * @dev Updates the version of a specific token
+   * @dev Returns the URI of a specific token
    * @param tokenId The ID of the token
+   * @return The URI of the token
    */
-  function _updateTokenVersion(uint256 tokenId) internal {
-    TokenVersion nextVersion = _tokenVersionMap[tokenId];
-
-    if (nextVersion == TokenVersion.D) {
-      return;
-    }
-
-    if (nextVersion == TokenVersion.A) {
-      nextVersion = TokenVersion.B;
-    } else if (nextVersion == TokenVersion.B) {
-      nextVersion = TokenVersion.C;
-    } else if (nextVersion == TokenVersion.C) {
-      nextVersion = TokenVersion.D;
-    }
-
-    _tokenVersionMap[tokenId] = nextVersion;
+  function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+    _requireOwned(tokenId);
+    return string(abi.encodePacked(baseURI, getTokenVersion(tokenId), '/', Strings.toString(tokenId)));
   }
 
   /**
-   * @dev Refreshes the version of a specific token
-   * @param tokenId The ID of the token
+   * @dev Returns the total number of tokens minted
+   * @return The total supply of tokens
    */
-  function refreshToken(uint256 tokenId) public {
-    _tokenVersionMap[tokenId] = TokenVersion.A;
-  }
-
-  /**
-   * @dev Sets the address of the minter contract
-   * @param newMinterContractAddress The address of the minter contract
-   */
-  function setMinterContractAddress(address newMinterContractAddress) public _onlyOwner {
-    minterContractAddress = newMinterContractAddress;
-  }
-
-  /**
-   * @dev Sets the base URI for token URIs
-   * @param newBaseURI The new base URI
-   */
-  function setBaseURI(string memory newBaseURI) public _onlyOwner {
-    baseURI = newBaseURI;
+  function totalSupply() public pure override(ERC721Enumerable) returns (uint256) {
+    return MAX_SUPPLY;
   }
 
   /**
