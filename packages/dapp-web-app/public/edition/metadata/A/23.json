@@ -1,21 +1,24 @@
 {
   "name": "joy conquers sorrow",
   "background_color": "ffffff",
-  "image": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/joy-conquers-sorrow_A.gif",
-  "external_url": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/joy-conquers-sorrow_A.gif",
+  "image": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/metadata/joy-conquers-sorrow_A.gif",
+  "external_url": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/metadata/joy-conquers-sorrow_A.gif",
   "description": "",
   "attributes": [
     {
       "trait_type": "seconds",
-      "value": "20"
+      "value": "20",
+      "display_type": "number"
     },
     {
       "trait_type": "frames",
-      "value": "5"
+      "value": "5",
+      "display_type": "number"
     },
     {
       "trait_type": "face",
-      "value": "false"
+      "value": "false",
+      "display_type": "boolean"
     },
     {
       "trait_type": "text",
@@ -31,7 +34,8 @@
     },
     {
       "trait_type": "decay",
-      "value": "0%"
+      "value": "0%",
+      "display_type": "boost_number"
     }
   ]
 }

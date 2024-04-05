@@ -1,21 +1,24 @@
 {
   "name": "grind rise learn",
   "background_color": "ffffff",
-  "image": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/grind-rise-learn_C.gif",
-  "external_url": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/grind-rise-learn_C.gif",
+  "image": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/metadata/grind-rise-learn_C.gif",
+  "external_url": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/metadata/grind-rise-learn_C.gif",
   "description": "",
   "attributes": [
     {
       "trait_type": "seconds",
-      "value": "0"
+      "value": "0",
+      "display_type": "number"
     },
     {
       "trait_type": "frames",
-      "value": "1"
+      "value": "1",
+      "display_type": "number"
     },
     {
       "trait_type": "face",
-      "value": "FALSE"
+      "value": "FALSE",
+      "display_type": "boolean"
     },
     {
       "trait_type": "text",
@@ -31,7 +34,8 @@
     },
     {
       "trait_type": "decay",
-      "value": "50%"
+      "value": "50%",
+      "display_type": "boost_number"
     }
   ]
 }

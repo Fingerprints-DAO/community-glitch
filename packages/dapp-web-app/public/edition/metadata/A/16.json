@@ -1,21 +1,24 @@
 {
   "name": "forget me not",
   "background_color": "ffffff",
-  "image": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/forget-me-not_A.gif",
-  "external_url": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/forget-me-not_A.gif",
+  "image": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/metadata/forget-me-not_A.gif",
+  "external_url": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/metadata/forget-me-not_A.gif",
   "description": "",
   "attributes": [
     {
       "trait_type": "seconds",
-      "value": "5"
+      "value": "5",
+      "display_type": "number"
     },
     {
       "trait_type": "frames",
-      "value": "4"
+      "value": "4",
+      "display_type": "number"
     },
     {
       "trait_type": "face",
-      "value": "true"
+      "value": "true",
+      "display_type": "boolean"
     },
     {
       "trait_type": "text",
@@ -31,7 +34,8 @@
     },
     {
       "trait_type": "decay",
-      "value": "0%"
+      "value": "0%",
+      "display_type": "boost_number"
     }
   ]
 }

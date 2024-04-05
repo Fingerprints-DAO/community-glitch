@@ -6,7 +6,7 @@ const csvFilePath = './scripts/data/edition.csv' // Caminho para o arquivo CSV
 const outputPath = '../public/edition/metadata'
 const outputDirs = ['A', 'B', 'C', 'D'] // Nomes das pastas de saída
 const imagePath =
-  'https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/'
+  'https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/metadata/'
 
 interface CsvRow {
   title: string
@@ -66,13 +66,17 @@ async function createJsonFiles() {
         external_url: `${imagePath}${image}_${dir}.gif`,
         description: '',
         attributes: [
-          { trait_type: 'seconds', value: row.seconds },
-          { trait_type: 'frames', value: row.frames },
-          { trait_type: 'face', value: row.face },
+          { trait_type: 'seconds', value: row.seconds, display_type: 'number' },
+          { trait_type: 'frames', value: row.frames, display_type: 'number' },
+          { trait_type: 'face', value: row.face, display_type: 'boolean' },
           { trait_type: 'text', value: row.text },
           { trait_type: 'symbol', value: row.symbol },
           { trait_type: 'love', value: row.love },
-          { trait_type: 'decay', value: row.decay },
+          {
+            trait_type: 'decay',
+            value: row.decay,
+            display_type: 'boost_number',
+          },
         ],
       }
 
@@ -82,15 +86,20 @@ async function createJsonFiles() {
           image: dir === 'D' ? '' : content.image,
           external_url: dir === 'D' ? '' : content.image,
           attributes: [
-            { trait_type: 'seconds', value: '0' },
-            { trait_type: 'frames', value: dir === 'D' ? '0' : '1' },
-            { trait_type: 'face', value: 'FALSE' },
+            { trait_type: 'seconds', value: '0', display_type: 'number' },
+            {
+              trait_type: 'frames',
+              value: dir === 'D' ? '0' : '1',
+              display_type: 'number',
+            },
+            { trait_type: 'face', value: 'FALSE', display_type: 'boolean' },
             { trait_type: 'text', value: 'FALSE' },
             { trait_type: 'symbol', value: 'FALSE' },
             { trait_type: 'love', value: 'FALSE' },
             {
               trait_type: 'decay',
               value: dir === 'B' ? '25%' : dir === 'C' ? '50%' : '100%',
+              display_type: 'boost_number',
             },
           ],
         }

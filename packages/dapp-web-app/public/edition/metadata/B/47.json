@@ -1,21 +1,24 @@
 {
   "name": "whispers conceal truth",
   "background_color": "ffffff",
-  "image": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/whispers-conceal-truth_B.gif",
-  "external_url": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/whispers-conceal-truth_B.gif",
+  "image": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/metadata/whispers-conceal-truth_B.gif",
+  "external_url": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/metadata/whispers-conceal-truth_B.gif",
   "description": "",
   "attributes": [
     {
       "trait_type": "seconds",
-      "value": "0"
+      "value": "0",
+      "display_type": "number"
     },
     {
       "trait_type": "frames",
-      "value": "1"
+      "value": "1",
+      "display_type": "number"
     },
     {
       "trait_type": "face",
-      "value": "FALSE"
+      "value": "FALSE",
+      "display_type": "boolean"
     },
     {
       "trait_type": "text",
@@ -31,7 +34,8 @@
     },
     {
       "trait_type": "decay",
-      "value": "25%"
+      "value": "25%",
+      "display_type": "boost_number"
     }
   ]
 }
