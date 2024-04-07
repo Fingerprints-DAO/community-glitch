@@ -65,7 +65,9 @@ async function createJsonFiles() {
         background_color: 'ffffff',
         image: `${imagePath}${image}_${dir}.gif`,
         external_url: website,
-        description: '',
+        description: `‘glitch’ by misha de ridder in partnership with Fingerprints dao\n
+        Dynamic art about erasure and finding the generative in the real.\n
+        \nThe act of erasing can involve both destruction and generation, transformation, and reimagining, through which we create new possibilities and new forms emerge.`,
         attributes: [
           { trait_type: 'seconds', value: row.seconds },
           { trait_type: 'frames', value: row.frames },
