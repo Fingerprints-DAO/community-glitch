@@ -46,7 +46,9 @@ export const ClaimButton = ({
 
   const onClick = () => {
     claimAll.writeContract(
-      {},
+      {
+        args: [userAddress!],
+      },
       {
         onSuccess: (data) => {
           showTxSentToast('claim-sent', data)

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.23;
+pragma solidity ^0.8.20;
 
 import {Strings} from '@openzeppelin/contracts/utils/Strings.sol';
 import {ERC721, IERC721} from '@openzeppelin/contracts/token/ERC721/ERC721.sol';
@@ -65,8 +65,8 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, O
   function mint(address recipient, uint256 _id) external _onlyMinter {
     require(recipient != address(0), 'Cannot mint to zero address');
     require(_id <= MAX_SUPPLY && _id > 0, 'Id out of bounds');
-    _safeMint(recipient, _id);
     emit Minted(recipient, _id);
+    _safeMint(recipient, _id);
   }
 
   /**
@@ -99,11 +99,11 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, O
   function refreshToken(uint256 _tokenId) external payable nonReentrant {
     require(msg.value >= refreshTokenPrice, 'Not enough ETH');
 
-    (bool success, ) = fundsReceiverAddress.call{value: msg.value}('');
-    require(success, 'Transfer failed.');
-
     _tokenVersionMap[_tokenId] = TokenVersion.A;
     emit MetadataUpdate(_tokenId);
+
+    (bool success, ) = fundsReceiverAddress.call{value: msg.value}('');
+    require(success, 'Transfer failed.');
   }
 
   /**

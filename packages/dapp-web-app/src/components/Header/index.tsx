@@ -2,15 +2,49 @@ import { Box, Flex, Grid, GridItem, Text } from '@chakra-ui/react'
 import Wallet from 'components/Wallet'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useAccount } from 'wagmi'
 
 const nav = [
-  { href: '/', label: 'gallery', isDisabled: false },
   { href: '/about', label: 'about', isDisabled: false },
   { href: '/auction', label: '1/1 edition', isDisabled: false },
   { href: '/limited-edition', label: 'limited edition', isDisabled: false },
 ]
 
+const NavItem = ({
+  item,
+  isActive,
+  isDrawer,
+}: {
+  item: any
+  isActive: boolean
+  isDrawer: boolean
+}) => {
+  return (
+    <Box
+      as={Link}
+      href={item.href}
+      title={item.label}
+      mr={0}
+      ml={isDrawer ? 0 : 6}
+      _hover={{
+        color: item.isDisabled ? 'gray.300' : 'gray.900',
+        cursor: item.isDisabled ? 'not-allowed' : 'pointer',
+      }}
+      color={item.isDisabled ? 'gray.300' : isActive ? 'gray.900' : 'gray.500'}
+      transition="ease"
+      transitionProperty="color"
+      transitionDuration="0.2s"
+    >
+      <Text as="strong" fontSize="14px" lineHeight={'14px'}>
+        {item.label}
+      </Text>
+    </Box>
+  )
+}
+
 const Header = ({ isDrawer = false }) => {
+  const { isConnected } = useAccount()
   const pathname = usePathname()
 
   return (
@@ -44,34 +78,21 @@ const Header = ({ isDrawer = false }) => {
               if (item.label === '') return
 
               return (
-                <Box
+                <NavItem
                   key={index}
-                  as={Link}
-                  href={item.href}
-                  title={item.label}
-                  mr={0}
-                  ml={isDrawer ? 0 : 6}
-                  _hover={{
-                    color: item.isDisabled ? 'gray.300' : 'gray.900',
-                    cursor: item.isDisabled ? 'not-allowed' : 'pointer',
-                  }}
-                  color={
-                    item.isDisabled
-                      ? 'gray.300'
-                      : isActive
-                        ? 'gray.900'
-                        : 'gray.500'
-                  }
-                  transition="ease"
-                  transitionProperty="color"
-                  transitionDuration="0.2s"
-                >
-                  <Text as="strong" fontSize="14px" lineHeight={'14px'}>
-                    {item.label}
-                  </Text>
-                </Box>
+                  item={item}
+                  isActive={isActive}
+                  isDrawer={isDrawer}
+                />
               )
             })}
+            {isConnected ? (
+              <NavItem
+                item={{ href: '/my-tokens', label: 'my tokens' }}
+                isActive={false}
+                isDrawer={isDrawer}
+              />
+            ) : null}
             <Wallet buttonWidth={'auto'} ml={6} isDrawer={isDrawer} />
           </Flex>
         </GridItem>

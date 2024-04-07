@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.23;
+pragma solidity ^0.8.20;
 
 import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol';
@@ -9,7 +9,7 @@ import {ReentrancyGuard} from '@openzeppelin/contracts/utils/ReentrancyGuard.sol
 import {Pausable} from '@openzeppelin/contracts/utils/Pausable.sol';
 import {Base} from './Base.sol';
 import {IGlitch} from './IGlitch.sol';
-import {console2} from 'forge-std/src/console2.sol';
+// import {console2} from 'forge-std/src/console2.sol';
 
 enum DiscountType {
   None,
@@ -59,11 +59,6 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
    * @notice MAX_TOP_BIDS represents the maximum number of top bids that can be stored.
    */
   uint256 public constant MAX_TOP_BIDS = 10;
-
-  /**
-   * @notice FUNDS_SEND_GAS_LIMIT represents the gas limit for sending auction funds.
-   */
-  uint256 internal immutable FUNDS_SEND_GAS_LIMIT = 210_000;
 
   /// @dev The merkle root for members of FingerprintsDAO. 20%
   bytes32 public firstTierMerkleRoot;
@@ -215,12 +210,11 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
    * @param amount The amount of the bid.
    */
   function processBid(address bidder, uint256 amount, DiscountType discountType) internal {
-    uint256 position;
+    uint256 position = 0;
+
     // Find the position of the new bid in the top bids
-    for (position = 0; position < MAX_TOP_BIDS; position++) {
-      if (amount > topBids[position].amount) {
-        break;
-      }
+    while (position < MAX_TOP_BIDS && topBids[position].amount >= amount) {
+      position++;
     }
 
     require(position < MAX_TOP_BIDS, 'Bid does not qualify for top bids');
@@ -251,7 +245,10 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
     uint256 nftsMinted = 0;
     uint256 amountSpent = 0;
     DiscountType discountType = DiscountType.None;
+    uint256 balance = bidBalances[_to];
+    bidBalances[_to] = 0;
     claimed[_to] = true;
+
     for (uint256 i = 0; i < MAX_TOP_BIDS; i++) {
       if (topBids[i].bidder == _to) {
         erc721Address.mint(_to, i + 1);
@@ -263,9 +260,8 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
       }
     }
 
-    uint256 refundAmount = bidBalances[msg.sender] + (amountSpent - (nftsMinted * getSettledPriceWithDiscount(discountType)));
+    uint256 refundAmount = balance + (amountSpent - (nftsMinted * getSettledPriceWithDiscount(discountType)));
     if (refundAmount > 0) {
-      bidBalances[_to] = 0;
       payable(_to).transfer(refundAmount);
     }
   }
@@ -311,7 +307,7 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
       getSettledPriceWithDiscount(DiscountType.SecondTier) *
       givenSecondTierDiscount;
     uint256 salesAmount = getSettledPrice() * salesAmountWithoutDiscount;
-    (bool success, ) = treasuryWallet.call{value: salesAmountWithDiscount + salesAmount, gas: FUNDS_SEND_GAS_LIMIT}('');
+    (bool success, ) = treasuryWallet.call{value: salesAmountWithDiscount + salesAmount}('');
     require(success, 'Transfer failed.');
   }
 
@@ -339,11 +335,13 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
    * @return lastBidPosition The last bid position.
    */
   function _getLastBidPosition() internal view returns (uint256 lastBidPosition) {
-    for (lastBidPosition = MAX_TOP_BIDS - 1; lastBidPosition >= 0; lastBidPosition--) {
-      if (topBids[lastBidPosition].amount != 0) {
-        break;
-      }
+    lastBidPosition = MAX_TOP_BIDS;
+
+    while (lastBidPosition > 0 && topBids[lastBidPosition - 1].amount == 0) {
+      lastBidPosition--;
     }
+
+    lastBidPosition--;
   }
 
   /**

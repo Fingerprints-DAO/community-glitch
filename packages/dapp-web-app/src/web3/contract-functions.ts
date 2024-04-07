@@ -70,7 +70,7 @@ export const auctionAbi = [
   },
   {
     type: 'function',
-    inputs: [],
+    inputs: [{ name: '_to', internalType: 'address', type: 'address' }],
     name: 'claimAll',
     outputs: [],
     stateMutability: 'nonpayable',
@@ -465,6 +465,13 @@ export const glitchAbi = [
   {
     type: 'function',
     inputs: [],
+    name: 'fundsReceiverAddress',
+    outputs: [{ name: '', internalType: 'address payable', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
     name: 'getAllTokensVersion',
     outputs: [{ name: 'versions', internalType: 'string[]', type: 'string[]' }],
     stateMutability: 'view',
@@ -533,10 +540,17 @@ export const glitchAbi = [
   },
   {
     type: 'function',
-    inputs: [{ name: 'tokenId', internalType: 'uint256', type: 'uint256' }],
+    inputs: [{ name: '_tokenId', internalType: 'uint256', type: 'uint256' }],
     name: 'refreshToken',
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'refreshTokenPrice',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -589,12 +603,38 @@ export const glitchAbi = [
     type: 'function',
     inputs: [
       {
+        name: 'newFundsReceiverAddress',
+        internalType: 'address',
+        type: 'address',
+      },
+    ],
+    name: 'setFundsReceiverAddress',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
         name: 'newMinterContractAddress',
         internalType: 'address',
         type: 'address',
       },
     ],
     name: 'setMinterContractAddress',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'newRefreshTokenPriceInWei',
+        internalType: 'uint256',
+        type: 'uint256',
+      },
+    ],
+    name: 'setRefreshTokenPrice',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -857,6 +897,7 @@ export const glitchAbi = [
     inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
     name: 'OwnableUnauthorizedAccount',
   },
+  { type: 'error', inputs: [], name: 'ReentrancyGuardReentrantCall' },
 ] as const
 
 export const glitchAddress =
@@ -1345,6 +1386,16 @@ export const useReadGlitchBaseUri = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"fundsReceiverAddress"`
+ */
+export const useReadGlitchFundsReceiverAddress =
+  /*#__PURE__*/ createUseReadContract({
+    abi: glitchAbi,
+    address: glitchAddress,
+    functionName: 'fundsReceiverAddress',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"getAllTokensVersion"`
  */
 export const useReadGlitchGetAllTokensVersion =
@@ -1416,6 +1467,16 @@ export const useReadGlitchOwnerOf = /*#__PURE__*/ createUseReadContract({
   address: glitchAddress,
   functionName: 'ownerOf',
 })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"refreshTokenPrice"`
+ */
+export const useReadGlitchRefreshTokenPrice =
+  /*#__PURE__*/ createUseReadContract({
+    abi: glitchAbi,
+    address: glitchAddress,
+    functionName: 'refreshTokenPrice',
+  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"supportsInterface"`
@@ -1557,6 +1618,16 @@ export const useWriteGlitchSetBaseUri = /*#__PURE__*/ createUseWriteContract({
 })
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"setFundsReceiverAddress"`
+ */
+export const useWriteGlitchSetFundsReceiverAddress =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: glitchAbi,
+    address: glitchAddress,
+    functionName: 'setFundsReceiverAddress',
+  })
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"setMinterContractAddress"`
  */
 export const useWriteGlitchSetMinterContractAddress =
@@ -1564,6 +1635,16 @@ export const useWriteGlitchSetMinterContractAddress =
     abi: glitchAbi,
     address: glitchAddress,
     functionName: 'setMinterContractAddress',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"setRefreshTokenPrice"`
+ */
+export const useWriteGlitchSetRefreshTokenPrice =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: glitchAbi,
+    address: glitchAddress,
+    functionName: 'setRefreshTokenPrice',
   })
 
 /**
@@ -1669,6 +1750,16 @@ export const useSimulateGlitchSetBaseUri =
   })
 
 /**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"setFundsReceiverAddress"`
+ */
+export const useSimulateGlitchSetFundsReceiverAddress =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: glitchAbi,
+    address: glitchAddress,
+    functionName: 'setFundsReceiverAddress',
+  })
+
+/**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"setMinterContractAddress"`
  */
 export const useSimulateGlitchSetMinterContractAddress =
@@ -1676,6 +1767,16 @@ export const useSimulateGlitchSetMinterContractAddress =
     abi: glitchAbi,
     address: glitchAddress,
     functionName: 'setMinterContractAddress',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"setRefreshTokenPrice"`
+ */
+export const useSimulateGlitchSetRefreshTokenPrice =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: glitchAbi,
+    address: glitchAddress,
+    functionName: 'setRefreshTokenPrice',
   })
 
 /**
@@ -2245,6 +2346,15 @@ export const readGlitchBaseUri = /*#__PURE__*/ createReadContract({
 })
 
 /**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"fundsReceiverAddress"`
+ */
+export const readGlitchFundsReceiverAddress = /*#__PURE__*/ createReadContract({
+  abi: glitchAbi,
+  address: glitchAddress,
+  functionName: 'fundsReceiverAddress',
+})
+
+/**
  * Wraps __{@link readContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"getAllTokensVersion"`
  */
 export const readGlitchGetAllTokensVersion = /*#__PURE__*/ createReadContract({
@@ -2316,6 +2426,15 @@ export const readGlitchOwnerOf = /*#__PURE__*/ createReadContract({
   abi: glitchAbi,
   address: glitchAddress,
   functionName: 'ownerOf',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"refreshTokenPrice"`
+ */
+export const readGlitchRefreshTokenPrice = /*#__PURE__*/ createReadContract({
+  abi: glitchAbi,
+  address: glitchAddress,
+  functionName: 'refreshTokenPrice',
 })
 
 /**
@@ -2453,6 +2572,16 @@ export const writeGlitchSetBaseUri = /*#__PURE__*/ createWriteContract({
 })
 
 /**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"setFundsReceiverAddress"`
+ */
+export const writeGlitchSetFundsReceiverAddress =
+  /*#__PURE__*/ createWriteContract({
+    abi: glitchAbi,
+    address: glitchAddress,
+    functionName: 'setFundsReceiverAddress',
+  })
+
+/**
  * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"setMinterContractAddress"`
  */
 export const writeGlitchSetMinterContractAddress =
@@ -2460,6 +2589,16 @@ export const writeGlitchSetMinterContractAddress =
     abi: glitchAbi,
     address: glitchAddress,
     functionName: 'setMinterContractAddress',
+  })
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"setRefreshTokenPrice"`
+ */
+export const writeGlitchSetRefreshTokenPrice =
+  /*#__PURE__*/ createWriteContract({
+    abi: glitchAbi,
+    address: glitchAddress,
+    functionName: 'setRefreshTokenPrice',
   })
 
 /**
@@ -2564,6 +2703,16 @@ export const simulateGlitchSetBaseUri = /*#__PURE__*/ createSimulateContract({
 })
 
 /**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"setFundsReceiverAddress"`
+ */
+export const simulateGlitchSetFundsReceiverAddress =
+  /*#__PURE__*/ createSimulateContract({
+    abi: glitchAbi,
+    address: glitchAddress,
+    functionName: 'setFundsReceiverAddress',
+  })
+
+/**
  * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"setMinterContractAddress"`
  */
 export const simulateGlitchSetMinterContractAddress =
@@ -2571,6 +2720,16 @@ export const simulateGlitchSetMinterContractAddress =
     abi: glitchAbi,
     address: glitchAddress,
     functionName: 'setMinterContractAddress',
+  })
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"setRefreshTokenPrice"`
+ */
+export const simulateGlitchSetRefreshTokenPrice =
+  /*#__PURE__*/ createSimulateContract({
+    abi: glitchAbi,
+    address: glitchAddress,
+    functionName: 'setRefreshTokenPrice',
   })
 
 /**
