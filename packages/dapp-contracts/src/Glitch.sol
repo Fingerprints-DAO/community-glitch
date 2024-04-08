@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity 0.8.23;
 
 import {Strings} from '@openzeppelin/contracts/utils/Strings.sol';
 import {ERC721, IERC721} from '@openzeppelin/contracts/token/ERC721/ERC721.sol';
@@ -7,6 +7,7 @@ import {ERC721Enumerable} from '@openzeppelin/contracts/token/ERC721/extensions/
 import {ERC721URIStorage} from '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
 import {ReentrancyGuard} from '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
 import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
+import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 
 enum TokenVersion {
   A,
@@ -20,8 +21,11 @@ enum TokenVersion {
  * @dev ERC721 token contract representing a collection of digital artworks
  */
 contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, ReentrancyGuard {
+  using Address for address payable;
+
   event Minted(address indexed recipient, uint256 indexed tokenId);
   event Burned(address indexed tokenOwner, uint256 indexed tokenId, uint256 indexed givenCode);
+  event TokenRefreshed(uint256 indexed tokenId, address refresherAddress);
 
   uint16 private constant MAX_SUPPLY = 50;
   uint256 public refreshTokenPrice = 0.025 ether;
@@ -46,7 +50,7 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
    * @dev Modifier to check if the caller is the minter contract or the owner
    */
   modifier _onlyMinter() {
-    require(msg.sender == minterContractAddress, 'Only minter can mint');
+    require(_msgSender() == minterContractAddress, 'Only minter can mint');
     _;
   }
 
@@ -54,7 +58,7 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
    * @dev Modifier to check if the caller is the owner
    */
   modifier _onlyOwner() {
-    require(msg.sender == owner(), 'Only owner');
+    require(_msgSender() == owner(), 'Only owner');
     _;
   }
 
@@ -64,7 +68,8 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
    */
   function mint(address recipient, uint256 _id) external _onlyMinter {
     require(recipient != address(0), 'Cannot mint to zero address');
-    require(_id <= MAX_SUPPLY && _id > 0, 'Id out of bounds');
+    require(_id <= MAX_SUPPLY, 'Id out of bounds');
+    require(_id > 0, 'Id out of bounds');
     emit Minted(recipient, _id);
     _safeMint(recipient, _id);
   }
@@ -73,7 +78,7 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
    * @dev Updates the version of a specific token
    * @param tokenId The ID of the token
    */
-  function _updateTokenVersion(uint256 tokenId) internal {
+  function _updateTokenVersion(uint256 tokenId) private {
     TokenVersion nextVersion = _tokenVersionMap[tokenId];
 
     if (nextVersion == TokenVersion.D) {
@@ -101,9 +106,9 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
 
     _tokenVersionMap[_tokenId] = TokenVersion.A;
     emit MetadataUpdate(_tokenId);
+    emit TokenRefreshed(_tokenId, _msgSender());
 
-    (bool success, ) = fundsReceiverAddress.call{value: msg.value}('');
-    require(success, 'Transfer failed.');
+    fundsReceiverAddress.sendValue(msg.value);
   }
 
   /**
@@ -111,10 +116,10 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
    * @param _tokenId The ID of the token to burn
    * @param _givenCode The code given to the token
    */
-  function burnToReedem(uint256 _tokenId, uint256 _givenCode) public {
+  function burnToReedem(uint256 _tokenId, uint256 _givenCode) external {
     // must be the token owner
-    require(msg.sender == ownerOf(_tokenId), 'Only token owner');
-    emit Burned(msg.sender, _tokenId, _givenCode);
+    require(_msgSender() == ownerOf(_tokenId), 'Only token owner');
+    emit Burned(_msgSender(), _tokenId, _givenCode);
     _burn(_tokenId);
   }
 
@@ -123,7 +128,7 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
    * @param newMinterContractAddress The address of the minter contract
    * @dev Only the owner can call this function
    */
-  function setMinterContractAddress(address newMinterContractAddress) public _onlyOwner {
+  function setMinterContractAddress(address newMinterContractAddress) external _onlyOwner {
     minterContractAddress = newMinterContractAddress;
   }
 
@@ -132,7 +137,7 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
    * @param newBaseURI The new base URI
    * @dev Only the owner can call this function
    */
-  function setBaseURI(string memory newBaseURI) public _onlyOwner {
+  function setBaseURI(string memory newBaseURI) external _onlyOwner {
     baseURI = newBaseURI;
   }
 
@@ -141,7 +146,7 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
    * @param newFundsReceiverAddress The address of the funds receiver
    * @dev Only the owner can call this function
    */
-  function setFundsReceiverAddress(address newFundsReceiverAddress) public _onlyOwner {
+  function setFundsReceiverAddress(address newFundsReceiverAddress) external _onlyOwner {
     require(newFundsReceiverAddress != address(0), 'Cannot set zero address');
     fundsReceiverAddress = payable(newFundsReceiverAddress);
   }
@@ -151,7 +156,7 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
    * @param newRefreshTokenPriceInWei The new price of the refresh token
    * @dev Only the owner can call this function
    */
-  function setRefreshTokenPrice(uint256 newRefreshTokenPriceInWei) public _onlyOwner {
+  function setRefreshTokenPrice(uint256 newRefreshTokenPriceInWei) external _onlyOwner {
     require(newRefreshTokenPriceInWei > 0, 'Invalid price');
     refreshTokenPrice = newRefreshTokenPriceInWei;
   }
@@ -178,11 +183,14 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
    * @dev Returns an array of versions for all tokens
    * @return versions An array of versions for all tokens
    */
-  function getAllTokensVersion() public view returns (string[] memory versions) {
+  function getAllTokensVersion() external view returns (string[] memory versions) {
     versions = new string[](MAX_SUPPLY);
-    for (uint256 i = 0; i < MAX_SUPPLY; i++) {
+    for (uint256 i; i < MAX_SUPPLY; ) {
       // token id start on #1
       versions[i] = getTokenVersion(i + 1);
+      unchecked {
+        ++i;
+      }
     }
   }
   /**

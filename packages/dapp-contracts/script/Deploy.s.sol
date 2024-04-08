@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.20 <0.9.0;
+pragma solidity 0.8.23;
 
 import {Glitch} from '../src/Glitch.sol';
 import {GlitchAuction} from '../src/GlitchAuction.sol';

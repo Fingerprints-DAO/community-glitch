@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity 0.8.23;
 
-import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
-import '@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol';
+import {IERC721} from '@openzeppelin/contracts/token/ERC721/IERC721.sol';
+import {IERC721Enumerable} from '@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol';
 import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
 import {MerkleProof} from '@openzeppelin/contracts/utils/cryptography/MerkleProof.sol';
 import {ReentrancyGuard} from '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
 import {Pausable} from '@openzeppelin/contracts/utils/Pausable.sol';
+import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {Base} from './Base.sol';
 import {IGlitch} from './IGlitch.sol';
 // import {console2} from 'forge-std/src/console2.sol';
@@ -54,7 +55,10 @@ event BidPlaced(address indexed bidder, uint256 amount);
 // @dev Emitted when a bid is outbid.
 event Outbid(address indexed bidder, uint256 amount, uint256 lastBidPosition);
 
+event Claimed(address indexed to, uint256 nftAmount, uint256 refundAmount);
+
 contract GlitchAuction is Base, ReentrancyGuard, Pausable {
+  using Address for address payable;
   /**
    * @notice MAX_TOP_BIDS represents the maximum number of top bids that can be stored.
    */
@@ -124,7 +128,7 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
    * @dev Modifier to check if the caller is the owner
    */
   modifier _onlyOwner() {
-    require(msg.sender == owner(), 'Only owner');
+    require(_msgSender() == owner(), 'Only owner');
     _;
   }
 
@@ -195,13 +199,13 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
    * @dev Allows users to place bids on the auction.
    * @param bidAmount The amount of the bid.
    */
-  function bid(uint256 bidAmount, bytes32[] calldata merkleProof) public payable validConfig validTime whenNotPaused nonReentrant {
+  function bid(uint256 bidAmount, bytes32[] calldata merkleProof) external payable validConfig validTime whenNotPaused nonReentrant {
     require(bidAmount >= getMinimumBid(), 'Bid too low');
-    uint256 totalBidAmount = bidBalances[msg.sender] + msg.value;
+    uint256 totalBidAmount = bidBalances[_msgSender()] + msg.value;
     require(totalBidAmount >= bidAmount, 'Insufficient funds for bid');
 
-    bidBalances[msg.sender] = totalBidAmount - bidAmount;
-    processBid(msg.sender, bidAmount, _getTierDiscount(merkleProof, msg.sender));
+    bidBalances[_msgSender()] = totalBidAmount - bidAmount;
+    processBid(_msgSender(), bidAmount, _getTierDiscount(merkleProof, _msgSender()));
   }
 
   /**
@@ -209,21 +213,24 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
    * @param bidder The address of the bidder.
    * @param amount The amount of the bid.
    */
-  function processBid(address bidder, uint256 amount, DiscountType discountType) internal {
-    uint256 position = 0;
+  function processBid(address bidder, uint256 amount, DiscountType discountType) private {
+    uint256 position;
 
     // Find the position of the new bid in the top bids
     while (position < MAX_TOP_BIDS && topBids[position].amount >= amount) {
-      position++;
+      unchecked {
+        ++position;
+      }
     }
 
     require(position < MAX_TOP_BIDS, 'Bid does not qualify for top bids');
+    emit BidPlaced(bidder, amount);
 
     // Remove the old top bid
     Bid memory outbid = topBids[MAX_TOP_BIDS - 1];
     if (outbid.bidder != address(0)) {
-      bidBalances[outbid.bidder] = bidBalances[outbid.bidder] + outbid.amount;
       emit Outbid(outbid.bidder, outbid.amount, position);
+      bidBalances[outbid.bidder] = bidBalances[outbid.bidder] + outbid.amount;
     }
 
     // Insert the new bid
@@ -231,25 +238,23 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
       topBids[i] = topBids[i - 1];
     }
     topBids[position] = Bid(bidder, amount, discountType);
-    emit BidPlaced(bidder, amount);
   }
 
   /**
    * @dev Allows users to claim their NFTs and any refunds after the auction ends.
    * @param _to The claimer address.
    */
-  function claimAll(address _to) public validConfig whenNotPaused nonReentrant {
+  function claimAll(address _to) external validConfig whenNotPaused nonReentrant {
     require(block.timestamp > _config.endTime, 'Auction not ended');
     require(!claimed[_to], 'Already claimed');
 
-    uint256 nftsMinted = 0;
-    uint256 amountSpent = 0;
+    uint256 nftsMinted;
+    uint256 amountSpent;
     DiscountType discountType = DiscountType.None;
     uint256 balance = bidBalances[_to];
-    bidBalances[_to] = 0;
     claimed[_to] = true;
 
-    for (uint256 i = 0; i < MAX_TOP_BIDS; i++) {
+    for (uint256 i; i < MAX_TOP_BIDS; ) {
       if (topBids[i].bidder == _to) {
         erc721Address.mint(_to, i + 1);
         nftsMinted++;
@@ -258,38 +263,45 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
           discountType = topBids[i].discountType;
         }
       }
+      unchecked {
+        ++i;
+      }
     }
 
     uint256 refundAmount = balance + (amountSpent - (nftsMinted * getSettledPriceWithDiscount(discountType)));
     if (refundAmount > 0) {
-      payable(_to).transfer(refundAmount);
+      payable(_to).sendValue(refundAmount);
     }
+    emit Claimed(_to, nftsMinted, refundAmount);
   }
 
   /**
    * @dev Allows the owner to mint the remaining NFTs after the auction ends.
    * @param _recipient The recipient address.
    */
-  function adminMintRemaining(address _recipient) public _onlyOwner validConfig {
+  function adminMintRemaining(address _recipient) external _onlyOwner validConfig {
     require(block.timestamp > _config.endTime, 'Auction not ended');
     uint256 lastBidPosition = _getLastBidPosition();
-    for (uint256 i = lastBidPosition + 1; i < MAX_TOP_BIDS; i++) {
+    for (uint256 i = lastBidPosition + 1; i < MAX_TOP_BIDS; ) {
       erc721Address.mint(_recipient, i + 1);
+      unchecked {
+        ++i;
+      }
     }
   }
 
   /**
    * @dev Allows the owner to withdraw the sales amount after the auction ends.
    */
-  function withdraw() public _onlyOwner nonReentrant {
+  function withdraw() external _onlyOwner nonReentrant {
     require(block.timestamp > _config.endTime, 'Auction not ended');
     require(!withdrawn, 'Already withdrawn');
     withdrawn = true;
-    uint256 givenFirstTierDiscount = 0;
-    uint256 givenSecondTierDiscount = 0;
-    uint256 salesAmountWithoutDiscount = 0;
+    uint256 givenFirstTierDiscount;
+    uint256 givenSecondTierDiscount;
+    uint256 salesAmountWithoutDiscount;
 
-    for (uint256 i = 0; i < MAX_TOP_BIDS; i++) {
+    for (uint256 i; i < MAX_TOP_BIDS; ) {
       if (topBids[i].bidder == address(0)) {
         break;
       }
@@ -299,6 +311,9 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
         givenSecondTierDiscount++;
       } else {
         salesAmountWithoutDiscount++;
+      }
+      unchecked {
+        ++i;
       }
     }
 
@@ -334,7 +349,7 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
    * @dev Returns the last bid position.
    * @return lastBidPosition The last bid position.
    */
-  function _getLastBidPosition() internal view returns (uint256 lastBidPosition) {
+  function _getLastBidPosition() private view returns (uint256 lastBidPosition) {
     lastBidPosition = MAX_TOP_BIDS;
 
     while (lastBidPosition > 0 && topBids[lastBidPosition - 1].amount == 0) {
