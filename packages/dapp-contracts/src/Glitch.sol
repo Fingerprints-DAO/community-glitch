@@ -5,7 +5,6 @@ import {Strings} from '@openzeppelin/contracts/utils/Strings.sol';
 import {ERC721, IERC721} from '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import {ERC721Enumerable} from '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol';
 import {ERC721URIStorage} from '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
-import {ERC721Burnable} from '@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol';
 import {ReentrancyGuard} from '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
 import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
 
@@ -20,8 +19,9 @@ enum TokenVersion {
  * @title Glitch
  * @dev ERC721 token contract representing a collection of digital artworks
  */
-contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, Ownable, ReentrancyGuard {
+contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, ReentrancyGuard {
   event Minted(address indexed recipient, uint256 indexed tokenId);
+  event Burned(address indexed tokenOwner, uint256 indexed tokenId, uint256 indexed givenCode);
 
   uint16 private constant MAX_SUPPLY = 50;
   uint256 public refreshTokenPrice = 0.025 ether;
@@ -107,8 +107,21 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, O
   }
 
   /**
+   * @dev Burns a token to reedem a physical piece of the art
+   * @param _tokenId The ID of the token to burn
+   * @param _givenCode The code given to the token
+   */
+  function burnToReedem(uint256 _tokenId, uint256 _givenCode) public {
+    // must be the token owner
+    require(msg.sender == ownerOf(_tokenId), 'Only token owner');
+    emit Burned(msg.sender, _tokenId, _givenCode);
+    _burn(_tokenId);
+  }
+
+  /**
    * @dev Sets the address of the minter contract
    * @param newMinterContractAddress The address of the minter contract
+   * @dev Only the owner can call this function
    */
   function setMinterContractAddress(address newMinterContractAddress) public _onlyOwner {
     minterContractAddress = newMinterContractAddress;
@@ -117,6 +130,7 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, O
   /**
    * @dev Sets the base URI for token URIs
    * @param newBaseURI The new base URI
+   * @dev Only the owner can call this function
    */
   function setBaseURI(string memory newBaseURI) public _onlyOwner {
     baseURI = newBaseURI;
@@ -125,12 +139,18 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, O
   /**
    * @dev Sets the address of the funds receiver
    * @param newFundsReceiverAddress The address of the funds receiver
+   * @dev Only the owner can call this function
    */
   function setFundsReceiverAddress(address newFundsReceiverAddress) public _onlyOwner {
     require(newFundsReceiverAddress != address(0), 'Cannot set zero address');
     fundsReceiverAddress = payable(newFundsReceiverAddress);
   }
 
+  /**
+   * @dev Sets the price of the refresh token
+   * @param newRefreshTokenPriceInWei The new price of the refresh token
+   * @dev Only the owner can call this function
+   */
   function setRefreshTokenPrice(uint256 newRefreshTokenPriceInWei) public _onlyOwner {
     require(newRefreshTokenPriceInWei > 0, 'Invalid price');
     refreshTokenPrice = newRefreshTokenPriceInWei;
@@ -173,14 +193,6 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Burnable, O
   function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
     _requireOwned(tokenId);
     return string(abi.encodePacked(baseURI, getTokenVersion(tokenId), '/', Strings.toString(tokenId)));
-  }
-
-  /**
-   * @dev Returns the total number of tokens minted
-   * @return The total supply of tokens
-   */
-  function totalSupply() public pure override(ERC721Enumerable) returns (uint256) {
-    return MAX_SUPPLY;
   }
 
   /**
