@@ -23,6 +23,16 @@ enum TokenVersion {
 contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, ReentrancyGuard {
   using Address for address payable;
 
+  // Errors
+  error OnlyMinter();
+  error OnlyOwner();
+  error ZeroAddress();
+  error IdOutOfBounds();
+  error NotEnoughETH();
+  error InvalidPrice();
+  error OnlyTokenOwner();
+
+  // Events
   event Minted(address indexed recipient, uint256 indexed tokenId);
   event Burned(address indexed tokenOwner, uint256 indexed tokenId, uint256 indexed givenCode);
   event TokenRefreshed(uint256 indexed tokenId, address refresherAddress);
@@ -50,7 +60,7 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
    * @dev Modifier to check if the caller is the minter contract or the owner
    */
   modifier _onlyMinter() {
-    require(_msgSender() == minterContractAddress, 'Only minter can mint');
+    if (_msgSender() != minterContractAddress) revert OnlyMinter();
     _;
   }
 
@@ -58,7 +68,7 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
    * @dev Modifier to check if the caller is the owner
    */
   modifier _onlyOwner() {
-    require(_msgSender() == owner(), 'Only owner');
+    if (_msgSender() != owner()) revert OnlyOwner();
     _;
   }
 
@@ -67,9 +77,8 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
    * @param recipient The address to receive the minted token
    */
   function mint(address recipient, uint256 _id) external _onlyMinter {
-    require(recipient != address(0), 'Cannot mint to zero address');
-    require(_id <= MAX_SUPPLY, 'Id out of bounds');
-    require(_id > 0, 'Id out of bounds');
+    if (recipient == address(0)) revert ZeroAddress();
+    if (_id > MAX_SUPPLY || _id == 0) revert IdOutOfBounds();
     emit Minted(recipient, _id);
     _safeMint(recipient, _id);
   }
@@ -102,7 +111,7 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
    * @param _tokenId The ID of the token
    */
   function refreshToken(uint256 _tokenId) external payable nonReentrant {
-    require(msg.value >= refreshTokenPrice, 'Not enough ETH');
+    if (msg.value < refreshTokenPrice) revert NotEnoughETH();
 
     _tokenVersionMap[_tokenId] = TokenVersion.A;
     emit MetadataUpdate(_tokenId);
@@ -118,7 +127,7 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
    */
   function burnToReedem(uint256 _tokenId, uint256 _givenCode) external {
     // must be the token owner
-    require(_msgSender() == ownerOf(_tokenId), 'Only token owner');
+    if (_msgSender() != ownerOf(_tokenId)) revert OnlyTokenOwner();
     emit Burned(_msgSender(), _tokenId, _givenCode);
     _burn(_tokenId);
   }
@@ -147,7 +156,7 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
    * @dev Only the owner can call this function
    */
   function setFundsReceiverAddress(address newFundsReceiverAddress) external _onlyOwner {
-    require(newFundsReceiverAddress != address(0), 'Cannot set zero address');
+    if (newFundsReceiverAddress == address(0)) revert ZeroAddress();
     fundsReceiverAddress = payable(newFundsReceiverAddress);
   }
 
@@ -157,7 +166,7 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
    * @dev Only the owner can call this function
    */
   function setRefreshTokenPrice(uint256 newRefreshTokenPriceInWei) external _onlyOwner {
-    require(newRefreshTokenPriceInWei > 0, 'Invalid price');
+    if (newRefreshTokenPriceInWei == 0) revert InvalidPrice();
     refreshTokenPrice = newRefreshTokenPriceInWei;
   }
 

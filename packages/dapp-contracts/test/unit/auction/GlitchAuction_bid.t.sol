@@ -9,7 +9,7 @@ import {ERC721} from '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import {IERC721Errors} from '@openzeppelin/contracts/interfaces/draft-IERC6093.sol';
 import {IERC721Enumerable} from '@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol';
 
-import {GlitchAuction, Bid} from '../../../src/GlitchAuction.sol';
+import {GlitchAuction} from '../../../src/GlitchAuction.sol';
 
 contract GlitchBidTest is PRBTest, StdCheats {
   GlitchAuction internal auction;
@@ -74,7 +74,7 @@ contract GlitchBidTest is PRBTest, StdCheats {
     // Act
     vm.prank(alice);
     auction.bid{value: bidAmount}(bidAmount, new bytes32[](1));
-    Bid[10] memory bids = auction.getTopBids();
+    GlitchAuction.Bid[10] memory bids = auction.getTopBids();
     uint256 highestBidAmount = bids[0].amount;
 
     // Assert
@@ -139,7 +139,7 @@ contract GlitchBidTest is PRBTest, StdCheats {
       vm.stopPrank();
     }
     // Assert
-    Bid[10] memory topBids = auction.getTopBids();
+    GlitchAuction.Bid[10] memory topBids = auction.getTopBids();
     for (uint256 i = 0; i < 10; i++) {
       assertEq(topBids[i].amount, orderedBidAmounts[i], 'Incorrect order of bids');
     }
@@ -155,7 +155,7 @@ contract GlitchBidTest is PRBTest, StdCheats {
     // Arrange
     vm.warp(startTime + 2);
     fillTopBids();
-    Bid memory lowestBid = auction.getTopBids()[9];
+    GlitchAuction.Bid memory lowestBid = auction.getTopBids()[9];
     uint256 minimumBid = auction.getMinimumBid();
     uint256 aliceBid = minimumBid;
 
@@ -179,8 +179,8 @@ contract GlitchBidTest is PRBTest, StdCheats {
     // Arrange
     vm.warp(startTime + 2);
     fillTopBids();
-    Bid memory lowestBid = auction.getTopBids()[9];
-    Bid memory secondLowestBid = auction.getTopBids()[8];
+    GlitchAuction.Bid memory lowestBid = auction.getTopBids()[9];
+    GlitchAuction.Bid memory secondLowestBid = auction.getTopBids()[8];
     uint256 minBidIncrease = auction.getConfig().minBidIncrementInWei;
     uint256 aliceBids = 0;
     uint256 minimunBid = auction.getMinimumBid();
@@ -216,7 +216,7 @@ contract GlitchBidTest is PRBTest, StdCheats {
     // Arrange
     vm.warp(startTime + 2);
     fillTopBids();
-    Bid memory highestBid = auction.getTopBids()[0];
+    GlitchAuction.Bid memory highestBid = auction.getTopBids()[0];
     vm.deal(alice, 100 ether);
 
     // Act

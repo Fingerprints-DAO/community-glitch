@@ -12,53 +12,54 @@ import {Base} from './Base.sol';
 import {IGlitch} from './IGlitch.sol';
 // import {console2} from 'forge-std/src/console2.sol';
 
-enum DiscountType {
-  None,
-  FirstTier,
-  SecondTier
-}
-
-/// @dev Represents a bid in the auction.
-struct Bid {
-  address bidder;
-  uint256 amount;
-  DiscountType discountType;
-}
-
-/// @dev Represents the auction configuration.
-struct Config {
-  /// @notice The start time of the auction.
-  uint256 startTime;
-  /// @notice The end time of the auction.
-  uint256 endTime;
-  /// @notice The minimum value to increase the current bid in WEI.
-  uint256 minBidIncrementInWei;
-  /// @notice The starting amount in WEI.
-  uint256 startAmountInWei;
-}
-
-/// @dev Emitted when the amount of wei provided for a bid or starting bid is invalid. This usually means the amount is zero.
-error InvalidAmountInWei();
-
-/// @dev Emitted when the provided minimum bid increment value is invalid. This usually means the value is either zero.
-error InvalidMinBidIncrementValue();
-
-/// @dev Emitted when the provided start or end time for the auction is invalid. This usually means the start time is greater than the end time.
-error InvalidStartEndTime(uint256 startTime, uint256 endTime);
-
-/// @dev Emitted when a config-related operation is attempted before the config has been set.
-error ConfigNotSet();
-
-// @dev Emitted when a bid is placed.
-event BidPlaced(address indexed bidder, uint256 amount);
-
-// @dev Emitted when a bid is outbid.
-event Outbid(address indexed bidder, uint256 amount, uint256 lastBidPosition);
-
-event Claimed(address indexed to, uint256 nftAmount, uint256 refundAmount);
-
 contract GlitchAuction is Base, ReentrancyGuard, Pausable {
   using Address for address payable;
+
+  enum DiscountType {
+    None,
+    FirstTier,
+    SecondTier
+  }
+
+  /// @dev Represents a bid in the auction.
+  struct Bid {
+    address bidder;
+    uint256 amount;
+    DiscountType discountType;
+  }
+
+  /// @dev Represents the auction configuration.
+  struct Config {
+    /// @notice The start time of the auction.
+    uint256 startTime;
+    /// @notice The end time of the auction.
+    uint256 endTime;
+    /// @notice The minimum value to increase the current bid in WEI.
+    uint256 minBidIncrementInWei;
+    /// @notice The starting amount in WEI.
+    uint256 startAmountInWei;
+  }
+
+  /// @dev Emitted when the amount of wei provided for a bid or starting bid is invalid. This usually means the amount is zero.
+  error InvalidAmountInWei();
+  /// @dev Emitted when the provided minimum bid increment value is invalid. This usually means the value is either zero.
+  error InvalidMinBidIncrementValue();
+  /// @dev Emitted when the provided start or end time for the auction is invalid. This usually means the start time is greater than the end time.
+  error InvalidStartEndTime(uint256 startTime, uint256 endTime);
+  error ConfigNotSet(); /// @dev Emitted when the config has not been set.
+  error OnlyOwner(); /// @dev Emitted when the caller is not the owner of the contract.
+  error InvalidAddress(); /// @dev Emitted when an invalid address is provided.
+  error BidTooLow(); /// @dev Emitted when the bid amount is too low.
+  error InsufficientFundsForBid(); /// @dev Emitted when caller does not have enough funds to bid.
+  error BidDoesNotQualifyForTopBids(); /// @dev Emitted when bid does not qualify for top bids.
+  error AuctionNotEnded(); /// @dev Emitted when the auction has not ended.
+  error AlreadyClaimed(); /// @dev Emitted when the NFT and refund has already been claimed.
+  error TransferFailed(); /// @dev Emitted when the NFT transfer has failed.
+
+  event BidPlaced(address indexed bidder, uint256 amount); /// @dev Emitted when a bid is placed.
+  event Outbid(address indexed bidder, uint256 amount, uint256 lastBidPosition); /// @dev Emitted when a bid is outbid.
+  event Claimed(address indexed to, uint256 nftAmount, uint256 refundAmount); /// @dev Emitted when the NFT and refund have been claimed.
+
   /**
    * @notice MAX_TOP_BIDS represents the maximum number of top bids that can be stored.
    */
@@ -67,7 +68,7 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
   /// @dev The merkle root for members of FingerprintsDAO. 20%
   bytes32 public firstTierMerkleRoot;
 
-  /// @dev The merkle root for holders and communities. 15%
+  /// @dev The merkle root for members, not included for this project
   bytes32 public secondTierMerkleRoot;
 
   /**
@@ -81,9 +82,9 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
   bool public withdrawn;
 
   /**
-   * @notice erc721Address stores the address of the ERC721 token (Glitch NFT) being auctioned.
+   * @notice glitchAddress stores the address of the ERC721 token (Glitch NFT) being auctioned.
    */
-  IGlitch public erc721Address;
+  IGlitch public glitchAddress;
 
   /**
    * @notice topBids stores the top bids in the auction up to a maximum of MAX_TOP_BIDS.
@@ -134,11 +135,11 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
 
   /**
    * @dev Constructor to initialize the auction with the owner and the ERC721 address.
-   * @param initialOwner The initial owner of the contract.
-   * @param _erc721Address The address of the ERC721 token to be auctioned.
+   * @param _initialOwner The initial owner of the contract.
+   * @param _glitchAddress The address of the ERC721 token to be auctioned.
    */
-  constructor(address initialOwner, address _erc721Address, address _treasuryWallet) Ownable(initialOwner) {
-    erc721Address = IGlitch(_erc721Address);
+  constructor(address _initialOwner, address _glitchAddress, address _treasuryWallet) Ownable(_initialOwner) {
+    glitchAddress = IGlitch(_glitchAddress);
     treasuryWallet = payable(_treasuryWallet);
   }
 
@@ -176,11 +177,20 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
 
   /**
    * @dev Allows the owner to set a new treasury wallet address.
-   * @param newWallet The new treasury wallet address.
+   * @param _newWallet The new treasury wallet address.
    */
-  function setTreasuryWallet(address newWallet) external _onlyOwner {
-    require(newWallet != address(0), 'Invalid address');
-    treasuryWallet = payable(newWallet);
+  function setTreasuryWallet(address _newWallet) external _onlyOwner {
+    require(_newWallet != address(0), 'Invalid address');
+    treasuryWallet = payable(_newWallet);
+  }
+
+  /**
+   * @dev Allows the owner to set a new treasury wallet address.
+   * @param _glitchAddress The new treasury wallet address.
+   */
+  function setGlitchAddress(address _glitchAddress) external _onlyOwner {
+    require(_glitchAddress != address(0), 'Invalid address');
+    glitchAddress = IGlitch(_glitchAddress);
   }
 
   /// @dev Updates the merkle roots
@@ -190,41 +200,41 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
   }
 
   /// @dev Returns if a wallet address/proof is part of the given merkle root.
-  function checkMerkleProof(bytes32[] calldata merkleProof, address _address, bytes32 _root) public pure returns (bool) {
+  function checkMerkleProof(bytes32[] calldata _merkleProof, address _address, bytes32 _root) public pure returns (bool) {
     bytes32 leaf = keccak256(abi.encodePacked(_address));
-    return MerkleProof.verify(merkleProof, _root, leaf);
+    return MerkleProof.verify(_merkleProof, _root, leaf);
   }
 
   /**
    * @dev Allows users to place bids on the auction.
-   * @param bidAmount The amount of the bid.
+   * @param _bidAmount The amount of the bid.
    */
-  function bid(uint256 bidAmount, bytes32[] calldata merkleProof) external payable validConfig validTime whenNotPaused nonReentrant {
-    require(bidAmount >= getMinimumBid(), 'Bid too low');
+  function bid(uint256 _bidAmount, bytes32[] calldata _merkleProof) external payable validConfig validTime whenNotPaused nonReentrant {
+    require(_bidAmount >= getMinimumBid(), 'Bid too low');
     uint256 totalBidAmount = bidBalances[_msgSender()] + msg.value;
-    require(totalBidAmount >= bidAmount, 'Insufficient funds for bid');
+    require(totalBidAmount >= _bidAmount, 'Insufficient funds for bid');
 
-    bidBalances[_msgSender()] = totalBidAmount - bidAmount;
-    processBid(_msgSender(), bidAmount, _getTierDiscount(merkleProof, _msgSender()));
+    bidBalances[_msgSender()] = totalBidAmount - _bidAmount;
+    processBid(_msgSender(), _bidAmount, _getTierDiscount(_merkleProof, _msgSender()));
   }
 
   /**
    * @dev Internal function to process a bid.
-   * @param bidder The address of the bidder.
-   * @param amount The amount of the bid.
+   * @param _bidder The address of the bidder.
+   * @param _amount The amount of the bid.
    */
-  function processBid(address bidder, uint256 amount, DiscountType discountType) private {
+  function processBid(address _bidder, uint256 _amount, DiscountType _discountType) private {
     uint256 position;
 
     // Find the position of the new bid in the top bids
-    while (position < MAX_TOP_BIDS && topBids[position].amount >= amount) {
+    while (position < MAX_TOP_BIDS && topBids[position].amount >= _amount) {
       unchecked {
         ++position;
       }
     }
 
     require(position < MAX_TOP_BIDS, 'Bid does not qualify for top bids');
-    emit BidPlaced(bidder, amount);
+    emit BidPlaced(_bidder, _amount);
 
     // Remove the old top bid
     Bid memory outbid = topBids[MAX_TOP_BIDS - 1];
@@ -237,7 +247,7 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
     for (uint256 i = MAX_TOP_BIDS - 1; i > position; i--) {
       topBids[i] = topBids[i - 1];
     }
-    topBids[position] = Bid(bidder, amount, discountType);
+    topBids[position] = Bid(_bidder, _amount, _discountType);
   }
 
   /**
@@ -256,7 +266,7 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
 
     for (uint256 i; i < MAX_TOP_BIDS; ) {
       if (topBids[i].bidder == _to) {
-        erc721Address.mint(_to, i + 1);
+        glitchAddress.mint(_to, i + 1);
         nftsMinted++;
         amountSpent += topBids[i].amount;
         if (topBids[i].discountType != DiscountType.None) {
@@ -283,7 +293,7 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
     require(block.timestamp > _config.endTime, 'Auction not ended');
     uint256 lastBidPosition = _getLastBidPosition();
     for (uint256 i = lastBidPosition + 1; i < MAX_TOP_BIDS; ) {
-      erc721Address.mint(_recipient, i + 1);
+      glitchAddress.mint(_recipient, i + 1);
       unchecked {
         ++i;
       }
@@ -328,17 +338,18 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
 
   /**
    * @dev Returns the tier discount type of an address.
-   * @param addressToCheck The address to check.
+   * @param _merkleProof The merkle proof.
+   * @param _addressToCheck The address to check.
    * @return The tier discount type.
    */
-  function _getTierDiscount(bytes32[] calldata merkleProof, address addressToCheck) private view returns (DiscountType) {
-    if (merkleProof.length == 0) {
+  function _getTierDiscount(bytes32[] calldata _merkleProof, address _addressToCheck) private view returns (DiscountType) {
+    if (_merkleProof.length == 0) {
       return DiscountType.None;
     }
-    if (checkMerkleProof(merkleProof, addressToCheck, firstTierMerkleRoot)) {
+    if (checkMerkleProof(_merkleProof, _addressToCheck, firstTierMerkleRoot)) {
       return DiscountType.FirstTier;
     }
-    if (checkMerkleProof(merkleProof, addressToCheck, secondTierMerkleRoot)) {
+    if (checkMerkleProof(_merkleProof, _addressToCheck, secondTierMerkleRoot)) {
       return DiscountType.SecondTier;
     }
 
@@ -371,15 +382,15 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
 
   /**
    * @dev Returns the settled price of the auction with discount.
-   * @param discountType The type of discount to apply.
+   * @param _discountType The type of discount to apply.
    * @return The price of the lowest winning bid.
    */
-  function getSettledPriceWithDiscount(DiscountType discountType) public view returns (uint256) {
-    if (discountType == DiscountType.None) {
+  function getSettledPriceWithDiscount(DiscountType _discountType) public view returns (uint256) {
+    if (_discountType == DiscountType.None) {
       return getSettledPrice();
     }
 
-    if (discountType == DiscountType.FirstTier) {
+    if (_discountType == DiscountType.FirstTier) {
       return (getSettledPrice() * 80) / 100; // 20% discount
     }
 

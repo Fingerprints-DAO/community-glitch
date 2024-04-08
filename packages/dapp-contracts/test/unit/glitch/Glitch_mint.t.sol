@@ -30,7 +30,7 @@ contract GlitchMintTest is PRBTest, StdCheats, TestHelpers {
     // Act and Assert
     glitch.setMinterContractAddress(newMinter);
 
-    vm.expectRevert('Only minter can mint');
+    vm.expectRevert(abi.encodeWithSelector(Glitch.OnlyMinter.selector));
     glitch.mint(recipient, 1);
   }
   function test_shouldAllowMinterContractToMintAToken() public {
@@ -52,7 +52,7 @@ contract GlitchMintTest is PRBTest, StdCheats, TestHelpers {
     address recipient = address(0);
 
     // Act and Assert
-    vm.expectRevert('Cannot mint to zero address');
+    vm.expectRevert(abi.encodeWithSelector(Glitch.ZeroAddress.selector));
     glitch.mint(recipient, 1);
   }
   function test_mintingFailsIfNftIsMinted() public {
@@ -99,7 +99,7 @@ contract GlitchMintTest is PRBTest, StdCheats, TestHelpers {
     vm.prank(address(0x456));
 
     // Assert
-    vm.expectRevert('Only minter can mint');
+    vm.expectRevert(abi.encodeWithSelector(Glitch.OnlyMinter.selector));
     glitch.mint(recipient, 1);
   }
 
@@ -136,7 +136,7 @@ contract GlitchMintTest is PRBTest, StdCheats, TestHelpers {
     glitch.mint(alice, tokenId);
 
     vm.startPrank(address(this));
-    vm.expectRevert('Only token owner');
+    vm.expectRevert(abi.encodeWithSelector(Glitch.OnlyTokenOwner.selector));
     glitch.burnToReedem(tokenId, code);
     vm.stopPrank();
 

@@ -10,7 +10,7 @@ import {IERC721Errors} from '@openzeppelin/contracts/interfaces/draft-IERC6093.s
 import {IERC721Enumerable} from '@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol';
 import {Merkle} from 'murky-merkle/src/Merkle.sol';
 
-import {GlitchAuction, Bid, InvalidStartEndTime, DiscountType} from '../../src/GlitchAuction.sol';
+import {GlitchAuction} from '../../src/GlitchAuction.sol';
 import {Glitch, TokenVersion} from '../../src/Glitch.sol';
 import {TestHelpers} from '../../script/Helpers.s.sol';
 
@@ -576,8 +576,8 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     vm.warp(endTime + 1);
 
     uint256 settledPrice = auction.getSettledPrice();
-    uint256 settledPriceWithTierOneDiscount = auction.getSettledPriceWithDiscount(DiscountType.FirstTier);
-    uint256 settledPriceWithTierTwoDiscount = auction.getSettledPriceWithDiscount(DiscountType.SecondTier);
+    uint256 settledPriceWithTierOneDiscount = auction.getSettledPriceWithDiscount(GlitchAuction.DiscountType.FirstTier);
+    uint256 settledPriceWithTierTwoDiscount = auction.getSettledPriceWithDiscount(GlitchAuction.DiscountType.SecondTier);
     uint256 discountedNfts = 2;
     uint256 salesAmount = settledPrice * (MAX_TOP_BIDS - discountedNfts) + settledPriceWithTierOneDiscount + settledPriceWithTierTwoDiscount;
     uint256 ownerBalance = owner.balance;

@@ -8,7 +8,7 @@ import {stdError} from 'forge-std/src/stdError.sol';
 import {ERC721} from '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import {IERC721Errors} from '@openzeppelin/contracts/interfaces/draft-IERC6093.sol';
 
-import {GlitchAuction, Config, InvalidStartEndTime} from '../../../src/GlitchAuction.sol';
+import {GlitchAuction} from '../../../src/GlitchAuction.sol';
 
 contract GlitchConfigTest is PRBTest, StdCheats {
   GlitchAuction internal auction;
@@ -39,7 +39,7 @@ contract GlitchConfigTest is PRBTest, StdCheats {
     // Act
     vm.prank(owner);
     auction.setConfig(startTime, endTime, minBidIncrementInWei, startAmountInWei);
-    Config memory config = auction.getConfig();
+    GlitchAuction.Config memory config = auction.getConfig();
 
     // Assert
     assertEq(config.startTime, startTime, 'Start time should be set correctly');
@@ -73,7 +73,7 @@ contract GlitchConfigTest is PRBTest, StdCheats {
     // Assert
     minBid = auction.getMinimumBid();
     vm.prank(alice);
-    vm.expectRevert(abi.encodeWithSelector(InvalidStartEndTime.selector, startTime, endTime));
+    vm.expectRevert(abi.encodeWithSelector(GlitchAuction.InvalidStartEndTime.selector, startTime, endTime));
     auction.bid{value: minBid}(minBid, new bytes32[](1));
   }
 }
