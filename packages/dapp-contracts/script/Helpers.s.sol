@@ -12,6 +12,7 @@ contract Helpers {
 }
 
 contract TestHelpers is PRBTest {
+  bytes32[] internal fakeMerkleProof = new bytes32[](1);
   function fillTopBids(GlitchAuction auction) internal {
     address[10] memory addresses = [
       vm.addr(42),

@@ -332,8 +332,7 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
       getSettledPriceWithDiscount(DiscountType.SecondTier) *
       givenSecondTierDiscount;
     uint256 salesAmount = getSettledPrice() * salesAmountWithoutDiscount;
-    (bool success, ) = treasuryWallet.call{value: salesAmountWithDiscount + salesAmount}('');
-    require(success, 'Transfer failed.');
+    treasuryWallet.sendValue(salesAmountWithDiscount + salesAmount);
   }
 
   /**

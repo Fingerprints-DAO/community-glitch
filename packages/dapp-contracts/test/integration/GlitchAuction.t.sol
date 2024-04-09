@@ -70,7 +70,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     for (uint256 i = 0; i < addresses.length; i++) {
       vm.startPrank(addresses[i]);
       vm.deal(addresses[i], 100 ether);
-      auction.bid{value: bidAmounts[i]}(bidAmounts[i], new bytes32[](1));
+      auction.bid{value: bidAmounts[i]}(bidAmounts[i], fakeMerkleProof);
       vm.stopPrank();
     }
   }
@@ -85,7 +85,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     vm.deal(alice, 100 ether);
     vm.startPrank(alice);
     uint256 aliceBid = 99 ether;
-    auction.bid{value: aliceBid}(aliceBid, new bytes32[](1));
+    auction.bid{value: aliceBid}(aliceBid, fakeMerkleProof);
 
     uint256 aliceBalance = alice.balance;
     uint256 settledPrice = auction.getSettledPrice();
@@ -114,7 +114,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     vm.deal(alice, 100 ether);
     vm.startPrank(alice);
     uint256 aliceBid = 99 ether;
-    auction.bid{value: aliceBid}(aliceBid, new bytes32[](1));
+    auction.bid{value: aliceBid}(aliceBid, fakeMerkleProof);
 
     vm.warp(endTime - 200);
 
@@ -133,7 +133,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     vm.deal(alice, 100 ether);
     vm.startPrank(alice);
     uint256 aliceBid = 99 ether;
-    auction.bid{value: aliceBid}(aliceBid, new bytes32[](1));
+    auction.bid{value: aliceBid}(aliceBid, fakeMerkleProof);
 
     // end the auction
     vm.warp(endTime + 1);
@@ -156,10 +156,10 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     vm.deal(alice, 100 ether);
     vm.startPrank(alice);
     uint256 aliceFirstBid = 80 ether;
-    auction.bid{value: aliceFirstBid}(aliceFirstBid, new bytes32[](1));
+    auction.bid{value: aliceFirstBid}(aliceFirstBid, fakeMerkleProof);
 
     uint256 aliceSecondBid = auction.getMinimumBid();
-    auction.bid{value: aliceSecondBid}(aliceSecondBid, new bytes32[](1));
+    auction.bid{value: aliceSecondBid}(aliceSecondBid, fakeMerkleProof);
 
     uint256 aliceBalance = alice.balance;
     uint256 settledPrice = auction.getSettledPrice();
@@ -190,10 +190,10 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     vm.deal(alice, 100 ether);
     vm.startPrank(alice);
     uint256 aliceFirstBid = 80 ether;
-    auction.bid{value: aliceFirstBid}(aliceFirstBid, new bytes32[](1));
+    auction.bid{value: aliceFirstBid}(aliceFirstBid, fakeMerkleProof);
 
     uint256 aliceSecondBid = auction.getMinimumBid();
-    auction.bid{value: aliceSecondBid}(aliceSecondBid, new bytes32[](1));
+    auction.bid{value: aliceSecondBid}(aliceSecondBid, fakeMerkleProof);
 
     vm.stopPrank();
 
@@ -201,7 +201,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     vm.deal(bob, 1 ether);
     vm.prank(bob);
     uint256 bobBid = auction.getMinimumBid();
-    auction.bid{value: bobBid}(bobBid, new bytes32[](1));
+    auction.bid{value: bobBid}(bobBid, fakeMerkleProof);
 
     // end the auction
     vm.warp(endTime + 1);
@@ -236,7 +236,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     uint256 aliceBid = auction.getMinimumBid();
 
     vm.prank(alice);
-    auction.bid{value: aliceBid}(aliceBid, new bytes32[](1));
+    auction.bid{value: aliceBid}(aliceBid, fakeMerkleProof);
 
     // end the auction
     vm.warp(endTime + 1);
@@ -267,9 +267,9 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     // Act
     vm.startPrank(alice);
     uint256 aliceBid = 0.1 ether;
-    auction.bid{value: aliceBid}(aliceBid, new bytes32[](1));
+    auction.bid{value: aliceBid}(aliceBid, fakeMerkleProof);
     uint256 aliceSecondBid = auction.getMinimumBid();
-    auction.bid{value: aliceSecondBid}(aliceSecondBid, new bytes32[](1));
+    auction.bid{value: aliceSecondBid}(aliceSecondBid, fakeMerkleProof);
     vm.stopPrank();
 
     fillTopBids();
@@ -308,7 +308,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     for (uint256 i = 0; i < 5; i++) {
       vm.startPrank(addresses[i]);
       vm.deal(addresses[i], 1 ether);
-      auction.bid{value: 0.1 ether}(0.1 ether, new bytes32[](1));
+      auction.bid{value: 0.1 ether}(0.1 ether, fakeMerkleProof);
       vm.stopPrank();
     }
     vm.warp(endTime + 1);
@@ -362,33 +362,6 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     vm.expectRevert('Auction not ended');
     auction.withdraw();
   }
-  // function test_adminMintAndAuctionWorksFine() public {
-  //   // Arrange
-  //   vm.startPrank(owner);
-  //   glitch.mint(alice, 5);
-  //   vm.warp(startTime + 1);
-  //   glitch.mint(bob, 3);
-  //   vm.stopPrank();
-
-  //   // Act
-  //   fillTopBids();
-  //   vm.deal(alice, 1 ether);
-  //   vm.prank(alice);
-  //   auction.bid{value: 1 ether}(1 ether, new bytes32[](1));
-
-  //   vm.warp(endTime + 1);
-  //   vm.prank(alice);
-  //   auction.claimAll();
-
-  //   // Assert
-  //   assertEq(glitch.balanceOf(alice), 6, 'Alice should own 6 NFTs');
-  //   assertEq(glitch.balanceOf(bob), 3, 'Bob should own 3 NFTs');
-  //   assertEq(glitch.ownerOf(9), alice, 'NFT should be minted to recipient');
-  //   assertEq(glitch.ownerOf(7), bob, 'NFT should be minted to recipient');
-
-  //   vm.expectRevert(abi.encodeWithSelector(IERC721Errors.ERC721NonexistentToken.selector, 10));
-  //   glitch.ownerOf(10);
-  // }
 
   function test_canSetNewTreasuryWallet() public {
     vm.prank(owner);
@@ -447,7 +420,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     for (uint256 i = 0; i < 5; i++) {
       vm.startPrank(addresses[i]);
       vm.deal(addresses[i], 1 ether);
-      auction.bid{value: 0.1 ether}(0.1 ether, new bytes32[](1));
+      auction.bid{value: 0.1 ether}(0.1 ether, fakeMerkleProof);
       vm.stopPrank();
     }
     vm.warp(endTime + 1);
@@ -463,6 +436,31 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
 
     assertNotEq(contractBalanceAfterAuction, 0, 'Contract balance before withdraw and claim should be not zero');
     assertEq(address(auction).balance, 0, 'Contract balance after withdraw and claim should be zero');
+  }
+
+  function test_BidderClaimNFTsIDsProperly() public {
+    vm.warp(startTime + 1);
+    fillTopBids();
+    GlitchAuction.Bid[10] memory topBids = auction.getTopBids();
+
+    vm.deal(bob, 10000 ether);
+    vm.startPrank(bob);
+    auction.bid{value: topBids[0].amount + 1 ether}(topBids[0].amount + 1 ether, fakeMerkleProof);
+
+    topBids = auction.getTopBids();
+    auction.bid{value: topBids[4].amount + 0.1 ether}(topBids[4].amount + 0.1 ether, fakeMerkleProof);
+
+    auction.bid{value: auction.getMinimumBid()}(auction.getMinimumBid(), fakeMerkleProof);
+    vm.stopPrank();
+
+    vm.warp(endTime + 1);
+
+    auction.claimAll(bob);
+
+    assertEq(glitch.balanceOf(bob), 3, 'Bob should have 3 NFTs');
+    assertEq(glitch.ownerOf(1), bob, 'NFT #1 should be owned by Bob');
+    assertEq(glitch.ownerOf(5), bob, 'NFT #5 should be owned by Bob');
+    assertEq(glitch.ownerOf(10), bob, 'NFT #10 should be owned by Bob');
   }
 
   function test_bidWithFirstTierDiscount() public {
@@ -610,7 +608,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     for (uint256 i = 0; i < bidsCounter; i++) {
       vm.startPrank(addresses[i]);
       vm.deal(addresses[i], 100 ether);
-      auction.bid{value: (i + 1) * 1 ether}((i + 1) * 1 ether, new bytes32[](1));
+      auction.bid{value: (i + 1) * 1 ether}((i + 1) * 1 ether, fakeMerkleProof);
       vm.stopPrank();
     }
 
@@ -638,7 +636,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     for (uint256 i = 0; i < bidsCounter; i++) {
       vm.startPrank(addresses[i]);
       vm.deal(addresses[i], 100 ether);
-      auction.bid{value: (i + 1) * 1 ether}((i + 1) * 1 ether, new bytes32[](1));
+      auction.bid{value: (i + 1) * 1 ether}((i + 1) * 1 ether, fakeMerkleProof);
       vm.stopPrank();
     }
 
