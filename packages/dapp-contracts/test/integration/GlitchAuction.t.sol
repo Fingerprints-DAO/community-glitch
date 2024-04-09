@@ -24,20 +24,6 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
   uint256 internal endTime = startTime + 1800; // 1 hour after start time
   uint256 internal minBidIncrementInWei = 0.01 ether;
   uint256 internal startAmountInWei = 1000;
-  uint256 internal constant MAX_TOP_BIDS = 10;
-  uint256 internal constant DISCOUNT_PERCENTAGE = 15;
-  address[10] internal addresses = [
-    vm.addr(42),
-    vm.addr(43),
-    vm.addr(44),
-    vm.addr(45),
-    vm.addr(46),
-    vm.addr(47),
-    vm.addr(48),
-    vm.addr(49),
-    vm.addr(50),
-    vm.addr(20)
-  ];
 
   /// @dev A function invoked before each test_ case is run.
   function setUp() public virtual {
@@ -54,33 +40,11 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     vm.stopPrank();
   }
 
-  function fillTopBids() internal {
-    uint64[10] memory bidAmounts = [
-      10.9 ether, // 1st highest bid
-      0.7 ether, // 11th highest bid
-      1.9 ether, // 5th highest bid
-      0.9 ether,
-      10.8 ether, // 2nd highest bid
-      1.8 ether,
-      0.8 ether, // 10th highest bid
-      10.7 ether, // 3rd highest bid
-      1.7 ether, // 6th highest bid
-      10.6 ether
-    ];
-    // Act
-    for (uint256 i = 0; i < addresses.length; i++) {
-      vm.startPrank(addresses[i]);
-      vm.deal(addresses[i], 100 ether);
-      auction.bid{value: bidAmounts[i]}(bidAmounts[i], fakeMerkleProof);
-      vm.stopPrank();
-    }
-  }
-
   function test_claimAll_TransferNFTsAndRefund() public {
     // Arrange
     // fill top bids
     vm.warp(startTime + 2);
-    fillTopBids();
+    fillTopBids(auction);
 
     // bid top 1
     vm.deal(alice, 100 ether);
@@ -109,7 +73,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     // Arrange
     // fill top bids
     vm.warp(startTime + 2);
-    fillTopBids();
+    fillTopBids(auction);
 
     // act
     vm.deal(alice, 100 ether);
@@ -128,7 +92,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     // Arrange
     // fill top bids
     vm.warp(startTime + 2);
-    fillTopBids();
+    fillTopBids(auction);
 
     // bid top 1
     vm.deal(alice, 100 ether);
@@ -151,7 +115,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     // Arrange
     // fill top bids
     vm.warp(startTime + 2);
-    fillTopBids();
+    fillTopBids(auction);
 
     // bid top 1
     vm.deal(alice, 100 ether);
@@ -178,14 +142,14 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     assertEq(alice.balance, aliceBalance + refundAmount, 'Caller`s bid balance should sum to refund amount');
     assertEq(alice.balance, aliceBalance + aliceFirstBid - settledPrice, 'Last bid is not refunded once it`s the settled price');
     assertEq(glitch.ownerOf(1), alice, 'NFT should be minted to recipient');
-    assertEq(glitch.ownerOf(10), alice, 'NFT should be minted to recipient');
+    assertEq(glitch.ownerOf(50), alice, 'NFT should be minted to recipient');
   }
 
   function test_claimAll_TransferNFTsAndRefund_With2WinnerBidsAndOneOutbid() public {
     // Arrange
     // fill top bids
     vm.warp(startTime + 2);
-    fillTopBids();
+    fillTopBids(auction);
 
     // bid top 1
     vm.deal(alice, 100 ether);
@@ -230,7 +194,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     // Arrange
     // fill top bids
     vm.warp(startTime + 2);
-    fillTopBids();
+    fillTopBids(auction);
 
     // bid as the last one
     vm.deal(alice, 100 ether);
@@ -252,11 +216,11 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
 
     // Assert
     assert(auction.claimed(alice));
-    assertEq(auction.getTopBids()[9].bidder, alice, 'Top bid should be alice');
+    assertEq(auction.getTopBids()[49].bidder, alice, 'Last highest bid should be alice');
     assertEq(glitch.balanceOf(alice), 1, 'Alice must be owner of one NFT');
     assertEq(alice.balance, aliceBalance, 'Alice bid should keep the same after claim refund');
     assertEq(settledPrice, aliceBid, 'Settled price should be equal to last bid which is aliceBid');
-    assertEq(glitch.ownerOf(10), alice, 'NFT should be minted to recipient');
+    assertEq(glitch.ownerOf(50), alice, 'NFT should be minted to recipient');
   }
 
   function test_refundEtherToOutbiddedUser() public {
@@ -273,7 +237,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     auction.bid{value: aliceSecondBid}(aliceSecondBid, fakeMerkleProof);
     vm.stopPrank();
 
-    fillTopBids();
+    fillTopBids(auction);
     vm.warp(endTime + 1);
 
     uint256 aliceBalance = alice.balance;
@@ -289,7 +253,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     // Arrange
     // fill top bids
     vm.warp(startTime + 1);
-    fillTopBids();
+    fillTopBids(auction);
     vm.warp(endTime + 1);
     uint256 settledPrice = auction.getSettledPrice();
     uint256 ownerBalance = owner.balance;
@@ -328,7 +292,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     // Arrange
     // fill top bids
     vm.warp(startTime + 1);
-    fillTopBids();
+    fillTopBids(auction);
     vm.warp(endTime + 1);
 
     // Act
@@ -344,7 +308,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     // Arrange
     // fill top bids
     vm.warp(startTime + 1);
-    fillTopBids();
+    fillTopBids(auction);
     vm.warp(endTime);
 
     // Assert
@@ -356,7 +320,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     // Arrange
     // fill top bids
     vm.warp(startTime + 1);
-    fillTopBids();
+    fillTopBids(auction);
 
     // Assert
     vm.prank(owner);
@@ -384,7 +348,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
 
   function test_afterAllClaimedContractMustHaveZeroBalance() public {
     vm.warp(startTime + 1);
-    fillTopBids();
+    fillTopBids(auction);
     vm.warp(endTime + 1);
 
     uint256 contractBalanceAfterAuction = address(auction).balance;
@@ -400,7 +364,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
   }
   function test_afterWithdrawnUsersCanClaimCorrectly() public {
     vm.warp(startTime + 1);
-    fillTopBids();
+    fillTopBids(auction);
     vm.warp(endTime + 1);
 
     vm.prank(owner);
@@ -441,15 +405,15 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
 
   function test_BidderClaimNFTsIDsProperly() public {
     vm.warp(startTime + 1);
-    fillTopBids();
-    GlitchAuction.Bid[10] memory topBids = auction.getTopBids();
+    fillTopBids(auction);
+    GlitchAuction.Bid[50] memory topBids = auction.getTopBids();
 
     vm.deal(bob, 10000 ether);
     vm.startPrank(bob);
     auction.bid{value: topBids[0].amount + 1 ether}(topBids[0].amount + 1 ether, fakeMerkleProof);
 
     topBids = auction.getTopBids();
-    auction.bid{value: topBids[4].amount + 0.1 ether}(topBids[4].amount + 0.1 ether, fakeMerkleProof);
+    auction.bid{value: topBids[4].amount + 0.00001 ether}(topBids[4].amount + 0.00001 ether, fakeMerkleProof);
 
     auction.bid{value: auction.getMinimumBid()}(auction.getMinimumBid(), fakeMerkleProof);
     vm.stopPrank();
@@ -461,13 +425,13 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     assertEq(glitch.balanceOf(bob), 3, 'Bob should have 3 NFTs');
     assertEq(glitch.ownerOf(1), bob, 'NFT #1 should be owned by Bob');
     assertEq(glitch.ownerOf(5), bob, 'NFT #5 should be owned by Bob');
-    assertEq(glitch.ownerOf(10), bob, 'NFT #10 should be owned by Bob');
+    assertEq(glitch.ownerOf(50), bob, 'NFT #10 should be owned by Bob');
   }
 
   function test_bidWithFirstTierDiscount() public {
     // Arrange
     vm.warp(startTime + 1);
-    fillTopBids();
+    fillTopBids(auction);
 
     // Create merkle root and set it
     Merkle m = new Merkle();
@@ -525,7 +489,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     vm.stopPrank();
 
     // fill top bids
-    fillTopBids();
+    fillTopBids(auction);
     vm.warp(endTime + 1);
 
     uint256 settledPrice = auction.getSettledPrice();

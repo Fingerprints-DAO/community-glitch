@@ -62,7 +62,7 @@ contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
   /**
    * @notice MAX_TOP_BIDS represents the maximum number of top bids that can be stored.
    */
-  uint256 public constant MAX_TOP_BIDS = 10;
+  uint256 public constant MAX_TOP_BIDS = 50;
 
   /// @dev The merkle root for discount. 15%
   bytes32 public firstTierMerkleRoot;
