@@ -17,8 +17,7 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
 
   enum DiscountType {
     None,
-    FirstTier,
-    SecondTier
+    FirstTier
   }
 
   /// @dev Represents a bid in the auction.
@@ -65,11 +64,12 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
    */
   uint256 public constant MAX_TOP_BIDS = 10;
 
-  /// @dev The merkle root for members of FingerprintsDAO. 20%
+  /// @dev The merkle root for discount. 15%
   bytes32 public firstTierMerkleRoot;
 
-  /// @dev The merkle root for members, not included for this project
-  bytes32 public secondTierMerkleRoot;
+  /**
+   */
+  uint256 internal constant DISCOUNT_PERCENTAGE = 15;
 
   /**
    * @notice treasuryWallet stores the address of the treasury wallet where auction funds are sent.
@@ -193,13 +193,20 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
     glitchAddress = IGlitch(_glitchAddress);
   }
 
-  /// @dev Updates the merkle roots
-  function setMerkleRoots(bytes32 _firstTierRoot, bytes32 _secondTierRoot) external onlyOwner {
+  /**
+   * @dev Allows the owner to set the first tier merkle root.
+   * @param _firstTierRoot The new first tier merkle root.
+   */
+  function setMerkleRoots(bytes32 _firstTierRoot) external onlyOwner {
     firstTierMerkleRoot = _firstTierRoot;
-    secondTierMerkleRoot = _secondTierRoot;
   }
 
-  /// @dev Returns if a wallet address/proof is part of the given merkle root.
+  /**
+   * @dev Checks if a merkle proof is valid.
+   * @param _merkleProof The merkle proof to be checked.
+   * @param _address The address to be checked.
+   * @param _root The merkle root.
+   */
   function checkMerkleProof(bytes32[] calldata _merkleProof, address _address, bytes32 _root) public pure returns (bool) {
     bytes32 leaf = keccak256(abi.encodePacked(_address));
     return MerkleProof.verify(_merkleProof, _root, leaf);
@@ -308,7 +315,6 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
     require(!withdrawn, 'Already withdrawn');
     withdrawn = true;
     uint256 givenFirstTierDiscount;
-    uint256 givenSecondTierDiscount;
     uint256 salesAmountWithoutDiscount;
 
     for (uint256 i; i < MAX_TOP_BIDS; ) {
@@ -317,8 +323,6 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
       }
       if (topBids[i].discountType == DiscountType.FirstTier) {
         givenFirstTierDiscount++;
-      } else if (topBids[i].discountType == DiscountType.SecondTier) {
-        givenSecondTierDiscount++;
       } else {
         salesAmountWithoutDiscount++;
       }
@@ -327,10 +331,7 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
       }
     }
 
-    uint256 salesAmountWithDiscount = getSettledPriceWithDiscount(DiscountType.FirstTier) *
-      givenFirstTierDiscount +
-      getSettledPriceWithDiscount(DiscountType.SecondTier) *
-      givenSecondTierDiscount;
+    uint256 salesAmountWithDiscount = getSettledPriceWithDiscount(DiscountType.FirstTier) * givenFirstTierDiscount;
     uint256 salesAmount = getSettledPrice() * salesAmountWithoutDiscount;
     treasuryWallet.sendValue(salesAmountWithDiscount + salesAmount);
   }
@@ -342,14 +343,8 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
    * @return The tier discount type.
    */
   function _getTierDiscount(bytes32[] calldata _merkleProof, address _addressToCheck) private view returns (DiscountType) {
-    if (_merkleProof.length == 0) {
-      return DiscountType.None;
-    }
     if (checkMerkleProof(_merkleProof, _addressToCheck, firstTierMerkleRoot)) {
       return DiscountType.FirstTier;
-    }
-    if (checkMerkleProof(_merkleProof, _addressToCheck, secondTierMerkleRoot)) {
-      return DiscountType.SecondTier;
     }
 
     return DiscountType.None;
@@ -363,10 +358,10 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
     lastBidPosition = MAX_TOP_BIDS;
 
     while (lastBidPosition > 0 && topBids[lastBidPosition - 1].amount == 0) {
-      lastBidPosition--;
+      --lastBidPosition;
     }
 
-    lastBidPosition--;
+    --lastBidPosition;
   }
 
   /**
@@ -385,15 +380,10 @@ contract GlitchAuction is Base, ReentrancyGuard, Pausable {
    * @return The price of the lowest winning bid.
    */
   function getSettledPriceWithDiscount(DiscountType _discountType) public view returns (uint256) {
-    if (_discountType == DiscountType.None) {
-      return getSettledPrice();
-    }
-
     if (_discountType == DiscountType.FirstTier) {
-      return (getSettledPrice() * 80) / 100; // 20% discount
+      return (getSettledPrice() * (100 - DISCOUNT_PERCENTAGE)) / 100;
     }
-
-    return (getSettledPrice() * 85) / 100; // 15% discount
+    return getSettledPrice();
   }
   /**
    * @dev Returns the minimum bid amount required to place a bid.
