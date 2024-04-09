@@ -2,6 +2,7 @@
 pragma solidity 0.8.23;
 
 interface IGlitch {
+  error AddressInsufficientBalance(address account);
   error ERC721EnumerableForbiddenBatchMint();
   error ERC721IncorrectOwner(address sender, uint256 tokenId, address owner);
   error ERC721InsufficientApproval(address operator, uint256 tokenId);
@@ -12,9 +13,17 @@ interface IGlitch {
   error ERC721InvalidSender(address sender);
   error ERC721NonexistentToken(uint256 tokenId);
   error ERC721OutOfBoundsIndex(address owner, uint256 index);
+  error FailedInnerCall();
+  error IdOutOfBounds();
+  error InvalidPrice();
+  error NotEnoughETH();
+  error OnlyMinter();
+  error OnlyOwner();
+  error OnlyTokenOwner();
   error OwnableInvalidOwner(address owner);
   error OwnableUnauthorizedAccount(address account);
   error ReentrancyGuardReentrantCall();
+  error ZeroAddress();
 
   event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
   event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
@@ -23,12 +32,12 @@ interface IGlitch {
   event MetadataUpdate(uint256 _tokenId);
   event Minted(address indexed recipient, uint256 indexed tokenId);
   event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+  event TokenRefreshed(uint256 indexed tokenId, address refresherAddress);
   event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 
   function approve(address to, uint256 tokenId) external;
   function balanceOf(address owner) external view returns (uint256);
   function baseURI() external view returns (string memory);
-  function burn(uint256 tokenId) external;
   function burnToReedem(uint256 _tokenId, uint256 _givenCode) external;
   function fundsReceiverAddress() external view returns (address payable);
   function getAllTokensVersion() external view returns (string[] memory versions);
@@ -55,7 +64,7 @@ interface IGlitch {
   function tokenByIndex(uint256 index) external view returns (uint256);
   function tokenOfOwnerByIndex(address owner, uint256 index) external view returns (uint256);
   function tokenURI(uint256 tokenId) external view returns (string memory);
-  function totalSupply() external pure returns (uint256);
+  function totalSupply() external view returns (uint256);
   function transferFrom(address from, address to, uint256 tokenId) external;
   function transferOwnership(address newOwner) external;
 }
