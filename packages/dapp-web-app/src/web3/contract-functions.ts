@@ -464,6 +464,16 @@ export const glitchAbi = [
   },
   {
     type: 'function',
+    inputs: [
+      { name: '_tokenId', internalType: 'uint256', type: 'uint256' },
+      { name: '_givenCode', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'burnToReedem',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     inputs: [],
     name: 'fundsReceiverAddress',
     outputs: [{ name: '', internalType: 'address payable', type: 'address' }],
@@ -764,6 +774,31 @@ export const glitchAbi = [
       },
     ],
     name: 'BatchMetadataUpdate',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'tokenOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'tokenId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'givenCode',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+    ],
+    name: 'Burned',
   },
   {
     type: 'event',
@@ -1561,6 +1596,15 @@ export const useWriteGlitchBurn = /*#__PURE__*/ createUseWriteContract({
 })
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"burnToReedem"`
+ */
+export const useWriteGlitchBurnToReedem = /*#__PURE__*/ createUseWriteContract({
+  abi: glitchAbi,
+  address: glitchAddress,
+  functionName: 'burnToReedem',
+})
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"mint"`
  */
 export const useWriteGlitchMint = /*#__PURE__*/ createUseWriteContract({
@@ -1689,6 +1733,16 @@ export const useSimulateGlitchBurn = /*#__PURE__*/ createUseSimulateContract({
   address: glitchAddress,
   functionName: 'burn',
 })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"burnToReedem"`
+ */
+export const useSimulateGlitchBurnToReedem =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: glitchAbi,
+    address: glitchAddress,
+    functionName: 'burnToReedem',
+  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"mint"`
@@ -1835,6 +1889,16 @@ export const useWatchGlitchBatchMetadataUpdateEvent =
     abi: glitchAbi,
     address: glitchAddress,
     eventName: 'BatchMetadataUpdate',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link glitchAbi}__ and `eventName` set to `"Burned"`
+ */
+export const useWatchGlitchBurnedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: glitchAbi,
+    address: glitchAddress,
+    eventName: 'Burned',
   })
 
 /**
@@ -2518,6 +2582,15 @@ export const writeGlitchBurn = /*#__PURE__*/ createWriteContract({
 })
 
 /**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"burnToReedem"`
+ */
+export const writeGlitchBurnToReedem = /*#__PURE__*/ createWriteContract({
+  abi: glitchAbi,
+  address: glitchAddress,
+  functionName: 'burnToReedem',
+})
+
+/**
  * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"mint"`
  */
 export const writeGlitchMint = /*#__PURE__*/ createWriteContract({
@@ -2643,6 +2716,15 @@ export const simulateGlitchBurn = /*#__PURE__*/ createSimulateContract({
   abi: glitchAbi,
   address: glitchAddress,
   functionName: 'burn',
+})
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"burnToReedem"`
+ */
+export const simulateGlitchBurnToReedem = /*#__PURE__*/ createSimulateContract({
+  abi: glitchAbi,
+  address: glitchAddress,
+  functionName: 'burnToReedem',
 })
 
 /**
@@ -2787,6 +2869,15 @@ export const watchGlitchBatchMetadataUpdateEvent =
     address: glitchAddress,
     eventName: 'BatchMetadataUpdate',
   })
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link glitchAbi}__ and `eventName` set to `"Burned"`
+ */
+export const watchGlitchBurnedEvent = /*#__PURE__*/ createWatchContractEvent({
+  abi: glitchAbi,
+  address: glitchAddress,
+  eventName: 'Burned',
+})
 
 /**
  * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link glitchAbi}__ and `eventName` set to `"MetadataUpdate"`

@@ -1,9 +1,9 @@
-'use client'
-import { Box, Flex } from '@chakra-ui/react'
+import { Box, Flex, Skeleton } from '@chakra-ui/react'
 import ChakraNextImageLoader from 'components/ChakraNextImageLoader'
 import { tokens } from 'data/tokens'
 import Link from 'next/link'
 import { useMemo } from 'react'
+import { getSmallTokenPath } from 'utils/tokens'
 import { useReadGlitchGetAllTokensVersion } from 'web3/contract-functions'
 
 type TokensVersionByIndexType = {
@@ -12,6 +12,48 @@ type TokensVersionByIndexType = {
 
 const divisor = 12
 const randomTokens = [...tokens].sort(() => Math.random() - 0.5)
+
+const TokenPreview = ({
+  token,
+  version,
+  isLoading,
+}: {
+  token: (typeof tokens)[0]
+  version: string
+  isLoading: boolean
+}) => {
+  return (
+    <Box
+      as={Link}
+      href={`/gallery/${token.id}`}
+      maxW={token.width / divisor}
+      w={'100%'}
+    >
+      {(isLoading || version === '') && (
+        <Skeleton w={token.width / divisor} h={token.height / divisor} />
+      )}
+      {!isLoading && (
+        <>
+          {version === 'D' && (
+            <Box as={'span'} bgColor={'white'} w={'full'} h={'100%'} />
+          )}
+          {version !== 'D' && (
+            <ChakraNextImageLoader
+              src={getSmallTokenPath(token.filename, version)}
+              alt={`${token.name}`}
+              imageWidth={token.width}
+              imageHeight={token.height}
+              imageProps={{
+                priority: true,
+                unoptimized: true,
+              }}
+            />
+          )}
+        </>
+      )}
+    </Box>
+  )
+}
 export const ArtGrid = () => {
   const { data: tokensVersion = [], isLoading } =
     useReadGlitchGetAllTokensVersion()
@@ -20,7 +62,7 @@ export const ArtGrid = () => {
       tokensVersion.reduce(
         (acc, version, index) => ({
           ...acc,
-          [index]: version,
+          [index + 1]: version,
         }),
         {},
       ),
@@ -36,23 +78,12 @@ export const ArtGrid = () => {
       alignContent={'flex-start'}
     >
       {randomTokens.map((token) => (
-        <Box
-          as={Link}
-          href={`/gallery/${token.id}`}
-          key={token.filename}
-          maxW={token.width / divisor}
-        >
-          <ChakraNextImageLoader
-            src={`/arts/${tokensVersionByIndex[token.id]}/${token.filename}`}
-            alt={`${token.name}`}
-            imageWidth={token.width}
-            imageHeight={token.height}
-            imageProps={{
-              priority: true,
-              unoptimized: true,
-            }}
-          />
-        </Box>
+        <TokenPreview
+          key={token.id}
+          token={token}
+          version={tokensVersionByIndex[token.id] ?? ''}
+          isLoading={isLoading}
+        />
       ))}
     </Flex>
   )

@@ -17,6 +17,7 @@ import { tokens } from 'data/tokens'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getExternalOpenseaUrl } from 'utils/getLink'
+import { getSmallTokenPath } from 'utils/tokens'
 
 export default function Token({ params: { id } }: { params: { id: string } }) {
   const token = tokens.find((token) => token.id === Number(id))
@@ -39,7 +40,7 @@ export default function Token({ params: { id } }: { params: { id: string } }) {
           justifyContent={'center'}
         >
           <ChakraNextImageLoader
-            src={`/arts/A/${token.filename}`}
+            src={getSmallTokenPath(token.filename, 'A')}
             alt={`${token.name}`}
             imageWidth={token.width}
             imageHeight={token.height}
