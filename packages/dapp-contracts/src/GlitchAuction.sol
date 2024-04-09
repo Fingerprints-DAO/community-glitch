@@ -39,12 +39,21 @@ import {IGlitch} from './IGlitch.sol';
 contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
   using Address for address payable;
 
+  /**
+   * @dev Enum representing the type of discount applied to the bid.
+   * @custom:enum
+   */
   enum DiscountType {
     None,
     FirstTier
   }
 
-  /// @dev Represents a bid in the auction.
+  /**
+   * @dev Represents a bid.
+   * @param bidder The address of the bidder.
+   * @param amount The amount of wei provided for the bid.
+   * @param discountType The type of discount applied to the bid.
+   */
   struct Bid {
     address bidder;
     uint256 amount;

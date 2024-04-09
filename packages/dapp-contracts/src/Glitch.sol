@@ -70,6 +70,9 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
    */
   event TokenRefreshed(uint256 indexed tokenId, address refresherAddress);
 
+  /**
+   * @dev Enum representing the different token versions.
+   */
   enum TokenVersion {
     A,
     B,
@@ -77,12 +80,12 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
     D
   }
 
-  uint16 private constant MAX_SUPPLY = 50;
-  uint256 public refreshTokenPrice = 0.025 ether;
-  address public minterContractAddress;
-  address payable public fundsReceiverAddress;
-  string public baseURI;
-  mapping(uint256 tokenId => TokenVersion version) private _tokenVersionMap;
+  uint16 private constant MAX_SUPPLY = 50; /// @notice The maximum number of tokens that can be minted.
+  uint256 public refreshTokenPrice = 0.025 ether; /// @notice The price of a refresh token.
+  address public minterContractAddress; /// @notice The address of the minter contract.
+  address payable public fundsReceiverAddress; /// @notice The address of the funds receiver.
+  string public baseURI; /// @notice The base URI of the contract.
+  mapping(uint256 tokenId => TokenVersion version) private _tokenVersionMap; /// @notice The version of each token.
 
   /**
    * @dev Constructor function
