@@ -8,11 +8,11 @@ import {MerkleProof} from '@openzeppelin/contracts/utils/cryptography/MerkleProo
 import {ReentrancyGuard} from '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
 import {Pausable} from '@openzeppelin/contracts/utils/Pausable.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
-import {Base} from './Base.sol';
+import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
 import {IGlitch} from './IGlitch.sol';
 // import {console2} from 'forge-std/src/console2.sol';
 
-contract GlitchAuction is Base, ReentrancyGuard, Pausable {
+contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
   using Address for address payable;
 
   enum DiscountType {
