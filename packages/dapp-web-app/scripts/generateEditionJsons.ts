@@ -8,6 +8,9 @@ const outputDirs = ['A', 'B', 'C', 'D'] // Nomes das pastas de saída
 const website =
   'https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app'
 const imagePath = `${website}/edition/metadata/`
+const description = `glitch by misha de ridder, released by Fingerprints, is a collection of 50 animated GIFs, stemming from photographs of erased graffiti. The act of erasing can involve both destruction and generation, transformation and reimagination—allowing for new possibilities to emerge.Playing with notions of loss and re-coding, misha has re-animated the graffiti, inserting liminal afterimages of what was once there: faces, text, and indecipherable symbols. The result is a series of images that blur the lines between abstract painting, photography, animation, and token art. glitch meditates on the idea of “unwanted information,”—the delineation between messages that are wanted, seen, and proliferated, and those that are not. Like memes for the public space, graffiti is a subversive, spontaneous form of communication meant for the masses.\n
+As a commentary on secondary market dynamics, misha has also introduced a twist: each time a token is traded, the artwork changes. On the first trade, the animation vanishes. Subsequent trades cause the image to fade, until eventually, the token points to a blank placeholder. \n
+Collectors can pay to restore the image to the minted original, or choose to burn the token to redeem it for a limited edition, physical fine art print through a collaboration with Assembly.`
 
 interface CsvRow {
   title: string
@@ -65,9 +68,7 @@ async function createJsonFiles() {
         background_color: 'ffffff',
         image: `${imagePath}${image}_${dir}.gif`,
         external_url: website,
-        description: `‘glitch’ by misha de ridder in partnership with Fingerprints dao\n
-        Dynamic art about erasure and finding the generative in the real.\n
-        \nThe act of erasing can involve both destruction and generation, transformation, and reimagining, through which we create new possibilities and new forms emerge.`,
+        description,
         attributes: [
           { trait_type: 'seconds', value: row.seconds },
           { trait_type: 'frames', value: row.frames },
@@ -112,4 +113,4 @@ async function createJsonFiles() {
   }
 }
 
-createJsonFiles().then(() => console.log('Arquivos JSON criados com sucesso.'))
+createJsonFiles().then(() => console.log('JSON files generated successfully'))

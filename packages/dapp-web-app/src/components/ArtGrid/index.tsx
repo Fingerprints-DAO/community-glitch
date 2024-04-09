@@ -13,7 +13,8 @@ type TokensVersionByIndexType = {
 const divisor = 12
 const randomTokens = [...tokens].sort(() => Math.random() - 0.5)
 export const ArtGrid = () => {
-  const { data: tokensVersion = [] } = useReadGlitchGetAllTokensVersion()
+  const { data: tokensVersion = [], isLoading } =
+    useReadGlitchGetAllTokensVersion()
   const tokensVersionByIndex: TokensVersionByIndexType = useMemo(
     () =>
       tokensVersion.reduce(
@@ -25,7 +26,6 @@ export const ArtGrid = () => {
       ),
     [tokensVersion],
   )
-  console.log(tokensVersionByIndex)
 
   return (
     <Flex
