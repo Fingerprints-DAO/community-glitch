@@ -8,10 +8,34 @@ import {MerkleProof} from '@openzeppelin/contracts/utils/cryptography/MerkleProo
 import {ReentrancyGuard} from '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
 import {Pausable} from '@openzeppelin/contracts/utils/Pausable.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
-import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
 import {IGlitch} from './IGlitch.sol';
-// import {console2} from 'forge-std/src/console2.sol';
 
+/**
+ * @title Glitch Auction
+ * @dev This is a smart contract for a glitch auction. It allows for the
+ * creation and management of auctions for the digital artworks represented
+ * by the Glitch contract.
+ *
+ * The auction contract allows for the minting of limited edition artworks,
+ * which can be sold on an auction platform. The artworks are represented by
+ * the Glitch contract, and the auction contract provides the mechanism
+ * to manage the minting and listing of these artworks for sale.
+ *
+ * The auction contract allows for a variety of configuration options,
+ * including the start time and duration of the auction, the price of the
+ * artworks, and the whitelist of users allowed to participate in the
+ * auction.
+ *
+ * The auction contract is designed to be flexible and extensible, allowing
+ * for different discount tiers to be offered to users based on their
+ * whitelisting status, and to enable the owner of the auction contract to
+ * pause or unpause the auction if necessary.
+ *
+ * Finally, the auction contract is designed to be secure, with a focus on
+ * preventing common attacks such as reentrancy and overflow/underflow
+ * vulnerabilities.
+ * @custom:security-contact arod.mail@proton.me
+ */
 contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
   using Address for address payable;
 

@@ -12,22 +12,62 @@ import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 /**
  * @title Glitch
  * @dev ERC721 token contract representing a collection of digital artworks
+ * @custom:security-contact arod.mail@proton.me
  */
 contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, ReentrancyGuard {
   using Address for address payable;
 
   // Errors
+  /**
+   * @dev Error emitted when the caller is not the current minter.
+   */
   error OnlyMinter();
+  /**
+   * @dev Error emitted when the caller is not the current owner.
+   */
   error OnlyOwner();
+  /**
+   * @dev Error emitted when the provided address is the zero address.
+   */
   error ZeroAddress();
+  /**
+   * @dev Error emitted when the provided token ID is out of bounds.
+   */
   error IdOutOfBounds();
+  /**
+   * @dev Error emitted when not enough Ether is provided for the transaction.
+   */
   error NotEnoughETH();
+  /**
+   * @dev Error emitted when the provided price is invalid.
+   */
   error InvalidPrice();
+  /**
+   * @dev Error emitted when the caller is not the token owner.
+   */
   error OnlyTokenOwner();
 
   // Events
+  /**
+   * @dev Event emitted when a new token is minted.
+   * @param recipient The address of the token recipient.
+   * @param tokenId The unique identifier of the minted token.
+   */
   event Minted(address indexed recipient, uint256 indexed tokenId);
+
+  /**
+   * @dev Event emitted when a token is burned.
+   * @param tokenOwner The address of the token owner.
+   * @param tokenId The unique identifier of the burned token.
+   * @param givenCode The value of the token's metadata, as a `uint256` integer.
+   */
   event Burned(address indexed tokenOwner, uint256 indexed tokenId, uint256 indexed givenCode);
+
+  /**
+   * @dev Event emitted when a token's metadata is refreshed.
+   * @param tokenId The unique identifier of the refreshed token.
+   * @param refresherAddress The address of the token refresher.
+   */
   event TokenRefreshed(uint256 indexed tokenId, address refresherAddress);
 
   enum TokenVersion {
