@@ -129,7 +129,7 @@ contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
    * @dev Modifier to check if the caller is the owner
    */
   modifier _onlyOwner() {
-    require(_msgSender() == owner(), 'Only owner');
+    if (_msgSender() != owner()) revert OnlyOwner();
     _;
   }
 
@@ -180,7 +180,7 @@ contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
    * @param _newWallet The new treasury wallet address.
    */
   function setTreasuryWallet(address _newWallet) external _onlyOwner {
-    require(_newWallet != address(0), 'Invalid address');
+    if (_newWallet == address(0)) revert InvalidAddress();
     treasuryWallet = payable(_newWallet);
   }
 
@@ -189,7 +189,7 @@ contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
    * @param _glitchAddress The new treasury wallet address.
    */
   function setGlitchAddress(address _glitchAddress) external _onlyOwner {
-    require(_glitchAddress != address(0), 'Invalid address');
+    if (_glitchAddress == address(0)) revert InvalidAddress();
     glitchAddress = IGlitch(_glitchAddress);
   }
 
@@ -217,9 +217,9 @@ contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
    * @param _bidAmount The amount of the bid.
    */
   function bid(uint256 _bidAmount, bytes32[] calldata _merkleProof) external payable validConfig validTime whenNotPaused nonReentrant {
-    require(_bidAmount >= getMinimumBid(), 'Bid too low');
+    if (_bidAmount < getMinimumBid()) revert BidTooLow();
     uint256 totalBidAmount = bidBalances[_msgSender()] + msg.value;
-    require(totalBidAmount >= _bidAmount, 'Insufficient funds for bid');
+    if (totalBidAmount < _bidAmount) revert InsufficientFundsForBid();
 
     bidBalances[_msgSender()] = totalBidAmount - _bidAmount;
     processBid(_msgSender(), _bidAmount, _getTierDiscount(_merkleProof, _msgSender()));
@@ -240,7 +240,7 @@ contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
       }
     }
 
-    require(position < MAX_TOP_BIDS, 'Bid does not qualify for top bids');
+    if (position >= MAX_TOP_BIDS) revert BidDoesNotQualifyForTopBids();
     emit BidPlaced(_bidder, _amount);
 
     // Remove the old top bid
@@ -262,8 +262,8 @@ contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
    * @param _to The claimer address.
    */
   function claimAll(address _to) external validConfig whenNotPaused nonReentrant {
-    require(block.timestamp > _config.endTime, 'Auction not ended');
-    require(!claimed[_to], 'Already claimed');
+    if (block.timestamp <= _config.endTime) revert AuctionNotEnded();
+    if (claimed[_to]) revert AlreadyClaimed();
 
     uint256 nftsMinted;
     uint256 amountSpent;
@@ -297,7 +297,7 @@ contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
    * @param _recipient The recipient address.
    */
   function adminMintRemaining(address _recipient) external _onlyOwner validConfig {
-    require(block.timestamp > _config.endTime, 'Auction not ended');
+    if (block.timestamp <= _config.endTime) revert AuctionNotEnded();
     uint256 lastBidPosition = _getLastBidPosition();
     for (uint256 i = lastBidPosition + 1; i < MAX_TOP_BIDS; ) {
       glitchAddress.mint(_recipient, i + 1);
@@ -311,8 +311,8 @@ contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
    * @dev Allows the owner to withdraw the sales amount after the auction ends.
    */
   function withdraw() external _onlyOwner nonReentrant {
-    require(block.timestamp > _config.endTime, 'Auction not ended');
-    require(!withdrawn, 'Already withdrawn');
+    if (block.timestamp <= _config.endTime) revert AuctionNotEnded();
+    if (withdrawn) revert AlreadyClaimed();
     withdrawn = true;
     uint256 givenFirstTierDiscount;
     uint256 salesAmountWithoutDiscount;

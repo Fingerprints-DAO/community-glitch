@@ -52,7 +52,7 @@ contract GlitchConfigTest is PRBTest, StdCheats {
     vm.prank(alice);
 
     // As
-    vm.expectRevert('Only owner');
+    vm.expectRevert(GlitchAuction.OnlyOwner.selector);
     auction.setConfig(startTime, endTime, minBidIncrementInWei, startAmountInWei);
   }
 

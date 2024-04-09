@@ -84,7 +84,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     vm.warp(endTime - 200);
 
     // Assert
-    vm.expectRevert('Auction not ended');
+    vm.expectRevert(GlitchAuction.AuctionNotEnded.selector);
     auction.claimAll(alice);
     vm.stopPrank();
   }
@@ -106,7 +106,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     // alice claim the nfts and refund
     auction.claimAll(alice);
     // Assert
-    vm.expectRevert('Already claimed');
+    vm.expectRevert(GlitchAuction.AlreadyClaimed.selector);
     auction.claimAll(alice);
     vm.stopPrank();
   }
@@ -301,7 +301,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
 
     // Assert
     vm.prank(owner);
-    vm.expectRevert('Already withdrawn');
+    vm.expectRevert(GlitchAuction.AlreadyClaimed.selector);
     auction.withdraw();
   }
   function test_revertWhenWithdrawIfNotOwner() public {
@@ -313,7 +313,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
 
     // Assert
     vm.prank(alice);
-    vm.expectRevert('Only owner');
+    vm.expectRevert(GlitchAuction.OnlyOwner.selector);
     auction.withdraw();
   }
   function test_revertWhenWithdrawBeforeAuctionEnding() public {
@@ -324,7 +324,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
 
     // Assert
     vm.prank(owner);
-    vm.expectRevert('Auction not ended');
+    vm.expectRevert(GlitchAuction.AuctionNotEnded.selector);
     auction.withdraw();
   }
 
@@ -336,12 +336,12 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
 
   function test_revertWhenSetTreasuryWalletIfNotOwner() public {
     vm.prank(alice);
-    vm.expectRevert('Only owner');
+    vm.expectRevert(GlitchAuction.OnlyOwner.selector);
     auction.setTreasuryWallet(alice);
   }
 
   function test_revertWhenSetTreasuryWalletIfZeroAddress() public {
-    vm.expectRevert('Invalid address');
+    vm.expectRevert(GlitchAuction.InvalidAddress.selector);
     vm.prank(owner);
     auction.setTreasuryWallet(address(0));
   }
@@ -558,7 +558,7 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
 
     // Assert
     vm.startPrank(owner);
-    vm.expectRevert('Auction not ended');
+    vm.expectRevert(GlitchAuction.AuctionNotEnded.selector);
     auction.adminMintRemaining(alice);
     vm.stopPrank();
   }
