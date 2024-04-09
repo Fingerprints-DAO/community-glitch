@@ -2,11 +2,11 @@
 pragma solidity 0.8.23;
 
 import {PRBTest} from '@prb/test/src/PRBTest.sol';
-import {Glitch, TokenVersion} from '../src/Glitch.sol';
+import {Glitch} from '../src/Glitch.sol';
 import {GlitchAuction} from '../src/GlitchAuction.sol';
 
 contract Helpers {
-  function tokenVersionToString(TokenVersion version) public pure returns (string memory) {
+  function tokenVersionToString(Glitch.TokenVersion version) public pure returns (string memory) {
     return string(abi.encodePacked(version));
   }
 }

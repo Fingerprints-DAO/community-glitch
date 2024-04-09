@@ -11,7 +11,7 @@ import {IERC721Enumerable} from '@openzeppelin/contracts/token/ERC721/extensions
 import {Merkle} from 'murky-merkle/src/Merkle.sol';
 
 import {GlitchAuction} from '../../src/GlitchAuction.sol';
-import {Glitch, TokenVersion} from '../../src/Glitch.sol';
+import {Glitch} from '../../src/Glitch.sol';
 import {TestHelpers} from '../../script/Helpers.s.sol';
 
 contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {

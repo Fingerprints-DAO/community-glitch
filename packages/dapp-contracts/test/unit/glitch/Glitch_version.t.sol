@@ -8,7 +8,7 @@ import {stdError} from 'forge-std/src/stdError.sol';
 import {ERC721} from '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import {IERC721Errors} from '@openzeppelin/contracts/interfaces/draft-IERC6093.sol';
 
-import {Glitch, TokenVersion} from '../../../src/Glitch.sol';
+import {Glitch} from '../../../src/Glitch.sol';
 import {Helpers} from '../../../script/Helpers.s.sol';
 
 /// @dev If this is your first time with Forge, read this tutorial in the Foundry Book:
@@ -131,7 +131,7 @@ contract GlitchTokenVersionTest is PRBTest, StdCheats, Helpers {
     vm.stopPrank();
 
     // Assert that the token version has been refreshed
-    assertNotEq(initialVersion, tokenVersionToString(TokenVersion.A), 'Token version not refreshed to A');
+    assertNotEq(initialVersion, tokenVersionToString(Glitch.TokenVersion.A), 'Token version not refreshed to A');
   }
   function test_refreshTokenVersionAndReceiverGetsTheAmountPaid() public {
     // Mint a token

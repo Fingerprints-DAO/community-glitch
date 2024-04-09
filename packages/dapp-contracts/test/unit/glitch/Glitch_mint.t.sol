@@ -9,7 +9,7 @@ import {ERC721} from '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import {IERC721Errors} from '@openzeppelin/contracts/interfaces/draft-IERC6093.sol';
 import {TestHelpers} from '../../../script/Helpers.s.sol';
 
-import {Glitch, TokenVersion} from '../../../src/Glitch.sol';
+import {Glitch} from '../../../src/Glitch.sol';
 import {IGlitch} from '../../../src/IGlitch.sol';
 
 contract GlitchMintTest is PRBTest, StdCheats, TestHelpers {

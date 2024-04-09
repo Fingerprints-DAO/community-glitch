@@ -9,13 +9,6 @@ import {ReentrancyGuard} from '@openzeppelin/contracts/utils/ReentrancyGuard.sol
 import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 
-enum TokenVersion {
-  A,
-  B,
-  C,
-  D
-}
-
 /**
  * @title Glitch
  * @dev ERC721 token contract representing a collection of digital artworks
@@ -36,6 +29,13 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
   event Minted(address indexed recipient, uint256 indexed tokenId);
   event Burned(address indexed tokenOwner, uint256 indexed tokenId, uint256 indexed givenCode);
   event TokenRefreshed(uint256 indexed tokenId, address refresherAddress);
+
+  enum TokenVersion {
+    A,
+    B,
+    C,
+    D
+  }
 
   uint16 private constant MAX_SUPPLY = 50;
   uint256 public refreshTokenPrice = 0.025 ether;
