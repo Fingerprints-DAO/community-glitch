@@ -116,28 +116,23 @@ contract GlitchBidTest is PRBTest, StdCheats, TestHelpers {
     assertEq(topBids[9].amount, 0.8 ether, 'Incorrect order of bids');
   }
 
-  function test_outbidCanBidUsingBalance() public {
+  function test_outbidCantBidUsingBalance() public {
     // Arrange
     vm.warp(startTime + 2);
     fillTopBids(auction);
     GlitchAuction.Bid memory lowestBid = auction.getTopBids()[49];
     uint256 minimumBid = auction.getMinimumBid();
-    uint256 aliceBid = minimumBid;
 
     // Act
     vm.prank(alice);
     auction.bid{value: minimumBid}(minimumBid, fakeMerkleProof);
 
     minimumBid = auction.getMinimumBid();
-    vm.prank(lowestBid.bidder);
-    auction.bid{value: minimumBid - lowestBid.amount}(minimumBid, fakeMerkleProof);
+    vm.startPrank(lowestBid.bidder);
 
-    // Assert
-    // Check that the bid was successful by verifying that the new bid amount is now the 10th highest bid
-    assertEq(auction.getTopBids()[49].amount, minimumBid, 'Lowest bid has the right amount');
-    assertEq(auction.getTopBids()[49].bidder, lowestBid.bidder, 'Lowest bid has the right bidder');
-    assertEq(auction.bidBalances(lowestBid.bidder), 0, 'Lowest bidder has no balance');
-    assertEq(auction.bidBalances(alice), aliceBid, 'Alice bid was not outbid');
+    vm.expectRevert(GlitchAuction.InsufficientFundsForBid.selector);
+    auction.bid{value: minimumBid - lowestBid.amount}(minimumBid, fakeMerkleProof);
+    vm.stopPrank();
   }
 
   function test_balanceAccumulatesWhenOutbidded() public {

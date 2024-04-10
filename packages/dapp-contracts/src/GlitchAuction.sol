@@ -89,7 +89,7 @@ contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
   error TransferFailed(); /// @dev Emitted when the NFT transfer has failed.
 
   event BidPlaced(address indexed bidder, uint256 amount); /// @dev Emitted when a bid is placed.
-  event Outbid(address indexed bidder, uint256 amount, uint256 lastBidPosition); /// @dev Emitted when a bid is outbid.
+  event Outbidded(address indexed bidder, uint256 amount, uint256 lastBidPosition); /// @dev Emitted when a bid is outbidded.
   event Claimed(address indexed to, uint256 nftAmount, uint256 refundAmount); /// @dev Emitted when the NFT and refund have been claimed.
 
   /**
@@ -251,10 +251,8 @@ contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
    */
   function bid(uint256 _bidAmount, bytes32[] calldata _merkleProof) external payable validConfig validTime whenNotPaused nonReentrant {
     if (_bidAmount < getMinimumBid()) revert BidTooLow();
-    uint256 totalBidAmount = bidBalances[_msgSender()] + msg.value;
-    if (totalBidAmount < _bidAmount) revert InsufficientFundsForBid();
+    if (msg.value != _bidAmount) revert InsufficientFundsForBid();
 
-    bidBalances[_msgSender()] = totalBidAmount - _bidAmount;
     processBid(_msgSender(), _bidAmount, _getTierDiscount(_merkleProof, _msgSender()));
   }
 
@@ -274,19 +272,19 @@ contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
     }
 
     if (position >= MAX_TOP_BIDS) revert BidDoesNotQualifyForTopBids();
-    emit BidPlaced(_bidder, _amount);
 
     // Remove the old top bid
-    Bid memory outbid = topBids[MAX_TOP_BIDS - 1];
-    if (outbid.bidder != address(0)) {
-      emit Outbid(outbid.bidder, outbid.amount, position);
-      bidBalances[outbid.bidder] = bidBalances[outbid.bidder] + outbid.amount;
+    Bid memory outbidded = topBids[MAX_TOP_BIDS - 1];
+    if (outbidded.bidder != address(0)) {
+      emit Outbidded(outbidded.bidder, outbidded.amount, position);
+      bidBalances[outbidded.bidder] = bidBalances[outbidded.bidder] + outbidded.amount;
     }
 
     // Insert the new bid
     for (uint256 i = MAX_TOP_BIDS - 1; i > position; i--) {
       topBids[i] = topBids[i - 1];
     }
+    emit BidPlaced(_bidder, _amount);
     topBids[position] = Bid(_bidder, _amount, _discountType);
   }
 
