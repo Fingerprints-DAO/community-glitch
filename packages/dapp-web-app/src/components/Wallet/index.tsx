@@ -11,19 +11,11 @@ type WalletProps = ButtonProps & {
   isDrawer?: boolean
 }
 
-const Wallet = ({
-  buttonWidth = 'full',
-  isDrawer = false,
-  ...props
-}: WalletProps) => {
+const Wallet = ({ buttonWidth = 'full', ...props }: WalletProps) => {
   const { disconnect } = useDisconnect()
   const { address } = useAccount()
   const { data: ensName } = useEnsName({ address })
-  const name = shortenAddress(
-    ensName || address,
-    isDrawer ? 8 : 5,
-    isDrawer ? 8 : 3,
-  )
+  const name = shortenAddress(ensName || address, 5, 3)
 
   const handleConnectWallet =
     (isConnected: boolean, show?: () => void) => () =>

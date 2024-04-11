@@ -82,6 +82,7 @@ export default function Auction() {
             w={'450px'}
             h={token === null ? '450px' : ''}
             mx={'auto'}
+            maxW={'100%'}
           >
             {token !== null && (
               <>
@@ -95,7 +96,12 @@ export default function Auction() {
                     unoptimized: true,
                   }}
                 />
-                <Flex w="full" justifyContent={'space-between'} mt={'10px'}>
+                <Flex
+                  w="full"
+                  justifyContent={'space-between'}
+                  mt={'10px'}
+                  flexWrap={'wrap'}
+                >
                   <Text>{token.name}</Text>
                   <ChakraLink
                     as={Link}
