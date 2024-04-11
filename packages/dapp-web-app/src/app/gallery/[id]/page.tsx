@@ -98,17 +98,10 @@ export default function Token({ params: { id } }: { params: { id: string } }) {
             <Grid
               templateColumns={{
                 base: 'repeat(2, 1fr)',
-                md: 'repeat(3, 1fr)',
                 lg: 'repeat(4, 1fr)',
               }}
               gap={4}
             >
-              <GridItem>
-                <Text as={'span'} fontWeight="bold">
-                  version:{' '}
-                </Text>
-                <Text as={'span'}>{version}</Text>
-              </GridItem>
               {Object.entries(token.metadata).map(([key, value]) => (
                 <GridItem key={key}>
                   <Text as={'span'} fontWeight="bold">
@@ -134,7 +127,7 @@ export default function Token({ params: { id } }: { params: { id: string } }) {
               <Button w="full" mb={1} variant={'outline'}>
                 burn to print
               </Button>
-              <ChakraLink as={Link} fontSize={'xs'} href={'/about#faq'}>
+              <ChakraLink as={Link} fontSize={'xs'} href={'/about#prints'}>
                 learn more
               </ChakraLink>
             </Box>

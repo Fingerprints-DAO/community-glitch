@@ -1,4 +1,5 @@
 import { Box, Container, Flex, Icon, Text } from '@chakra-ui/react'
+import { FarcasterIcon, LensIcon } from 'components/Icons'
 import { TextToltip } from 'components/TextTooltip'
 import { BsDiscord, BsTwitterX } from 'react-icons/bs'
 import { BsTwitter } from 'react-icons/bs'
@@ -55,11 +56,43 @@ const Footer = () => {
         </Box>
 
         <Flex flex={1} justifyContent={'flex-end'} alignItems={'center'}>
-          <TextToltip label="Check out on X!" placement="top">
+          <TextToltip label="Check out on Lens" placement="top">
+            <Box
+              as="a"
+              href="https://hey.xyz/u/mishaderidder"
+              title="Lens protocol"
+              target="_blank"
+              p={2}
+              color="gray.300"
+              _hover={{ color: 'gray.800' }}
+              transition="ease"
+              transitionProperty="color"
+              transitionDuration="0.2s"
+            >
+              <Icon as={LensIcon} w={8} h={8} display="block" />
+            </Box>
+          </TextToltip>
+          <TextToltip label="Check out on Farcaster" placement="top">
+            <Box
+              as="a"
+              href="https://warpcast.com/mishaderidder.eth"
+              title="Farcaster"
+              target="_blank"
+              p={2}
+              color="gray.300"
+              _hover={{ color: 'gray.800' }}
+              transition="ease"
+              transitionProperty="color"
+              transitionDuration="0.2s"
+            >
+              <Icon as={FarcasterIcon} w={6} h={6} display="block" />
+            </Box>
+          </TextToltip>
+          <TextToltip label="Check out on X" placement="top">
             <Box
               as="a"
               href="https://twitter.com/FingerprintsDAO"
-              title="Twitter"
+              title="X"
               target="_blank"
               p={2}
               color="gray.300"
@@ -71,7 +104,7 @@ const Footer = () => {
               <Icon as={BsTwitterX} w={6} h={6} display="block" />
             </Box>
           </TextToltip>
-          <TextToltip label="Join us on Discord!" placement="top">
+          <TextToltip label="Join us on Discord" placement="top">
             <Box
               as="a"
               href={
@@ -91,7 +124,7 @@ const Footer = () => {
           </TextToltip>
           {glitchAddress && (
             <>
-              <TextToltip label="Check out on Etherscan!" placement="top">
+              <TextToltip label="Check out on Etherscan" placement="top">
                 <Box
                   as="a"
                   href={getExternalEtherscanUrl(glitchAddress)}
@@ -108,7 +141,7 @@ const Footer = () => {
                 </Box>
               </TextToltip>
               <TextToltip
-                label="Check out the collection on Opensea!"
+                label="Check out the collection on Opensea"
                 placement="top"
               >
                 <Box
