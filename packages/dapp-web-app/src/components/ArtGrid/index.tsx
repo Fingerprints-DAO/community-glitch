@@ -6,12 +6,12 @@ import { useMemo } from 'react'
 import { getSmallTokenPath } from 'utils/tokens'
 import { useReadGlitchGetAllTokensVersion } from 'web3/contract-functions'
 
+const divisor = 12
+const randomTokens = [...tokens].sort(() => Math.random() - 0.5)
+
 type TokensVersionByIndexType = {
   [key: number]: string // Assuming the value is a string, adjust as needed
 }
-
-const divisor = 12
-const randomTokens = [...tokens].sort(() => Math.random() - 0.5)
 
 const TokenPreview = ({
   token,
@@ -22,6 +22,9 @@ const TokenPreview = ({
   version: string
   isLoading: boolean
 }) => {
+  if (isLoading || version === '') {
+    return <Skeleton w={'full'} h={'80vh'} rounded={0} />
+  }
   return (
     <Box
       as={Link}
@@ -29,27 +32,20 @@ const TokenPreview = ({
       maxW={token.width / divisor}
       w={'100%'}
     >
-      {(isLoading || version === '') && (
-        <Skeleton w={token.width / divisor} h={token.height / divisor} />
+      {version === 'D' && (
+        <Box as={'span'} bgColor={'white'} w={'full'} h={'100%'} />
       )}
-      {!isLoading && (
-        <>
-          {version === 'D' && (
-            <Box as={'span'} bgColor={'white'} w={'full'} h={'100%'} />
-          )}
-          {version !== 'D' && (
-            <ChakraNextImageLoader
-              src={getSmallTokenPath(token.filename, version)}
-              alt={`${token.name}`}
-              imageWidth={token.width}
-              imageHeight={token.height}
-              imageProps={{
-                priority: true,
-                unoptimized: true,
-              }}
-            />
-          )}
-        </>
+      {version !== 'D' && (
+        <ChakraNextImageLoader
+          src={getSmallTokenPath(token.filename, version)}
+          alt={`${token.name}`}
+          imageWidth={token.width / divisor}
+          imageHeight={token.height / divisor}
+          imageProps={{
+            priority: true,
+            unoptimized: true,
+          }}
+        />
       )}
     </Box>
   )

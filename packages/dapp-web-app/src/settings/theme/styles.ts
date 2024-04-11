@@ -3,7 +3,7 @@ import { Theme } from '@chakra-ui/react'
 const styles: Theme['styles'] = {
   global: ({ theme }) => ({
     body: {
-      background: 'white',
+      background: '#FEF9FF',
       color: theme.colors.black,
     },
     h1: {
