@@ -182,7 +182,7 @@ export default function About() {
         leaving only a placeholder.
       </Section>
       <Section title="contact fingerprints dao, & artist">
-        fingerprints [email]
+        fingerprints [contact@fingerprintsdao.xyz]
         <LineSpace />
         assembly [info@assembly.art]
         <LineSpace />

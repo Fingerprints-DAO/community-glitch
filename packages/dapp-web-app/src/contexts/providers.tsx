@@ -13,18 +13,6 @@ import { config } from 'settings/wagmi'
 const queryClient = new QueryClient()
 
 function Providers({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    if (window.location.hash) {
-      setTimeout(() => {
-        const id = window.location.hash.replace('#', '')
-        const element = document.getElementById(id)
-        if (element) {
-          element.scrollIntoView()
-        }
-      }, 1000) // Ajuste o tempo conforme necessário
-    }
-  }, [])
-
   return (
     <CacheProvider>
       <ChakraProvider theme={theme}>
