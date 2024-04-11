@@ -8,6 +8,7 @@ import {
   List,
   ListItem,
   TextProps,
+  Skeleton,
 } from '@chakra-ui/react'
 import Link from 'next/link'
 import ChakraNextImageLoader from 'components/ChakraNextImageLoader'
@@ -15,9 +16,10 @@ import FullPageTemplate from 'components/Templates/FullPage'
 import { tokens } from 'data/tokens'
 import { getExternalOpenseaUrl } from 'utils/getLink'
 import { auctionAddress } from 'web3/contract-functions'
-import { ReactNode } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { AuctionProvider } from 'contexts/AuctionContext'
 import { AuctionSidebar } from './components/AuctionSidebar'
+import { getSmallTokenPath } from 'utils/tokens'
 
 const TextSection = ({
   title,
@@ -64,35 +66,49 @@ const SubTextSection = ({
   </>
 )
 
-const token = tokens[0]
 export default function Auction() {
+  const [token, setToken] = useState<null | (typeof tokens)[0]>(null)
+
+  useEffect(() => {
+    setToken(tokens[Math.floor(Math.random() * 50)])
+  }, [])
+
   return (
     <AuctionProvider>
       <FullPageTemplate>
         <Box>
-          <Box width={'450px'} mx={'auto'}>
-            <ChakraNextImageLoader
-              src={`/arts/A/${token.filename}`}
-              alt={`${token.name}`}
-              imageWidth={token.width}
-              imageHeight={token.height}
-              imageProps={{
-                priority: true,
-                unoptimized: true,
-              }}
-            />
-            <Flex w="full" justifyContent={'space-between'} mt={'10px'}>
-              <Text>{token.name}</Text>
-              <ChakraLink
-                as={Link}
-                href={'/'}
-                // target="_blank"
-                // href={getExternalOpenseaUrl(auctionAddress)}
-              >
-                view collection
-              </ChakraLink>
-            </Flex>
-          </Box>
+          <Skeleton
+            isLoaded={token !== null}
+            w={'450px'}
+            h={token === null ? '450px' : ''}
+            mx={'auto'}
+          >
+            {token !== null && (
+              <>
+                <ChakraNextImageLoader
+                  src={getSmallTokenPath(token.filename, 'A')}
+                  alt={`${token.name}`}
+                  imageWidth={token.width}
+                  imageHeight={token.height}
+                  imageProps={{
+                    priority: true,
+                    unoptimized: true,
+                  }}
+                />
+                <Flex w="full" justifyContent={'space-between'} mt={'10px'}>
+                  <Text>{token.name}</Text>
+                  <ChakraLink
+                    as={Link}
+                    href={'/'}
+                    // target="_blank"
+                    // href={getExternalOpenseaUrl(auctionAddress)}
+                  >
+                    view collection
+                  </ChakraLink>
+                </Flex>
+              </>
+            )}
+          </Skeleton>
         </Box>
         <Flex
           flexDir={{ base: 'column-reverse', md: 'row' }}

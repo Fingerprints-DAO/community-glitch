@@ -1,4 +1,4 @@
-import { handleAuctionConfig } from 'app/auction/data-handler'
+import { handleAuctionConfig } from 'app/one-one-auction/data-handler'
 import { wagmiConfig } from 'settings/wagmiConfig'
 import { readAuctionGetConfig } from 'web3/contract-functions'
 

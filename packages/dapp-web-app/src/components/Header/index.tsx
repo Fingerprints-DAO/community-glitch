@@ -7,8 +7,8 @@ import { useAccount } from 'wagmi'
 
 const nav = [
   { href: '/about', label: 'about', isDisabled: false },
-  { href: '/auction', label: '1/1 edition', isDisabled: false },
-  { href: '/limited-edition', label: 'limited edition', isDisabled: false },
+  { href: '/one-one-auction', label: '1/1 auction', isDisabled: false },
+  { href: '/mint-edition', label: 'mint edition', isDisabled: false },
 ]
 
 const NavItem = ({
@@ -55,7 +55,7 @@ const Header = ({ isDrawer = false }) => {
       w={'full'}
       alignItems={'center'}
       justifyContent={'space-between'}
-      py={8}
+      py={5}
     >
       <Box as={Link} href={'/'} fontWeight={'bold'} color={'black'}>
         glitch

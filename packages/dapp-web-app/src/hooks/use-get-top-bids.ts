@@ -1,4 +1,4 @@
-import { cleanEmptyBids, filterMyBids } from 'app/auction/data-handler'
+import { cleanEmptyBids, filterMyBids } from 'app/one-one-auction/data-handler'
 import { useMemo } from 'react'
 import { useAccount } from 'wagmi'
 import { useReadAuctionGetTopBids } from 'web3/contract-functions'

@@ -1,6 +1,6 @@
 import { Button, Box, Text } from '@chakra-ui/react'
 import { useAccount } from 'wagmi'
-import { cleanEmptyBids } from 'app/auction/data-handler'
+import { cleanEmptyBids } from 'app/one-one-auction/data-handler'
 import { CustomTable } from 'components/CustomTable'
 import { TableRow } from 'components/CustomTable/TableRow'
 import { formatToEtherStringBN } from 'utils/price'

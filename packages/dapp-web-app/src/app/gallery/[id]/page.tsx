@@ -10,6 +10,7 @@ import {
   Heading,
   Link as ChakraLink,
   Text,
+  Skeleton,
 } from '@chakra-ui/react'
 import ChakraNextImageLoader from 'components/ChakraNextImageLoader'
 import FullPageTemplate from 'components/Templates/FullPage'
@@ -18,9 +19,13 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getExternalOpenseaUrl } from 'utils/getLink'
 import { getSmallTokenPath } from 'utils/tokens'
+import { useReadGlitchGetTokenVersion } from 'web3/contract-functions'
 
 export default function Token({ params: { id } }: { params: { id: string } }) {
   const token = tokens.find((token) => token.id === Number(id))
+  const { data: version, isLoading } = useReadGlitchGetTokenVersion({
+    args: [BigInt(token?.id ?? 0)],
+  })
 
   if (!token) {
     redirect('/')
@@ -38,19 +43,24 @@ export default function Token({ params: { id } }: { params: { id: string } }) {
           flexDir={'column'}
           alignItems={'center'}
           justifyContent={'center'}
+          bgColor={'white'}
+          flex={!version || version === 'D' ? 3 : ''}
         >
-          <ChakraNextImageLoader
-            src={getSmallTokenPath(token.filename, 'A')}
-            alt={`${token.name}`}
-            imageWidth={token.width}
-            imageHeight={token.height}
-            imageProps={{
-              priority: true,
-              unoptimized: true,
-            }}
-          />
+          {isLoading && <Skeleton w={'full'} h={token.height} />}
+          {!isLoading && version && version !== 'D' && (
+            <ChakraNextImageLoader
+              src={getSmallTokenPath(token.filename, version)}
+              alt={`${token.name}`}
+              imageWidth={token.width}
+              imageHeight={token.height}
+              imageProps={{
+                priority: true,
+                unoptimized: true,
+              }}
+            />
+          )}
         </Flex>
-        <Flex flexDir={'column'} alignItems={'flex-start'} flex={1} gap={10}>
+        <Flex flexDir={'column'} alignItems={'flex-start'} flex={9} gap={10}>
           <header>
             <Heading as={'h1'} p={0} fontSize={'2xl'}>
               {token.name}
@@ -97,7 +107,7 @@ export default function Token({ params: { id } }: { params: { id: string } }) {
                 <Text as={'span'} fontWeight="bold">
                   version:{' '}
                 </Text>
-                <Text as={'span'}>A</Text>
+                <Text as={'span'}>{version}</Text>
               </GridItem>
               {Object.entries(token.metadata).map(([key, value]) => (
                 <GridItem key={key}>

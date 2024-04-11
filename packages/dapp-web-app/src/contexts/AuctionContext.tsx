@@ -11,7 +11,7 @@ import {
   handleAuctionConfigToDayJs,
   HandledAuctionConfig,
   HandledAuctionConfigToDayJs,
-} from 'app/auction/data-handler'
+} from 'app/one-one-auction/data-handler'
 import { AuctionData, AuctionState } from 'types/auction'
 
 export const AuctionContext = createContext<

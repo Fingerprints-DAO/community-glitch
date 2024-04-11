@@ -11,7 +11,7 @@ import {
   Tbody,
   Text,
 } from '@chakra-ui/react'
-import { orderBidsByAmount } from 'app/auction/data-handler'
+import { orderBidsByAmount } from 'app/one-one-auction/data-handler'
 import { CustomTable } from 'components/CustomTable'
 import { TableRow } from 'components/CustomTable/TableRow'
 import useMediaQuery from 'hooks/use-media-query'
