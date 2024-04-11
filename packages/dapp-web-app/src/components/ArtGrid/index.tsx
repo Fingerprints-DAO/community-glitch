@@ -1,12 +1,11 @@
-import { Box, Flex, Skeleton } from '@chakra-ui/react'
+import { Box, Flex, Skeleton, useBreakpointValue } from '@chakra-ui/react'
 import ChakraNextImageLoader from 'components/ChakraNextImageLoader'
 import { tokens } from 'data/tokens'
 import Link from 'next/link'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { getSmallTokenPath } from 'utils/tokens'
 import { useReadGlitchGetAllTokensVersion } from 'web3/contract-functions'
 
-const divisor = 12
 const randomTokens = [...tokens].sort(() => Math.random() - 0.5)
 
 type TokensVersionByIndexType = {
@@ -22,14 +21,19 @@ const TokenPreview = ({
   version: string
   isLoading: boolean
 }) => {
-  if (isLoading || version === '') {
+  const divisor = useBreakpointValue(
+    { base: 40, sm: 18, md: 15, lg: 12 },
+    { ssr: true, fallback: 'base' },
+  )
+
+  if (!divisor || isLoading || version === '') {
     return <Skeleton w={'full'} h={'80vh'} rounded={0} />
   }
   return (
     <Box
       as={Link}
       href={`/gallery/${token.id}`}
-      maxW={token.width / divisor}
+      maxW={`${token.width / divisor}px`}
       w={'100%'}
     >
       {version === 'D' && (
@@ -39,8 +43,8 @@ const TokenPreview = ({
         <ChakraNextImageLoader
           src={getSmallTokenPath(token.filename, version)}
           alt={`${token.name}`}
-          imageWidth={token.width / divisor}
-          imageHeight={token.height / divisor}
+          imageWidth={token.width}
+          imageHeight={token.height}
           imageProps={{
             priority: true,
             unoptimized: true,
