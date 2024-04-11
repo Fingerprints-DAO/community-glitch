@@ -105,7 +105,7 @@ export const AuctionSidebar = () => {
       if (!publicClient || !userAccount.address) return
       const filter = await publicClient?.createContractEventFilter({
         ...auctionConfig,
-        eventName: 'Outbid',
+        eventName: 'Outbidded',
         fromBlock: BigInt(auctionContract.startBlock),
         args: {
           bidder: userAccount.address,

@@ -20,8 +20,8 @@ export const auctionAbi = [
   {
     type: 'constructor',
     inputs: [
-      { name: 'initialOwner', internalType: 'address', type: 'address' },
-      { name: '_erc721Address', internalType: 'address', type: 'address' },
+      { name: '_initialOwner', internalType: 'address', type: 'address' },
+      { name: '_glitchAddress', internalType: 'address', type: 'address' },
       { name: '_treasuryWallet', internalType: 'address', type: 'address' },
     ],
     stateMutability: 'nonpayable',
@@ -43,8 +43,8 @@ export const auctionAbi = [
   {
     type: 'function',
     inputs: [
-      { name: 'bidAmount', internalType: 'uint256', type: 'uint256' },
-      { name: 'merkleProof', internalType: 'bytes32[]', type: 'bytes32[]' },
+      { name: '_bidAmount', internalType: 'uint256', type: 'uint256' },
+      { name: '_merkleProof', internalType: 'bytes32[]', type: 'bytes32[]' },
     ],
     name: 'bid',
     outputs: [],
@@ -60,7 +60,7 @@ export const auctionAbi = [
   {
     type: 'function',
     inputs: [
-      { name: 'merkleProof', internalType: 'bytes32[]', type: 'bytes32[]' },
+      { name: '_merkleProof', internalType: 'bytes32[]', type: 'bytes32[]' },
       { name: '_address', internalType: 'address', type: 'address' },
       { name: '_root', internalType: 'bytes32', type: 'bytes32' },
     ],
@@ -85,13 +85,6 @@ export const auctionAbi = [
   {
     type: 'function',
     inputs: [],
-    name: 'erc721Address',
-    outputs: [{ name: '', internalType: 'contract IGlitch', type: 'address' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
     name: 'firstTierMerkleRoot',
     outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
     stateMutability: 'view',
@@ -103,7 +96,7 @@ export const auctionAbi = [
     outputs: [
       {
         name: '',
-        internalType: 'struct Config',
+        internalType: 'struct GlitchAuction.Config',
         type: 'tuple',
         components: [
           { name: 'startTime', internalType: 'uint256', type: 'uint256' },
@@ -141,8 +134,8 @@ export const auctionAbi = [
     type: 'function',
     inputs: [
       {
-        name: 'discountType',
-        internalType: 'enum DiscountType',
+        name: '_discountType',
+        internalType: 'enum GlitchAuction.DiscountType',
         type: 'uint8',
       },
     ],
@@ -157,19 +150,26 @@ export const auctionAbi = [
     outputs: [
       {
         name: '',
-        internalType: 'struct Bid[10]',
-        type: 'tuple[10]',
+        internalType: 'struct GlitchAuction.Bid[50]',
+        type: 'tuple[50]',
         components: [
           { name: 'bidder', internalType: 'address', type: 'address' },
           { name: 'amount', internalType: 'uint256', type: 'uint256' },
           {
             name: 'discountType',
-            internalType: 'enum DiscountType',
+            internalType: 'enum GlitchAuction.DiscountType',
             type: 'uint8',
           },
         ],
       },
     ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'glitchAddress',
+    outputs: [{ name: '', internalType: 'contract IGlitch', type: 'address' }],
     stateMutability: 'view',
   },
   {
@@ -202,13 +202,6 @@ export const auctionAbi = [
   },
   {
     type: 'function',
-    inputs: [],
-    name: 'secondTierMerkleRoot',
-    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
     inputs: [
       { name: '_startTime', internalType: 'uint256', type: 'uint256' },
       { name: '_endTime', internalType: 'uint256', type: 'uint256' },
@@ -226,8 +219,16 @@ export const auctionAbi = [
   {
     type: 'function',
     inputs: [
+      { name: '_glitchAddress', internalType: 'address', type: 'address' },
+    ],
+    name: 'setGlitchAddress',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
       { name: '_firstTierRoot', internalType: 'bytes32', type: 'bytes32' },
-      { name: '_secondTierRoot', internalType: 'bytes32', type: 'bytes32' },
     ],
     name: 'setMerkleRoots',
     outputs: [],
@@ -235,7 +236,7 @@ export const auctionAbi = [
   },
   {
     type: 'function',
-    inputs: [{ name: 'newWallet', internalType: 'address', type: 'address' }],
+    inputs: [{ name: '_newWallet', internalType: 'address', type: 'address' }],
     name: 'setTreasuryWallet',
     outputs: [],
     stateMutability: 'nonpayable',
@@ -249,7 +250,7 @@ export const auctionAbi = [
       { name: 'amount', internalType: 'uint256', type: 'uint256' },
       {
         name: 'discountType',
-        internalType: 'enum DiscountType',
+        internalType: 'enum GlitchAuction.DiscountType',
         type: 'uint8',
       },
     ],
@@ -313,6 +314,26 @@ export const auctionAbi = [
     type: 'event',
     anonymous: false,
     inputs: [
+      { name: 'to', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'nftAmount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'refundAmount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'Claimed',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
       {
         name: 'bidder',
         internalType: 'address',
@@ -332,7 +353,7 @@ export const auctionAbi = [
         indexed: false,
       },
     ],
-    name: 'Outbid',
+    name: 'Outbidded',
   },
   {
     type: 'event',
@@ -379,9 +400,21 @@ export const auctionAbi = [
     ],
     name: 'Unpaused',
   },
+  {
+    type: 'error',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'AddressInsufficientBalance',
+  },
+  { type: 'error', inputs: [], name: 'AlreadyClaimed' },
+  { type: 'error', inputs: [], name: 'AuctionNotEnded' },
+  { type: 'error', inputs: [], name: 'BidDoesNotQualifyForTopBids' },
+  { type: 'error', inputs: [], name: 'BidTooLow' },
   { type: 'error', inputs: [], name: 'ConfigNotSet' },
   { type: 'error', inputs: [], name: 'EnforcedPause' },
   { type: 'error', inputs: [], name: 'ExpectedPause' },
+  { type: 'error', inputs: [], name: 'FailedInnerCall' },
+  { type: 'error', inputs: [], name: 'InsufficientFundsForBid' },
+  { type: 'error', inputs: [], name: 'InvalidAddress' },
   { type: 'error', inputs: [], name: 'InvalidAmountInWei' },
   { type: 'error', inputs: [], name: 'InvalidMinBidIncrementValue' },
   {
@@ -392,6 +425,7 @@ export const auctionAbi = [
     ],
     name: 'InvalidStartEndTime',
   },
+  { type: 'error', inputs: [], name: 'OnlyOwner' },
   {
     type: 'error',
     inputs: [{ name: 'owner', internalType: 'address', type: 'address' }],
@@ -403,10 +437,11 @@ export const auctionAbi = [
     name: 'OwnableUnauthorizedAccount',
   },
   { type: 'error', inputs: [], name: 'ReentrancyGuardReentrantCall' },
+  { type: 'error', inputs: [], name: 'TransferFailed' },
 ] as const
 
 export const auctionAddress =
-  '0x63653E2dBb4F010825fD886a4E27a919aAF5A12F' as const
+  '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512' as const
 
 export const auctionConfig = {
   address: auctionAddress,
@@ -454,13 +489,6 @@ export const glitchAbi = [
     name: 'baseURI',
     outputs: [{ name: '', internalType: 'string', type: 'string' }],
     stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'tokenId', internalType: 'uint256', type: 'uint256' }],
-    name: 'burn',
-    outputs: [],
-    stateMutability: 'nonpayable',
   },
   {
     type: 'function',
@@ -691,7 +719,7 @@ export const glitchAbi = [
     inputs: [],
     name: 'totalSupply',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'pure',
+    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -855,6 +883,25 @@ export const glitchAbi = [
     type: 'event',
     anonymous: false,
     inputs: [
+      {
+        name: 'tokenId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'refresherAddress',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'TokenRefreshed',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
       { name: 'from', internalType: 'address', type: 'address', indexed: true },
       { name: 'to', internalType: 'address', type: 'address', indexed: true },
       {
@@ -865,6 +912,11 @@ export const glitchAbi = [
       },
     ],
     name: 'Transfer',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'AddressInsufficientBalance',
   },
   { type: 'error', inputs: [], name: 'ERC721EnumerableForbiddenBatchMint' },
   {
@@ -922,6 +974,13 @@ export const glitchAbi = [
     ],
     name: 'ERC721OutOfBoundsIndex',
   },
+  { type: 'error', inputs: [], name: 'FailedInnerCall' },
+  { type: 'error', inputs: [], name: 'IdOutOfBounds' },
+  { type: 'error', inputs: [], name: 'InvalidPrice' },
+  { type: 'error', inputs: [], name: 'NotEnoughETH' },
+  { type: 'error', inputs: [], name: 'OnlyMinter' },
+  { type: 'error', inputs: [], name: 'OnlyOwner' },
+  { type: 'error', inputs: [], name: 'OnlyTokenOwner' },
   {
     type: 'error',
     inputs: [{ name: 'owner', internalType: 'address', type: 'address' }],
@@ -933,10 +992,11 @@ export const glitchAbi = [
     name: 'OwnableUnauthorizedAccount',
   },
   { type: 'error', inputs: [], name: 'ReentrancyGuardReentrantCall' },
+  { type: 'error', inputs: [], name: 'ZeroAddress' },
 ] as const
 
 export const glitchAddress =
-  '0xA0852eB72B856DF132679E389c2B789557f51d08' as const
+  '0x5FbDB2315678afecb367f032d93F642f64180aa3' as const
 
 export const glitchConfig = { address: glitchAddress, abi: glitchAbi } as const
 
@@ -987,15 +1047,6 @@ export const useReadAuctionClaimed = /*#__PURE__*/ createUseReadContract({
   abi: auctionAbi,
   address: auctionAddress,
   functionName: 'claimed',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"erc721Address"`
- */
-export const useReadAuctionErc721Address = /*#__PURE__*/ createUseReadContract({
-  abi: auctionAbi,
-  address: auctionAddress,
-  functionName: 'erc721Address',
 })
 
 /**
@@ -1056,6 +1107,15 @@ export const useReadAuctionGetTopBids = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"glitchAddress"`
+ */
+export const useReadAuctionGlitchAddress = /*#__PURE__*/ createUseReadContract({
+  abi: auctionAbi,
+  address: auctionAddress,
+  functionName: 'glitchAddress',
+})
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"owner"`
  */
 export const useReadAuctionOwner = /*#__PURE__*/ createUseReadContract({
@@ -1072,16 +1132,6 @@ export const useReadAuctionPaused = /*#__PURE__*/ createUseReadContract({
   address: auctionAddress,
   functionName: 'paused',
 })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"secondTierMerkleRoot"`
- */
-export const useReadAuctionSecondTierMerkleRoot =
-  /*#__PURE__*/ createUseReadContract({
-    abi: auctionAbi,
-    address: auctionAddress,
-    functionName: 'secondTierMerkleRoot',
-  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"topBids"`
@@ -1171,6 +1221,16 @@ export const useWriteAuctionSetConfig = /*#__PURE__*/ createUseWriteContract({
   address: auctionAddress,
   functionName: 'setConfig',
 })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"setGlitchAddress"`
+ */
+export const useWriteAuctionSetGlitchAddress =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: auctionAbi,
+    address: auctionAddress,
+    functionName: 'setGlitchAddress',
+  })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"setMerkleRoots"`
@@ -1287,6 +1347,16 @@ export const useSimulateAuctionSetConfig =
   })
 
 /**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"setGlitchAddress"`
+ */
+export const useSimulateAuctionSetGlitchAddress =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: auctionAbi,
+    address: auctionAddress,
+    functionName: 'setGlitchAddress',
+  })
+
+/**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"setMerkleRoots"`
  */
 export const useSimulateAuctionSetMerkleRoots =
@@ -1355,13 +1425,23 @@ export const useWatchAuctionBidPlacedEvent =
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link auctionAbi}__ and `eventName` set to `"Outbid"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link auctionAbi}__ and `eventName` set to `"Claimed"`
  */
-export const useWatchAuctionOutbidEvent =
+export const useWatchAuctionClaimedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: auctionAbi,
     address: auctionAddress,
-    eventName: 'Outbid',
+    eventName: 'Claimed',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link auctionAbi}__ and `eventName` set to `"Outbidded"`
+ */
+export const useWatchAuctionOutbiddedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: auctionAbi,
+    address: auctionAddress,
+    eventName: 'Outbidded',
   })
 
 /**
@@ -1587,15 +1667,6 @@ export const useWriteGlitchApprove = /*#__PURE__*/ createUseWriteContract({
 })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"burn"`
- */
-export const useWriteGlitchBurn = /*#__PURE__*/ createUseWriteContract({
-  abi: glitchAbi,
-  address: glitchAddress,
-  functionName: 'burn',
-})
-
-/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"burnToReedem"`
  */
 export const useWriteGlitchBurnToReedem = /*#__PURE__*/ createUseWriteContract({
@@ -1724,15 +1795,6 @@ export const useSimulateGlitch = /*#__PURE__*/ createUseSimulateContract({
 export const useSimulateGlitchApprove = /*#__PURE__*/ createUseSimulateContract(
   { abi: glitchAbi, address: glitchAddress, functionName: 'approve' },
 )
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"burn"`
- */
-export const useSimulateGlitchBurn = /*#__PURE__*/ createUseSimulateContract({
-  abi: glitchAbi,
-  address: glitchAddress,
-  functionName: 'burn',
-})
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"burnToReedem"`
@@ -1932,6 +1994,16 @@ export const useWatchGlitchOwnershipTransferredEvent =
   })
 
 /**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link glitchAbi}__ and `eventName` set to `"TokenRefreshed"`
+ */
+export const useWatchGlitchTokenRefreshedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: glitchAbi,
+    address: glitchAddress,
+    eventName: 'TokenRefreshed',
+  })
+
+/**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link glitchAbi}__ and `eventName` set to `"Transfer"`
  */
 export const useWatchGlitchTransferEvent =
@@ -1990,15 +2062,6 @@ export const readAuctionClaimed = /*#__PURE__*/ createReadContract({
 })
 
 /**
- * Wraps __{@link readContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"erc721Address"`
- */
-export const readAuctionErc721Address = /*#__PURE__*/ createReadContract({
-  abi: auctionAbi,
-  address: auctionAddress,
-  functionName: 'erc721Address',
-})
-
-/**
  * Wraps __{@link readContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"firstTierMerkleRoot"`
  */
 export const readAuctionFirstTierMerkleRoot = /*#__PURE__*/ createReadContract({
@@ -2054,6 +2117,15 @@ export const readAuctionGetTopBids = /*#__PURE__*/ createReadContract({
 })
 
 /**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"glitchAddress"`
+ */
+export const readAuctionGlitchAddress = /*#__PURE__*/ createReadContract({
+  abi: auctionAbi,
+  address: auctionAddress,
+  functionName: 'glitchAddress',
+})
+
+/**
  * Wraps __{@link readContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"owner"`
  */
 export const readAuctionOwner = /*#__PURE__*/ createReadContract({
@@ -2070,17 +2142,6 @@ export const readAuctionPaused = /*#__PURE__*/ createReadContract({
   address: auctionAddress,
   functionName: 'paused',
 })
-
-/**
- * Wraps __{@link readContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"secondTierMerkleRoot"`
- */
-export const readAuctionSecondTierMerkleRoot = /*#__PURE__*/ createReadContract(
-  {
-    abi: auctionAbi,
-    address: auctionAddress,
-    functionName: 'secondTierMerkleRoot',
-  },
-)
 
 /**
  * Wraps __{@link readContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"topBids"`
@@ -2171,6 +2232,15 @@ export const writeAuctionSetConfig = /*#__PURE__*/ createWriteContract({
   abi: auctionAbi,
   address: auctionAddress,
   functionName: 'setConfig',
+})
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"setGlitchAddress"`
+ */
+export const writeAuctionSetGlitchAddress = /*#__PURE__*/ createWriteContract({
+  abi: auctionAbi,
+  address: auctionAddress,
+  functionName: 'setGlitchAddress',
 })
 
 /**
@@ -2283,6 +2353,16 @@ export const simulateAuctionSetConfig = /*#__PURE__*/ createSimulateContract({
 })
 
 /**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"setGlitchAddress"`
+ */
+export const simulateAuctionSetGlitchAddress =
+  /*#__PURE__*/ createSimulateContract({
+    abi: auctionAbi,
+    address: auctionAddress,
+    functionName: 'setGlitchAddress',
+  })
+
+/**
  * Wraps __{@link simulateContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"setMerkleRoots"`
  */
 export const simulateAuctionSetMerkleRoots =
@@ -2349,13 +2429,23 @@ export const watchAuctionBidPlacedEvent =
   })
 
 /**
- * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link auctionAbi}__ and `eventName` set to `"Outbid"`
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link auctionAbi}__ and `eventName` set to `"Claimed"`
  */
-export const watchAuctionOutbidEvent = /*#__PURE__*/ createWatchContractEvent({
+export const watchAuctionClaimedEvent = /*#__PURE__*/ createWatchContractEvent({
   abi: auctionAbi,
   address: auctionAddress,
-  eventName: 'Outbid',
+  eventName: 'Claimed',
 })
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link auctionAbi}__ and `eventName` set to `"Outbidded"`
+ */
+export const watchAuctionOutbiddedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: auctionAbi,
+    address: auctionAddress,
+    eventName: 'Outbidded',
+  })
 
 /**
  * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link auctionAbi}__ and `eventName` set to `"OwnershipTransferred"`
@@ -2573,15 +2663,6 @@ export const writeGlitchApprove = /*#__PURE__*/ createWriteContract({
 })
 
 /**
- * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"burn"`
- */
-export const writeGlitchBurn = /*#__PURE__*/ createWriteContract({
-  abi: glitchAbi,
-  address: glitchAddress,
-  functionName: 'burn',
-})
-
-/**
  * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"burnToReedem"`
  */
 export const writeGlitchBurnToReedem = /*#__PURE__*/ createWriteContract({
@@ -2707,15 +2788,6 @@ export const simulateGlitchApprove = /*#__PURE__*/ createSimulateContract({
   abi: glitchAbi,
   address: glitchAddress,
   functionName: 'approve',
-})
-
-/**
- * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"burn"`
- */
-export const simulateGlitchBurn = /*#__PURE__*/ createSimulateContract({
-  abi: glitchAbi,
-  address: glitchAddress,
-  functionName: 'burn',
 })
 
 /**
@@ -2906,6 +2978,16 @@ export const watchGlitchOwnershipTransferredEvent =
     abi: glitchAbi,
     address: glitchAddress,
     eventName: 'OwnershipTransferred',
+  })
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link glitchAbi}__ and `eventName` set to `"TokenRefreshed"`
+ */
+export const watchGlitchTokenRefreshedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: glitchAbi,
+    address: glitchAddress,
+    eventName: 'TokenRefreshed',
   })
 
 /**

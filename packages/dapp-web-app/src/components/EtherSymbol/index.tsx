@@ -1,6 +1,6 @@
-import { Text } from '@chakra-ui/react'
-export const EtherSymbol = () => (
-  <Text as={'span'} fontSize={'10px'}>
+import { Text, TextProps } from '@chakra-ui/react'
+export const EtherSymbol = (props: TextProps) => (
+  <Text as={'span'} fontSize={'10px'} {...props}>
     Ξ
   </Text>
 )

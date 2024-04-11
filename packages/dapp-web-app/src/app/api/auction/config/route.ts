@@ -16,4 +16,4 @@ export async function GET() {
   return Response.json({ ...auctionConfig })
 }
 
-export const revalidate = 60
+export const revalidate = 1
