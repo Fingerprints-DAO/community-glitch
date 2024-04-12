@@ -441,7 +441,7 @@ export const auctionAbi = [
 ] as const
 
 export const auctionAddress =
-  '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512' as const
+  '0x63653E2dBb4F010825fD886a4E27a919aAF5A12F' as const
 
 export const auctionConfig = {
   address: auctionAddress,
@@ -996,7 +996,7 @@ export const glitchAbi = [
 ] as const
 
 export const glitchAddress =
-  '0x5FbDB2315678afecb367f032d93F642f64180aa3' as const
+  '0xA0852eB72B856DF132679E389c2B789557f51d08' as const
 
 export const glitchConfig = { address: glitchAddress, abi: glitchAbi } as const
 

@@ -7,9 +7,13 @@ export const wagmiPlainConfig = {
   // Your dApps chains
   chains: [getChain()],
   transports: {
-    [mainnet.id]: http(),
+    [mainnet.id]: http(
+      `https://mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_PROVIDER_KEY}`,
+      { batch: true },
+    ),
     [sepolia.id]: http(
       `https://sepolia.infura.io/v3/${process.env.NEXT_PUBLIC_PROVIDER_KEY}`,
+      { batch: true },
     ),
     [hardhat.id]: http(),
   },

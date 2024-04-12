@@ -28,7 +28,7 @@ const TokenPreview = ({
   )
 
   if (!divisor || isLoading || version === '') {
-    return <Skeleton w={'full'} h={'80vh'} rounded={0} />
+    return <Skeleton w={'full'} h={'20px'} rounded={0} />
   }
   return (
     <Box
