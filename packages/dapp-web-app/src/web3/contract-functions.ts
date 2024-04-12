@@ -441,7 +441,7 @@ export const auctionAbi = [
 ] as const
 
 export const auctionAddress =
-  '0x63653E2dBb4F010825fD886a4E27a919aAF5A12F' as const
+  '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512' as const
 
 export const auctionConfig = {
   address: auctionAddress,
@@ -481,13 +481,6 @@ export const glitchAbi = [
     inputs: [{ name: 'owner', internalType: 'address', type: 'address' }],
     name: 'balanceOf',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'baseURI',
-    outputs: [{ name: '', internalType: 'string', type: 'string' }],
     stateMutability: 'view',
   },
   {
@@ -996,7 +989,7 @@ export const glitchAbi = [
 ] as const
 
 export const glitchAddress =
-  '0xA0852eB72B856DF132679E389c2B789557f51d08' as const
+  '0x5FbDB2315678afecb367f032d93F642f64180aa3' as const
 
 export const glitchConfig = { address: glitchAddress, abi: glitchAbi } as const
 
@@ -1489,15 +1482,6 @@ export const useReadGlitchBalanceOf = /*#__PURE__*/ createUseReadContract({
   abi: glitchAbi,
   address: glitchAddress,
   functionName: 'balanceOf',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"baseURI"`
- */
-export const useReadGlitchBaseUri = /*#__PURE__*/ createUseReadContract({
-  abi: glitchAbi,
-  address: glitchAddress,
-  functionName: 'baseURI',
 })
 
 /**
@@ -2488,15 +2472,6 @@ export const readGlitchBalanceOf = /*#__PURE__*/ createReadContract({
   abi: glitchAbi,
   address: glitchAddress,
   functionName: 'balanceOf',
-})
-
-/**
- * Wraps __{@link readContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"baseURI"`
- */
-export const readGlitchBaseUri = /*#__PURE__*/ createReadContract({
-  abi: glitchAbi,
-  address: glitchAddress,
-  functionName: 'baseURI',
 })
 
 /**

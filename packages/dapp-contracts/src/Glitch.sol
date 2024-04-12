@@ -81,10 +81,10 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
   }
 
   uint16 private constant MAX_SUPPLY = 50; /// @notice The maximum number of tokens that can be minted.
+  string private baseURI; /// @notice The base URI of the contract.
   uint256 public refreshTokenPrice = 0.025 ether; /// @notice The price of a refresh token.
   address public minterContractAddress; /// @notice The address of the minter contract.
   address payable public fundsReceiverAddress; /// @notice The address of the funds receiver.
-  string public baseURI; /// @notice The base URI of the contract.
   mapping(uint256 tokenId => TokenVersion version) private _tokenVersionMap; /// @notice The version of each token.
 
   /**
@@ -93,7 +93,11 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
    * @param _minterContractAddress The address of the minter contract
    * @param _baseUri The base URI of the contract
    */
-  constructor(address initialOwner, address _minterContractAddress, string memory _baseUri) ERC721('glitch', 'GLT') Ownable(initialOwner) {
+  constructor(
+    address initialOwner,
+    address _minterContractAddress,
+    string memory _baseUri
+  ) ERC721('glitch by misha de ridder', 'GLITCH') Ownable(initialOwner) {
     baseURI = _baseUri;
     minterContractAddress = _minterContractAddress;
     fundsReceiverAddress = payable(initialOwner);

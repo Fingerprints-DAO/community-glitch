@@ -47,9 +47,6 @@ contract GlitchTest is PRBTest, StdCheats {
     glitch.mint(msg.sender, 1);
     glitch.setBaseURI(baseURI);
 
-    // Assert
-    assertEq(glitch.baseURI(), baseURI, 'Base URI not set correctly');
-
     // assert if tokenURI containes baseURI
     string memory tokenURI = glitch.tokenURI(1);
     assertEq(tokenURI, string(abi.encodePacked(baseURI, 'A/1')), 'Token URI does not contain base URI');
