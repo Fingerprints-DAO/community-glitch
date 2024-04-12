@@ -186,7 +186,7 @@ export default function About() {
         <LineSpace />
         assembly [info@assembly.art]
         <LineSpace />
-        misha de ridder [misha@mishaderidder.xyz]
+        misha de ridder [mail@mishaderidder.com]
       </Section>
 
       <Section title="Frequently asked questions">

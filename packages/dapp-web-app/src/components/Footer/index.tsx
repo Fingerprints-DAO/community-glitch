@@ -39,6 +39,15 @@ const Footer = () => {
             >
               fingerprints dao
             </Box>
+            , in collaboration with{' '}
+            <Box
+              as="a"
+              href="https://assembly.art/"
+              target="_blank"
+              _hover={{ textDecor: 'underline' }}
+            >
+              assembly
+            </Box>
           </Text>{' '}
           <Text fontSize="xs" flex={1} mb={[2, 0]} mt={2}>
             developed by{' '}

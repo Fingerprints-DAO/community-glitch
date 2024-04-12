@@ -8,6 +8,7 @@ const nav = [
   { href: '/about', label: 'about', isDisabled: false },
   { href: '/one-one-auction', label: '1/1 auction', isDisabled: false },
   { href: '/mint-edition', label: 'mint edition', isDisabled: false },
+  { href: '/about#prints', label: 'print claim', isDisabled: false },
 ]
 
 const NavItem = ({ item, isActive }: { item: any; isActive: boolean }) => {
