@@ -1,8 +1,9 @@
 import { Box, Flex, Skeleton, useBreakpointValue } from '@chakra-ui/react'
 import ChakraNextImageLoader from 'components/ChakraNextImageLoader'
+import { useAuctionContext } from 'contexts/AuctionContext'
 import { tokens } from 'data/tokens'
 import Link from 'next/link'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { getSmallTokenPath } from 'utils/tokens'
 import { useReadGlitchGetAllTokensVersion } from 'web3/contract-functions'
 
@@ -55,6 +56,7 @@ const TokenPreview = ({
   )
 }
 export const ArtGrid = () => {
+  const { burnedTokensIds, isLoadingBurnedCall } = useAuctionContext()
   const { data: tokensVersion = [], isLoading } =
     useReadGlitchGetAllTokensVersion()
   const tokensVersionByIndex: TokensVersionByIndexType = useMemo(
@@ -77,14 +79,17 @@ export const ArtGrid = () => {
       justifyContent={'flex-start'}
       alignContent={'flex-start'}
     >
-      {randomTokens.map((token) => (
-        <TokenPreview
-          key={token.id}
-          token={token}
-          version={tokensVersionByIndex[token.id] ?? ''}
-          isLoading={isLoading}
-        />
-      ))}
+      {randomTokens.map(
+        (token) =>
+          !burnedTokensIds.includes(token.id) && (
+            <TokenPreview
+              key={token.id}
+              token={token}
+              version={tokensVersionByIndex[token.id] ?? ''}
+              isLoading={isLoading || isLoadingBurnedCall}
+            />
+          ),
+      )}
     </Flex>
   )
 }

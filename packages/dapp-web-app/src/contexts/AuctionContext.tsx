@@ -9,15 +9,19 @@ import React, {
 import {
   defaultAuctionConfigDayJs,
   handleAuctionConfigToDayJs,
+  handleBurnedTokens,
   HandledAuctionConfig,
   HandledAuctionConfigToDayJs,
 } from 'app/one-one-auction/data-handler'
 import { AuctionData, AuctionState } from 'types/auction'
+import { useBoolean } from '@chakra-ui/react'
 
 export const AuctionContext = createContext<
   HandledAuctionConfigToDayJs &
     AuctionData & {
       auctionState: AuctionState
+      burnedTokensIds: number[]
+      isLoadingBurnedCall: boolean
     }
 >({
   startTime: dayjs(),
@@ -28,6 +32,8 @@ export const AuctionContext = createContext<
   minted: 0n,
   maxSupply: 0n,
   auctionState: AuctionState.NOT_STARTED,
+  burnedTokensIds: [],
+  isLoadingBurnedCall: true,
 })
 
 export const useAuctionContext = () => useContext(AuctionContext)
@@ -60,6 +66,9 @@ export const AuctionProvider = ({
   const [config, setConfig] = useState<HandledAuctionConfigToDayJs>(
     defaultAuctionConfigDayJs,
   )
+  const [burnedTokensIds, setBurnedTokensIds] = useState<number[]>([])
+  const [isLoadingBurnedCall, setIsLoadingBurnedCall] = useBoolean(true)
+
   // Add useState for auctionState
   const [auctionState, setAuctionState] = useState<AuctionState>(
     AuctionState.IDLE,
@@ -67,11 +76,27 @@ export const AuctionProvider = ({
   const intervalRef = useRef<NodeJS.Timeout>()
 
   useEffect(() => {
+    async function fetchBurnedTokens() {
+      try {
+        const tokensBurned = (await fetch('/api/tokens/burned').then((res) =>
+          res.json(),
+        )) as ReturnType<typeof handleBurnedTokens>
+
+        setBurnedTokensIds(tokensBurned)
+      } catch (e) {
+        console.log(e)
+      }
+      setIsLoadingBurnedCall.off()
+    }
+    fetchBurnedTokens()
+  }, [setIsLoadingBurnedCall])
+
+  useEffect(() => {
     async function fetchData() {
       try {
-        const config = (await fetch('/api/auction/config', {
-          next: { revalidate: 60 },
-        }).then((res) => res.json())) as HandledAuctionConfig
+        const config = (await fetch('/api/auction/config').then((res) =>
+          res.json(),
+        )) as HandledAuctionConfig
 
         if (!config) throw new Error('Config not found')
         setConfig(handleAuctionConfigToDayJs(config))
@@ -122,6 +147,8 @@ export const AuctionProvider = ({
         minted: 50n,
         maxSupply: 50n,
         auctionState,
+        burnedTokensIds,
+        isLoadingBurnedCall,
       }}
     >
       {children}

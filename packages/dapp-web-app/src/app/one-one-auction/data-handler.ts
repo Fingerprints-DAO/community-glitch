@@ -1,11 +1,8 @@
 import dayjs from 'dayjs'
 import { formatEther } from 'ethers'
 import { AuctionConfig, BidLogsType } from 'types/auction'
-import {
-  readAuctionGetTopBids,
-  readAuctionTopBids,
-  useReadAuctionGetTopBids,
-} from 'web3/contract-functions'
+import { readAuctionGetTopBids } from 'web3/contract-functions'
+import { getBurnedTokens } from 'web3/logs'
 
 export const handleAuctionConfig = (config: AuctionConfig) => {
   return {
@@ -65,4 +62,17 @@ export const filterMyBids = (
 
 export const orderBidsByAmount = (bids: BidLogsType = []) => {
   return bids.sort((a, b) => Number(b.args.amount) - Number(a.args.amount))
+}
+
+export const handleBurnedTokens = (
+  eventResponse: Awaited<ReturnType<typeof getBurnedTokens>>,
+) => {
+  if (!eventResponse || eventResponse.length < 1) return []
+
+  return eventResponse.reduce((acc: number[], event) => {
+    if (!event.args.tokenId) return acc
+    const tokenId = Number(event.args.tokenId)
+    if (acc.includes(tokenId)) return acc
+    return [...acc, tokenId]
+  }, [])
 }

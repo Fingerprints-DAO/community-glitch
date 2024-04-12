@@ -14,9 +14,10 @@ import {
 import useTxToast from 'hooks/use-tx-toast'
 import { useEffect, useState } from 'react'
 import { useWaitForTransactionReceipt } from 'wagmi'
+import { redirect } from 'next/navigation'
 import { useWriteGlitchBurnToReedem } from 'web3/contract-functions'
 
-export const BurnModal = ({ id }: { id: string }) => {
+export const BurnModal = ({ id }: { id: number }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [code, setCode] = useState<number>()
   const [isMobile] = useMediaQuery('(max-width: 1023px)')
@@ -40,7 +41,7 @@ export const BurnModal = ({ id }: { id: string }) => {
       {
         onSuccess: (data) => {
           showTxSentToast('burn-sent', data)
-          setCode(0)
+          onClose()
         },
         onError: (error) => {
           showTxErrorToast(error ?? `Tx could not be sent`)
@@ -52,7 +53,7 @@ export const BurnModal = ({ id }: { id: string }) => {
   useEffect(() => {
     if (burn.data && burnTx.isSuccess) {
       showTxExecutedToast({ id: 'burn-executed', txHash: burn.data })
-      window.location.reload()
+      redirect('/')
     }
     if (burn.data && burnTx.isError)
       showTxErrorToast(burnTx?.failureReason ?? `Tx failed`)
@@ -109,20 +110,19 @@ export const BurnModal = ({ id }: { id: string }) => {
                 Once you send the transaction to burn the token, it can not be
                 reversed, refunded or returned.
               </Text>
-              {!burn.data && !burnTx.isPending && (
-                <Input
-                  placeholder={'Insert the code here'}
-                  size={'md'}
-                  colorScheme="blackAlpha"
-                  type="number"
-                  onChange={handleChange}
-                  value={code}
-                  textAlign={'left'}
-                  mt={6}
-                  maxLength={8}
-                  required
-                />
-              )}
+              <Input
+                placeholder={'Insert the code here'}
+                size={'md'}
+                colorScheme="blackAlpha"
+                type="number"
+                onChange={handleChange}
+                value={code}
+                textAlign={'left'}
+                mt={6}
+                maxLength={8}
+                required
+                isDisabled={burn.data && burnTx.isPending}
+              />
             </Box>
             <ModalFooter gap={4} px={0} pt={8}>
               <Button
