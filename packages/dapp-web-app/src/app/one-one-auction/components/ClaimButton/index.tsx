@@ -90,7 +90,7 @@ export const ClaimButton = ({
       <Button
         w={'full'}
         isDisabled={alreadyClaimed || claimAll.isPending}
-        isLoading={claimAll.isPending}
+        isLoading={claimAll.isPending || claimAllTx.isLoading}
         onClick={onClick}
       >
         {alreadyClaimed ? 'claimed' : 'claim all'}
