@@ -157,7 +157,7 @@ export default function Auction() {
                   </ListItem>
                   <ListItem>
                     <Text as={'span'} fontWeight={'bold'}>
-                      Minimun increase bid:
+                      Minimum increase bid:
                     </Text>{' '}
                     <Text as={'span'}>0.005 ETH</Text>
                   </ListItem>

@@ -79,7 +79,7 @@ export default function About() {
         graffiti, inserting liminal afterimages of what was once there: faces,
         text, and indecipherable symbols. The result is a series of images that
         blur the lines between abstract painting, photography, animation, and
-        token art. glitch meditates on the idea of “unwanted information,”—the
+        token art. glitch meditates on the idea of “unwanted information,” — the
         delineation between messages that are wanted, seen, and proliferated,
         and those that are not. Like memes for the public space, graffiti is a
         subversive, spontaneous form of communication meant for the masses.
@@ -108,9 +108,9 @@ export default function About() {
         <LineSpace />
         misha de ridder entered crypto space in 2020. He started out with NFT on
         Foundation and &#x27;hic et nunc&#x27;. Among his celebrated drops are
-        &#x27;high up close by&#x27; 2021 on Foundation in collaboration with
+        &#x27;high up close by&#x27; in 2021 on Foundation in collaboration with
         Assembly Curated and &#x27;generative by nature&#x27; in 2022 on a
-        self-build marketplace on Tezos. In 2023 he released a fun and ironic
+        self-build marketplace on Tezos. In 2023, he released a fun and ironic
         edition &#x27;grass&#x27; on Optimism.
         <LineSpace />
         de ridder is an active member of several DAOs and web3 communities like
@@ -121,7 +121,7 @@ export default function About() {
         <SubSection title="1/1 auction">
           Ranked auction with rebate
           <LineSpace />
-          Thursday, April 25 at 1 PM EDT / 7pm CEST
+          April 25, 2024 at 1:00 p.m. ET / 7:00 p.m. CET
           <br />
           0.06
           <EtherSymbol /> starting bid
@@ -129,7 +129,7 @@ export default function About() {
         </SubSection>
         <LineSpace />
         <SubSection title="edition mint">
-          Sunday, April 28 at 1 PM EDT / 7pm CEST
+          April 28, 2024 1:00 p.m. ET / 7:00 p.m. CET
           <br />
           0.03
           <EtherSymbol /> fixed price
@@ -139,8 +139,8 @@ export default function About() {
           become available, representing various mosaics of the full collection
           in randomized order. These images will slowly degrade as more editions
           are minted, until the last 10 editions in the series are left
-          completely blank. The edition mint will close on Sunday, May 5 at 1PM
-          EDT / 7pm CEST.
+          completely blank. The edition mint will close on May 5, 2024 11:59
+          p.m. ET / May 6, 5:59 a.m. CET.
           <LineSpace />
           Members of partner communities and collectors of select works by misha
           de ridder will be granted a 15% discount at mint for both the 1/1
@@ -167,10 +167,10 @@ export default function About() {
       </Section>
       <Section title="dynamic token mechanics">
         All 50 1 of 1s in the series are designed to degrade with each secondary
-        market trade or transfer to another wallet. The token’s traits, title
-        and token ID always remain except when you burn the token for a print.
-        Anyone can pay a small amount to refresh the token, restoring it to its
-        original state on the website glitch.mishaderidder.xyz.
+        market trade or transfer to another wallet. The token&apos;s traits,
+        title and token ID always remain except when you burn the token for a
+        print. Anyone can pay a small amount to refresh the token, restoring it
+        to its original state on the website glitch.mishaderidder.com.
         <LineSpace />
         1. The initial collector receives an original photo with liminal
         animation as GIF-file.

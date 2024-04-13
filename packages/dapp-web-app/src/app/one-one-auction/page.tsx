@@ -127,7 +127,7 @@ export default function Auction() {
           <Flex flexDir={'column'} gap={10}>
             <Box as="section">
               <Text as={'h1'} fontSize={'4xl'}>
-                1/1 edition
+                1/1 auction
               </Text>
               <Text>ranked auction with rebate</Text>
             </Box>
@@ -139,7 +139,7 @@ export default function Auction() {
                       Start date:
                     </Text>{' '}
                     <Text as={'span'}>
-                      April 18, 2024 at 10:00 a.m. PT / 01:00 p.m. ET
+                      Thursday, April 25 at 1 PM EDT / 7pm CEST
                     </Text>
                   </ListItem>
                   <ListItem>
@@ -147,7 +147,7 @@ export default function Auction() {
                       End date:
                     </Text>{' '}
                     <Text as={'span'}>
-                      April 18, 2024 at 11:00 a.m. PT / 02:00 p.m. ET
+                      Sunday, April 28 at 1 PM EDT / 7pm CEST
                     </Text>
                   </ListItem>
                   <ListItem>
@@ -158,7 +158,7 @@ export default function Auction() {
                   </ListItem>
                   <ListItem>
                     <Text as={'span'} fontWeight={'bold'}>
-                      Minimun increase bid:
+                      Minimum increase bid:
                     </Text>{' '}
                     <Text as={'span'}>0.005 ETH</Text>
                   </ListItem>
@@ -167,12 +167,6 @@ export default function Auction() {
                       Supply:
                     </Text>{' '}
                     <Text as={'span'}>50 artworks</Text>
-                  </ListItem>
-                  <ListItem>
-                    <Text as={'span'} fontWeight={'bold'}>
-                      Creator’s fee:
-                    </Text>{' '}
-                    <Text as={'span'}>5%</Text>
                   </ListItem>
                   <ListItem>
                     <Text as={'span'} fontWeight={'bold'}>
@@ -199,7 +193,7 @@ export default function Auction() {
               </TextSection>
               <SubTextSection title="Overview">
                 <Text>
-                  Overview The top 50 bids will secure a unique piece of art. We
+                  The top 50 bids will secure a unique piece of art. We
                   encourage our collectors to engage actively, as there is no
                   limit to the number of bids you can place. Additionally, the
                   more you bid, the higher your chances of winning multiple
@@ -228,8 +222,8 @@ export default function Auction() {
                 <Text>
                   At the conclusion of the auction, non-winning participants are
                   eligible to claim a full refund of their bid amounts. This
-                  process is straightforward and ensures that if you don’t win,
-                  you can retrieve your investment without any hassle.
+                  process is straightforward and ensures that if you don&apos;t
+                  win, you can retrieve your investment without any hassle.
                 </Text>
               </SubTextSection>
               <Text fontSize={'sm'} mt={10}>

@@ -58,7 +58,7 @@ export const AuctionSidebar = () => {
   const [bidAmount, setBidAmount] = useState('')
   const publicClient = usePublicClient()
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { data: minimunBid, refetch: refetchMinimumBid } =
+  const { data: minimumBid, refetch: refetchMinimumBid } =
     useReadAuctionGetMinimumBid()
   const { countdownInMili } = useCountdownTime()
   const { topBids, myBids, refetchBids } = useGetTopBids()
@@ -217,7 +217,7 @@ export const AuctionSidebar = () => {
                       Ξ
                     </InputLeftAddon>
                     <Input
-                      placeholder={`${formatToEtherStringBN(minimunBid)} or more`}
+                      placeholder={`${formatToEtherStringBN(minimumBid)} or more`}
                       size={'md'}
                       colorScheme="blackAlpha"
                       type="number"
@@ -233,7 +233,7 @@ export const AuctionSidebar = () => {
                     isDisabled={
                       bid.isPending ||
                       Number(bidAmount) <
-                        Number(formatToEtherStringBN(minimunBid))
+                        Number(formatToEtherStringBN(minimumBid))
                     }
                     isLoading={bid.isPending}
                   >
@@ -245,15 +245,15 @@ export const AuctionSidebar = () => {
                   fontSize={'sm'}
                   as={'div'}
                   onClick={() =>
-                    setBidAmount(formatToEtherStringBN(minimunBid))
+                    setBidAmount(formatToEtherStringBN(minimumBid))
                   }
                   _hover={{ cursor: 'pointer' }}
                 >
-                  minimun bid is{' '}
+                  minimum bid is{' '}
                   <Text fontSize={'9px'} as={'span'}>
                     Ξ
                   </Text>
-                  {formatToEtherStringBN(minimunBid)}
+                  {formatToEtherStringBN(minimumBid)}
                   <InfoTooltip
                     label="Bid at least this amount to be in top 50 and be able to mint"
                     iconProps={{ mt: '-1px', ml: 1 }}

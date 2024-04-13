@@ -27,7 +27,7 @@ import { redirect } from 'next/navigation'
 import { ReactNode } from 'react'
 import { getExternalOpenseaUrl } from 'utils/getLink'
 import { formatToEtherStringBN } from 'utils/price'
-import { getSmallTokenPath } from 'utils/tokens'
+import { getFullTokenPath, getSmallTokenPath } from 'utils/tokens'
 import { useAccount } from 'wagmi'
 import {
   glitchAddress,
@@ -102,16 +102,23 @@ export default function Token({ id }: { id?: number }) {
             flex={!version || version === 'D' ? 3 : ''}
           >
             {version && version !== 'D' && (
-              <ChakraNextImageLoader
-                src={getSmallTokenPath(token.filename, version)}
-                alt={`${token.name}`}
-                imageWidth={token.width}
-                imageHeight={token.height}
-                imageProps={{
-                  priority: true,
-                  unoptimized: true,
-                }}
-              />
+              <ChakraLink
+                as={Link}
+                target="_blank"
+                href={getFullTokenPath(token.filename, version)}
+                display={'block'}
+              >
+                <ChakraNextImageLoader
+                  src={getSmallTokenPath(token.filename, version)}
+                  alt={`${token.name}`}
+                  imageWidth={token.width}
+                  imageHeight={token.height}
+                  imageProps={{
+                    priority: true,
+                    unoptimized: true,
+                  }}
+                />
+              </ChakraLink>
             )}
           </Flex>
           <Flex flexDir={'column'} alignItems={'flex-start'} flex={9} gap={10}>
@@ -119,7 +126,7 @@ export default function Token({ id }: { id?: number }) {
               <Heading as={'h1'} p={0} fontSize={'2xl'}>
                 {token.name}
               </Heading>
-              <Heading as={'h2'} fontSize={'md'} p={0}>
+              <Box fontSize={'md'} p={0}>
                 <ChakraLink
                   as={Link}
                   target="_blank"
@@ -127,20 +134,21 @@ export default function Token({ id }: { id?: number }) {
                     glitchAddress,
                     token.id.toString(),
                   )}
+                  display={'block'}
                 >
                   buy on opensea
                 </ChakraLink>
-                <ChakraLink
-                  as={Link}
-                  target="_blank"
-                  href={getExternalOpenseaUrl(
-                    glitchAddress,
-                    token.id.toString(),
-                  )}
-                >
-                  see full art
-                </ChakraLink>
-              </Heading>
+                {version && (
+                  <ChakraLink
+                    as={Link}
+                    target="_blank"
+                    href={getFullTokenPath(token.filename, version)}
+                    display={'block'}
+                  >
+                    view actual size
+                  </ChakraLink>
+                )}
+              </Box>
             </header>
             <section>
               <Heading as={'h3'} fontSize={'lg'} fontWeight={'bold'} pt={0}>
