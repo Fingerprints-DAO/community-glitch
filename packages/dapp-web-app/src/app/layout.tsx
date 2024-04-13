@@ -8,8 +8,9 @@ import duration from 'dayjs/plugin/duration'
 import Providers from 'contexts/providers'
 
 export const metadata: Metadata = {
-  title: 'glitch by misha de ridder & fingerprints dao',
-  description: 'description',
+  title: 'glitch by misha de ridder',
+  description:
+    'dynamic art project about erasure and finding the generative in the real. released by fingerprints dao, in collaboration with assembly, 2024',
 }
 
 dayjs.extend(utc)
