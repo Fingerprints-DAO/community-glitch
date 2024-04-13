@@ -86,7 +86,7 @@ async function createJsonFiles() {
       if (dir !== 'A') {
         content = {
           ...content,
-          image: dir === 'D' ? '' : content.image,
+          image: dir === 'D' ? `${imagePath}empty.png` : content.image,
           attributes: [
             { trait_type: 'seconds', value: '0' },
             {
