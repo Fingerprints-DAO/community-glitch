@@ -1,18 +1,8 @@
 'use client'
 import { getDefaultConfig } from 'connectkit'
-import { createConfig } from 'wagmi'
+import { createConfig, createStorage, noopStorage } from 'wagmi'
 import { wagmiPlainConfig } from './wagmiConfig'
-
-// const walletConnectProjectId = '5e9390a7f8281ac44f6cf4348e74bdc5'
-
-// export const config = createConfig({
-//   chains: [getChain()],
-//   transports: {
-//     [mainnet.id]: http(),
-//     [sepolia.id]: http(),
-//     [hardhat.id]: http(),
-//   },
-// })
+import { getChainId } from 'utils/chain'
 
 export const config = createConfig(
   getDefaultConfig({
@@ -24,30 +14,16 @@ export const config = createConfig(
 
     // Required App Info
     appName: 'glitch',
+
+    storage: createStorage({
+      storage:
+        typeof window !== 'undefined' && window.localStorage
+          ? window.localStorage
+          : noopStorage,
+      key: `wagmi-store-${getChainId()}`,
+    }),
   }),
 )
-
-// const { chains } = configureChains(selectedChain, [
-//   infuraProvider({ apiKey: process.env.NEXT_PUBLIC_PROVIDER_KEY || '' }),
-//   jsonRpcProvider({
-//     rpc: (chain) => {
-//       if (chain.id === sepolia.id) return null
-//       return {
-//         http: chain.rpcUrls.default.http[0],
-//       }
-//     },
-//   }),
-// ])
-
-// export const config = createConfig(
-//   getDefaultConfig({
-//     autoConnect: true,
-//     appName: 'My wagmi + ConnectKit App',
-//     walletConnectProjectId,
-//     infuraId: process.env.NEXT_PUBLIC_PROVIDER_KEY,
-//     chains,
-//   })
-// )
 
 declare module 'wagmi' {
   interface Register {

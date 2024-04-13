@@ -7,8 +7,7 @@ import { SiOpensea } from 'react-icons/si'
 import { SiEthereum } from 'react-icons/si'
 // import { lineAddress } from 'services/web3/generated'
 import { getExternalEtherscanUrl, getExternalOpenseaUrl } from 'utils/getLink'
-
-const glitchAddress = null
+import { glitchAddress } from 'web3/contract-functions'
 
 const Footer = () => {
   return (

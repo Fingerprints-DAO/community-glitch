@@ -78,16 +78,20 @@ export const AuctionProvider = ({
   useEffect(() => {
     async function fetchBurnedTokens() {
       try {
+        setIsLoadingBurnedCall.on()
         const tokensBurned = (await fetch('/api/tokens/burned').then((res) =>
           res.json(),
         )) as ReturnType<typeof handleBurnedTokens>
 
         setBurnedTokensIds(tokensBurned)
+        setIsLoadingBurnedCall.off()
       } catch (e) {
-        console.log(e)
+        console.log('Error getting burned tokens', e)
+        setIsLoadingBurnedCall.off()
       }
-      setIsLoadingBurnedCall.off()
     }
+
+    if (!setIsLoadingBurnedCall) return
     fetchBurnedTokens()
   }, [setIsLoadingBurnedCall])
 
@@ -101,7 +105,7 @@ export const AuctionProvider = ({
         if (!config) throw new Error('Config not found')
         setConfig(handleAuctionConfigToDayJs(config))
       } catch (e) {
-        console.log(e)
+        console.log('Error getting config', e)
       }
     }
     fetchData()
