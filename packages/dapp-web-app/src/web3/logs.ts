@@ -13,6 +13,7 @@ export async function getBurnedTokens() {
     ...glitchConfig,
     eventName: 'Burned',
     fromBlock: BigInt(auctionContract.startBlock),
+    toBlock: 'latest',
   })
   const logs = await client.getFilterLogs({ filter })
   return logs

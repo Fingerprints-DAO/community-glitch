@@ -107,6 +107,7 @@ export const AuctionSidebar = () => {
         ...auctionConfig,
         eventName: 'Outbidded',
         fromBlock: BigInt(auctionContract.startBlock),
+        toBlock: 'latest',
         args: {
           bidder: userAccount.address,
         },
@@ -125,6 +126,7 @@ export const AuctionSidebar = () => {
         ...auctionConfig,
         eventName: 'BidPlaced',
         fromBlock: BigInt(auctionContract.startBlock),
+        toBlock: 'latest',
       })
       const bids = await publicClient.getFilterLogs({ filter })
       setAllBids(bids as BidLogsType)
