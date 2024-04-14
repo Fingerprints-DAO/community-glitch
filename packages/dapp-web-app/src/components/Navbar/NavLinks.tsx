@@ -1,4 +1,13 @@
-import { Grid, GridItem, Flex, Box, Text, GridProps } from '@chakra-ui/react'
+import {
+  Grid,
+  GridItem,
+  Flex,
+  Box,
+  Text,
+  GridProps,
+  Button,
+} from '@chakra-ui/react'
+import { TextToltip } from 'components/TextTooltip'
 import Wallet from 'components/Wallet'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -6,9 +15,19 @@ import { useAccount } from 'wagmi'
 
 const nav = [
   { href: '/about', label: 'about', isDisabled: false },
-  { href: '/one-one-auction', label: '1/1 auction', isDisabled: false },
-  { href: '/mint-edition', label: 'mint edition', isDisabled: false },
   { href: '/about#prints', label: 'print claim', isDisabled: false },
+  {
+    href: '/one-one-auction',
+    label: '1/1 auction',
+    isDisabled: true,
+    tooltip: 'starts on April 25, 2024 at 1:00 p.m. ET / 7:00 p.m. CET',
+  },
+  {
+    href: '/mint-edition',
+    label: 'mint edition',
+    isDisabled: true,
+    tooltip: 'starts on Sunday, April 28 at 1 PM EDT / 7pm CEST',
+  },
 ]
 
 const NavItem = ({ item, isActive }: { item: any; isActive: boolean }) => {
@@ -16,21 +35,23 @@ const NavItem = ({ item, isActive }: { item: any; isActive: boolean }) => {
     <Box
       as={Link}
       href={item.href}
-      title={item.label}
+      // title={item.label}
       mr={0}
       ml={{ base: 0, sm: 6 }}
       _hover={{
         color: item.isDisabled ? 'gray.300' : 'gray.900',
-        cursor: item.isDisabled ? 'not-allowed' : 'pointer',
+        cursor: 'pointer',
       }}
       color={item.isDisabled ? 'gray.300' : isActive ? 'gray.900' : 'gray.500'}
       transition="ease"
       transitionProperty="color"
       transitionDuration="0.2s"
     >
-      <Text as="strong" fontSize="14px" lineHeight={'14px'}>
-        {item.label}
-      </Text>
+      <TextToltip label={item.tooltip} isDisabled={!item.tooltip}>
+        <Text as="strong" fontSize="14px" lineHeight={'14px'}>
+          {item.label}
+        </Text>
+      </TextToltip>
     </Box>
   )
 }
@@ -64,7 +85,16 @@ export const NavLinks = (props: GridProps) => {
               isActive={false}
             />
           ) : null}
-          <Wallet buttonWidth={'auto'} ml={{ base: 0, sm: 6 }} />
+          {/* <Wallet buttonWidth={'auto'} ml={{ base: 0, sm: 6 }} /> */}
+          <Button
+            ml={{ base: 0, sm: 6 }}
+            onClick={() => {}}
+            variant={'outline'}
+            fontWeight={'normal'}
+            size={'xs'}
+          >
+            add to calendar
+          </Button>
         </Flex>
       </GridItem>
     </Grid>

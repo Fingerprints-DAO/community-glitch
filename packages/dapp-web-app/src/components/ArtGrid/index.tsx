@@ -57,8 +57,11 @@ const TokenPreview = ({
 }
 export const ArtGrid = () => {
   const { burnedTokensIds, isLoadingBurnedCall } = useAuctionContext()
-  const { data: tokensVersion = [], isLoading } =
-    useReadGlitchGetAllTokensVersion()
+  const {
+    data: tokensVersion = [],
+    isLoading,
+    isError,
+  } = useReadGlitchGetAllTokensVersion()
   const tokensVersionByIndex: TokensVersionByIndexType = useMemo(
     () =>
       tokensVersion.reduce(
@@ -85,7 +88,7 @@ export const ArtGrid = () => {
             <TokenPreview
               key={token.id}
               token={token}
-              version={tokensVersionByIndex[token.id] ?? ''}
+              version={isError ? 'A' : tokensVersionByIndex[token.id] ?? ''}
               isLoading={isLoading || isLoadingBurnedCall}
             />
           ),
