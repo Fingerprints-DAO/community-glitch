@@ -1,0 +1,42 @@
+{
+  "name": "resist persist exist",
+  "background_color": "ffffff",
+  "image": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/empty.png",
+  "external_url": "https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app",
+  "description": "glitch by misha de ridder, released by Fingerprints, is a collection of 50 animated GIFs, stemming from photographs of erased graffiti. The act of erasing can involve both destruction and generation, transformation and reimagination—allowing for new possibilities to emerge.\n\nPlaying with notions of loss and re-coding, misha has re-animated the graffiti, inserting liminal afterimages of what was once there: faces, text, and indecipherable symbols. The result is a series of images that blur the lines between abstract painting, photography, animation, and token art. glitch meditates on the idea of “unwanted information,”—the delineation between messages that are wanted, seen, and proliferated, and those that are not. Like memes for the public space, graffiti is a subversive, spontaneous form of communication meant for the masses.\n\nAs a commentary on secondary market dynamics, misha has also introduced a twist: each time a token is traded, the artwork changes. On the first trade, the animation vanishes. Subsequent trades cause the image to fade, until eventually, the token points to a blank placeholder. \n\nCollectors can pay to restore the image to the minted original, or choose to burn the token to redeem it for a limited edition, physical fine art print through a collaboration with Assembly.",
+  "attributes": [
+    {
+      "trait_type": "seconds",
+      "value": "0"
+    },
+    {
+      "trait_type": "frames",
+      "value": "0"
+    },
+    {
+      "trait_type": "face",
+      "value": "false",
+      "display_type": "boolean"
+    },
+    {
+      "trait_type": "text",
+      "value": "false",
+      "display_type": "boolean"
+    },
+    {
+      "trait_type": "symbol",
+      "value": "false",
+      "display_type": "boolean"
+    },
+    {
+      "trait_type": "love",
+      "value": "false",
+      "display_type": "boolean"
+    },
+    {
+      "trait_type": "decay",
+      "value": "100%",
+      "display_type": "boost_number"
+    }
+  ]
+}

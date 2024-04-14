@@ -2,16 +2,22 @@
   "1": {
     "Glitch": "0xc49d27c4a520a71ff899de7aca9fb56794bb0f1e",
     "GlitchAuction": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+    "startBlock": 5630818,
+    "endBlock": 10000000,
     "chainId": 1
   },
   "31337": {
-    "Glitch": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
-    "GlitchAuction": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+    "Glitch": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+    "GlitchAuction": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+    "startBlock": 0,
+    "endBlock": 10000000,
     "chainId": 31337
   },
   "11155111": {
-    "Glitch": "0xd3a2373276b23396c70abd7061bd6a5e69b1e5db",
-    "GlitchAuction": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+    "Glitch": "0x6606d5C9E23dbE93eaf22287A2c3C67b22Bb37D5",
+    "GlitchAuction": "0x2E924a9B80feE0620ba07F871bBB1BfD2741F988",
+    "startBlock": 5684055,
+    "endBlock": 10000000,
     "chainId": 11155111
   }
 }

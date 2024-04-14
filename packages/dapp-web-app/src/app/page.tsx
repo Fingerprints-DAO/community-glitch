@@ -2,11 +2,14 @@
 
 import FullPageTemplate from 'components/Templates/FullPage'
 import ArtGrid from 'components/ArtGrid'
+import { AuctionProvider } from 'contexts/AuctionContext'
 
 export default function Home() {
   return (
     <FullPageTemplate>
-      <ArtGrid />
+      <AuctionProvider>
+        <ArtGrid />
+      </AuctionProvider>
     </FullPageTemplate>
   )
 }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity >=0.8.23 <0.9.0;
+pragma solidity 0.8.23;
 
 import {PRBTest} from '@prb/test/src/PRBTest.sol';
 import {console2} from 'forge-std/src/console2.sol';
@@ -8,7 +8,7 @@ import {stdError} from 'forge-std/src/stdError.sol';
 import {ERC721} from '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import {IERC721Errors} from '@openzeppelin/contracts/interfaces/draft-IERC6093.sol';
 
-import {Glitch, TokenVersion} from '../../../src/Glitch.sol';
+import {Glitch} from '../../../src/Glitch.sol';
 
 contract GlitchTest is PRBTest, StdCheats {
   Glitch internal glitch;
@@ -18,7 +18,7 @@ contract GlitchTest is PRBTest, StdCheats {
     // Instantiate the contract-under-test.
     glitch = new Glitch(address(this), address(this), 'https://google.com/');
   }
-  function tokenVersionToString(TokenVersion version) public pure returns (string memory) {
+  function tokenVersionToString(Glitch.TokenVersion version) public pure returns (string memory) {
     return string(abi.encodePacked(version));
   }
 
@@ -46,9 +46,6 @@ contract GlitchTest is PRBTest, StdCheats {
     // Act
     glitch.mint(msg.sender, 1);
     glitch.setBaseURI(baseURI);
-
-    // Assert
-    assertEq(glitch.baseURI(), baseURI, 'Base URI not set correctly');
 
     // assert if tokenURI containes baseURI
     string memory tokenURI = glitch.tokenURI(1);

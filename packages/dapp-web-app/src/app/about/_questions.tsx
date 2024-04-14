@@ -1,162 +1,141 @@
 import { Box, Link as ChakraLink } from '@chakra-ui/react'
 import Link from 'next/link'
 
+const LineSpace = () => (
+  <>
+    <br />
+    <br />
+  </>
+)
+
 export const questions = [
   {
-    question: 'When is the auction?',
+    question:
+      'How will the Ranked auction with rebate work for the 1/1s? Can I choose which piece from the auction I want to bid on?',
     answer: (
       <>
-        The <b>60-minute Dutch auction</b> for glitch begins on{' '}
-        <b>Wednesday, February 21st at 10AM PT / 1PM ET / 7PM CET</b>. The
-        auction will take place on this website. If works are still available at
-        the end of the Dutch auction, minting will be open for 48 hours at the
-        resting price.
+        You cannot select a specific piece to bid on.
+        <LineSpace />
+        This is a ranked auction, meaning all collectors are bidding on all
+        pieces. When the auction ends, each collector will be assigned a token
+        id according to their position on bid ranking (The highest bidder gets
+        #1 and the lowest one in the 50 bids get #50)
+        <LineSpace />
+        You can bid as many times as you’d like. Each bid will be positioned in
+        the ranking.
       </>
     ),
   },
   {
-    question: 'How much will it cost to mint one?',
+    question: 'How do I exchange my 1/1 glitch work for a print?',
     answer: (
       <>
-        The Dutch auction will have a{' '}
-        <b>starting price of 1.0 ETH, going down to 0.15 ETH.</b>
+        Assembly will offer large scale museum quality fine art prints for
+        collectors who choose to burn their 1/1 token to purchase a physical
+        print.
+        <LineSpace />
+        All prints are produced on Canson Rag Photographique 310gsm paper with
+        Canon Lucia Pro ink, and come in 40 x 50 / 40 x 60 in. sizes, based on
+        the image aspect ratio. Print redemption costs $3,000, which can be paid
+        in USDC or other crypto.
+        <LineSpace />
+        To burn and redeem your token for a print go to the page of the token
+        you want to burn. A burn-to-print button will be displayed when you are
+        the owner. When clicked, it will display a modal informing you of the
+        step-by-step process to make it happen.
       </>
     ),
-  },
-  {
-    question: 'How will the auction work?',
-    answer: (
-      <>
-        The Dutch auction is first come, first served. Collectors can choose to
-        mint specific tokens or mint random ones. Tokens will be minted as soon
-        as a bid is placed. Note that there will not be rebates. However,
-        allowlisted wallets will be eligible for a discount at the time of mint.
-      </>
-    ),
-  },
-  {
-    question: 'Can I mint multiple tokens?',
-    answer: 'Yes, you can mint up to 5 at a time.',
-  },
-  {
-    question: 'What is the collection size?',
-    answer: (
-      <>
-        A total of <b>250 tokens</b> will be available for mint. If the
-        collection does not mint out after the auction or 48-hour minting
-        period, the remaining tokens will not get minted.
-      </>
-    ),
-  },
-  {
-    question: 'What chain is glitch on?',
-    answer: 'glitch will live on Ethereum Mainnet.',
-  },
-]
-export const auctionQuestions = [
-  {
-    question: 'How is the grid structured?',
-    answer: (
-      <>
-        The collection is structured on a grid with coordinates. There is an
-        image for every coordinate on the grid.
-      </>
-    ),
-  },
-  {
-    question: 'What is a token and how do they function on the grid?',
-    answer: (
-      <>
-        Tokens consist of an origin point and images in its “field of view.”
-        Their placement on the grid determines what they can see. The artist
-        hand-picked all initial origin points. Note that there are fewer tokens
-        than coordinates.
-      </>
-    ),
-  },
-  {
-    question: 'What will my field of view look like?',
-    answer: (
-      <>
-        Fields of view are unique, but they may overlap with others. They are
-        defined by the 625 photographs of the 25 x 25 grid. A specific
-        coordinate can only be occupied by one token at a time. Images cycle
-        daily per token. A full image cycle takes 10 days for a normal token and
-        16 days for a &ldquo;star&rdquo; token.
-      </>
-    ),
-  },
-  {
-    question: `What should I do during the Discovery phase before the auction?`,
-    answer: (
-      <>
-        During the discovery phase, you can explore the grid by moving a token
-        freely along different paths to reveal images in the landscape.
-        It&rsquo;s important to take note of which coordinates you prefer to
-        mint. You can restart the exploration as many times as you wish to
-        discover new fields of view. Once the auction begins, you&rsquo;re
-        encouraged to mint the tokens you like as quickly as possible before
-        they are minted by someone else. Visit the &ldquo;Playground&rdquo;{' '}
-        <ChakraLink as={Link} href="/">
-          here
-        </ChakraLink>
-        .
-      </>
-    ),
-  },
-  {
-    question: 'Can I move a token to a new coordinate during the auction?',
-    answer:
-      'You will not be able to move the token to a new coordinate until the collection mints out, or at the end of the 48-hour minting period.',
-  },
-  {
-    question: 'What happens at the end of the auction?',
-    answer: (
-      <>
-        Collectors can move their tokens to new coordinates on the grid after
-        the collection mints out, or at the end of the 48-hour minting period. A
-        token&apos;s origin point is the anchor of its field of view. When a
-        collector moves a token, they move the origin point. Collectors can move
-        around and discover the entire grid of images/the synthetic landscape.
-      </>
-    ),
-  },
-  {
-    question: 'What determines the movements a token can make on the grid?',
-    answer: (
-      <>
-        Tokens are pieces; they can go up or down, diagonally or laterally; they
-        simulate a 180-degree field of view. Tokens minted below the middle
-        glitch face up (red) while tokens minted above face down (blue), some
-        tokens face up, others down.
-      </>
-    ),
-  },
-  {
-    question: 'How can I move my token to a new coordinate?',
-    answer: (
-      <>
-        Tokens can be moved on the grid, on this website, or by using simple
-        smart-contract functions; their movements are limited, and they cannot
-        move on a coordinate that is already used by another.
-      </>
-    ),
-  },
-  {
-    question: 'Do I have to pay anything to move my token?',
-    answer:
-      'Movements are free. Yet, the only cost is the gas fees associated with the move function.',
   },
   {
     question:
-      'How can I get a special “star” token with a 360-degree field of view?',
+      'Can I burn to exchange a 1/1 glitch work for a print even if it is blank?',
+    answer: <>Yes.</>,
+  },
+]
+export const allowListQuestions = [
+  {
+    question: 'How will the allowlist work?',
+    answer:
+      'Members of partner communities and collectors of select works by misha de ridder will be granted a 15% discount at mint for both the 1/1 auction and the edition mint.',
+  },
+  {
+    question:
+      'If I am on the allowlist, do I have a discount on both the 1/1 auction and the editioned mints for glitch?',
     answer: (
       <>
-        The first 25 tokens to reach the upper or lower borders of the grid can
-        use a special function that will allow them to choose to relocate to any
-        coordinate on the grid they want. Their token&apos;s field of view will
-        change to become a full 360-degree. If they decide to do so, their
-        position will be locked down, and they cannot move anymore.
+        Yes. Allowlist discounts are valid for both parts of the minting process
+        for glitch.
+      </>
+    ),
+  },
+  {
+    question: 'When do allowlist sign ups close?',
+    answer:
+      'We will take a snapshot 24 hours before the 1/1 auction begins for collectors who want to bid in the 1/1 ranked auction with rebate. ',
+  },
+]
+
+export const printsQuestions = [
+  {
+    question:
+      'I collected a 1 of 1. How do I acquire a physical print from Assembly?',
+    answer: (
+      <>
+        Assembly will offer large scale museum quality fine art prints for
+        collectors who choose to burn their 1/1 token to purchase a physical
+        print. To burn a 1/1 token and acquire a physical print go to the page
+        of the specific token you&#39;d like to burn. You can only acquire a
+        print for the specific art work you own.
+        <LineSpace />
+        All prints are produced on Canson Rag Photographique 310gsm paper with
+        Canon Lucia Pro ink, and come in 40 x 50 / 40 x 60 in. sizes, based on
+        the image aspect ratio. Print redemption costs $3,000, which can be paid
+        in USDC or crypto. Prints include a signed label and certificate of
+        authenticity from the artist.
+        <LineSpace />
+        On the token page, a burn-to-print button will be displayed when the
+        user is the owner. When clicked, it will display a modal informing you
+        of the step-by-step process to make it happen. Fill out the form to
+        provide contact and shipping information. Please include all information
+        requested to assure a smooth process.
+        <LineSpace />
+        After receiving your information, Assembly will send you a payment
+        request. After payment you will receive a code for Assembly. Go back to
+        the token page and use the burn-to-print button to start the token
+        burning process filling in the code. After you burn your token Assembly
+        will produce and ship your unique print.
+      </>
+    ),
+  },
+  {
+    question: 'What are the mechanics for the fading of the 510 editions?',
+    answer: (
+      <>
+        1 - 10 are full
+        <LineSpace />
+        11 - 110 / lose 1 animation in steps of 10 - so minus 10 animations{' '}
+        <br />
+        101 - 210 / lose 4 animations in steps of 10 - so minus 40 animations
+        <br />
+        now animations are all gone
+        <LineSpace />
+        201 - 310 / 1 image fades 50% in steps of 10 - so 10 fade 50%
+        <br />
+        301 - 410 / 4 images fade in steps of 10 - so 40 fade 50%
+        <br />
+        now all are faded 50%
+        <LineSpace />
+        410 - 510 / 6 images become blank in steps of 10 - last 10 will be fully
+        blank
+      </>
+    ),
+  },
+  {
+    question: 'Can I restore one of the 510 editions to a full image?',
+    answer: (
+      <>
+        No. Paying to refresh will only be valid for the 1/1 pieces in{' '}
+        <i>glitch</i>
       </>
     ),
   },

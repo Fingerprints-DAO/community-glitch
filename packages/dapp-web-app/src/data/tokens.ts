@@ -1,8 +1,8 @@
 export const tokens = [
   {
-    id: 0,
+    id: 1,
     name: 'amnesia breeds repetition',
-    filename: 'amnesia-breeds-repetition.gif',
+    filename: 'amnesia-breeds-repetition',
     width: 1920,
     height: 2400,
     metadata: {
@@ -16,9 +16,9 @@ export const tokens = [
     },
   },
   {
-    id: 1,
+    id: 2,
     name: 'blossoms reclaim concrete',
-    filename: 'blossoms-reclaim-concrete.gif',
+    filename: 'blossoms-reclaim-concrete',
     width: 2400,
     height: 1920,
     metadata: {
@@ -32,9 +32,9 @@ export const tokens = [
     },
   },
   {
-    id: 2,
+    id: 3,
     name: 'blue memories fade',
-    filename: 'blue-memories-fade.gif',
+    filename: 'blue-memories-fade',
     width: 1920,
     height: 2400,
     metadata: {
@@ -48,9 +48,9 @@ export const tokens = [
     },
   },
   {
-    id: 3,
+    id: 4,
     name: 'create with pain',
-    filename: 'create-with-pain.gif',
+    filename: 'create-with-pain',
     width: 1600,
     height: 2400,
     metadata: {
@@ -64,9 +64,9 @@ export const tokens = [
     },
   },
   {
-    id: 4,
+    id: 5,
     name: 'dark words stain',
-    filename: 'dark-words-stain.gif',
+    filename: 'dark-words-stain',
     width: 1600,
     height: 2400,
     metadata: {
@@ -80,9 +80,9 @@ export const tokens = [
     },
   },
   {
-    id: 5,
+    id: 6,
     name: 'defy ooze obliterate',
-    filename: 'defy-ooze-obliterate.gif',
+    filename: 'defy-ooze-obliterate',
     width: 2400,
     height: 1920,
     metadata: {
@@ -96,9 +96,9 @@ export const tokens = [
     },
   },
   {
-    id: 6,
+    id: 7,
     name: 'delete dull minds',
-    filename: 'delete-dull-minds.gif',
+    filename: 'delete-dull-minds',
     width: 2400,
     height: 1920,
     metadata: {
@@ -112,9 +112,9 @@ export const tokens = [
     },
   },
   {
-    id: 7,
+    id: 8,
     name: 'devil bets lose',
-    filename: 'devil-bets-lose.gif',
+    filename: 'devil-bets-lose',
     width: 1600,
     height: 2400,
     metadata: {
@@ -128,9 +128,9 @@ export const tokens = [
     },
   },
   {
-    id: 8,
+    id: 9,
     name: 'eat the rich',
-    filename: 'eat-the-rich.gif',
+    filename: 'eat-the-rich',
     width: 2400,
     height: 1920,
     metadata: {
@@ -144,9 +144,9 @@ export const tokens = [
     },
   },
   {
-    id: 9,
+    id: 10,
     name: 'embrace illuminate resist',
-    filename: 'embrace-illuminate-resist.gif',
+    filename: 'embrace-illuminate-resist',
     width: 2400,
     height: 1920,
     metadata: {
@@ -160,9 +160,9 @@ export const tokens = [
     },
   },
   {
-    id: 10,
+    id: 11,
     name: 'embrace olive diversity',
-    filename: 'embrace-olive-diversity.gif',
+    filename: 'embrace-olive-diversity',
     width: 1600,
     height: 2400,
     metadata: {
@@ -176,9 +176,9 @@ export const tokens = [
     },
   },
   {
-    id: 11,
+    id: 12,
     name: 'end is near',
-    filename: 'end-is-near.gif',
+    filename: 'end-is-near',
     width: 2400,
     height: 1920,
     metadata: {
@@ -192,9 +192,9 @@ export const tokens = [
     },
   },
   {
-    id: 12,
+    id: 13,
     name: 'eyes wide awake',
-    filename: 'eyes-wide-awake.gif',
+    filename: 'eyes-wide-awake',
     width: 2400,
     height: 1920,
     metadata: {
@@ -208,9 +208,9 @@ export const tokens = [
     },
   },
   {
-    id: 13,
+    id: 14,
     name: 'fades fangs vanish',
-    filename: 'fades-fangs-vanish.gif',
+    filename: 'fades-fangs-vanish',
     width: 2400,
     height: 1920,
     metadata: {
@@ -224,9 +224,9 @@ export const tokens = [
     },
   },
   {
-    id: 14,
+    id: 15,
     name: 'fading pain canvas',
-    filename: 'fading-pain-canvas.gif',
+    filename: 'fading-pain-canvas',
     width: 1920,
     height: 2400,
     metadata: {
@@ -240,9 +240,9 @@ export const tokens = [
     },
   },
   {
-    id: 15,
+    id: 16,
     name: 'forget me not',
-    filename: 'forget-me-not.gif',
+    filename: 'forget-me-not',
     width: 1600,
     height: 2400,
     metadata: {
@@ -256,9 +256,9 @@ export const tokens = [
     },
   },
   {
-    id: 16,
+    id: 17,
     name: 'gaps perpetuate injustice',
-    filename: 'gaps-perpetuate-injustice.gif',
+    filename: 'gaps-perpetuate-injustice',
     width: 1600,
     height: 2400,
     metadata: {
@@ -272,9 +272,9 @@ export const tokens = [
     },
   },
   {
-    id: 17,
+    id: 18,
     name: 'grind rise learn',
-    filename: 'grind-rise-learn.gif',
+    filename: 'grind-rise-learn',
     width: 2400,
     height: 1920,
     metadata: {
@@ -288,9 +288,9 @@ export const tokens = [
     },
   },
   {
-    id: 18,
+    id: 19,
     name: 'healing amidst neglect',
-    filename: 'healing-amidst-neglect.gif',
+    filename: 'healing-amidst-neglect',
     width: 2400,
     height: 1920,
     metadata: {
@@ -304,9 +304,9 @@ export const tokens = [
     },
   },
   {
-    id: 19,
+    id: 20,
     name: 'healing through abandonment',
-    filename: 'healing-through-abandonment.gif',
+    filename: 'healing-through-abandonment',
     width: 1600,
     height: 2400,
     metadata: {
@@ -320,9 +320,9 @@ export const tokens = [
     },
   },
   {
-    id: 20,
+    id: 21,
     name: 'ignorance to empathy',
-    filename: 'ignorance-to-empathy.gif',
+    filename: 'ignorance-to-empathy',
     width: 1920,
     height: 2400,
     metadata: {
@@ -336,9 +336,9 @@ export const tokens = [
     },
   },
   {
-    id: 21,
+    id: 22,
     name: 'infernal blaze unraveling',
-    filename: 'infernal-blaze-unraveling.gif',
+    filename: 'infernal-blaze-unraveling',
     width: 1920,
     height: 2400,
     metadata: {
@@ -352,9 +352,9 @@ export const tokens = [
     },
   },
   {
-    id: 22,
+    id: 23,
     name: 'joy conquers sorrow',
-    filename: 'joy-conquers-sorrow.gif',
+    filename: 'joy-conquers-sorrow',
     width: 2400,
     height: 1920,
     metadata: {
@@ -368,9 +368,9 @@ export const tokens = [
     },
   },
   {
-    id: 23,
+    id: 24,
     name: 'kill the poor',
-    filename: 'kill-the-poor.gif',
+    filename: 'kill-the-poor',
     width: 1920,
     height: 2400,
     metadata: {
@@ -384,9 +384,9 @@ export const tokens = [
     },
   },
   {
-    id: 24,
+    id: 25,
     name: 'mindful mimicry unleashed',
-    filename: 'mindful-mimicry-unleashed.gif',
+    filename: 'mindful-mimicry-unleashed',
     width: 2400,
     height: 1920,
     metadata: {
@@ -400,9 +400,9 @@ export const tokens = [
     },
   },
   {
-    id: 25,
+    id: 26,
     name: 'nights silent scream',
-    filename: 'nights-silent-scream.gif',
+    filename: 'nights-silent-scream',
     width: 2400,
     height: 1920,
     metadata: {
@@ -416,9 +416,9 @@ export const tokens = [
     },
   },
   {
-    id: 26,
+    id: 27,
     name: 'no easy solutions',
-    filename: 'no-easy-solutions.gif',
+    filename: 'no-easy-solutions',
     width: 2400,
     height: 1920,
     metadata: {
@@ -432,9 +432,9 @@ export const tokens = [
     },
   },
   {
-    id: 27,
+    id: 28,
     name: 'notes numb minds',
-    filename: 'notes-numb-minds.gif',
+    filename: 'notes-numb-minds',
     width: 1600,
     height: 1920,
     metadata: {
@@ -448,9 +448,9 @@ export const tokens = [
     },
   },
   {
-    id: 28,
+    id: 29,
     name: 'passion persists here',
-    filename: 'passion-persists-here.gif',
+    filename: 'passion-persists-here',
     width: 2400,
     height: 1920,
     metadata: {
@@ -464,9 +464,9 @@ export const tokens = [
     },
   },
   {
-    id: 29,
+    id: 30,
     name: 'preserve the untold',
-    filename: 'preserve-the-untold.gif',
+    filename: 'preserve-the-untold',
     width: 2400,
     height: 1920,
     metadata: {
@@ -480,9 +480,9 @@ export const tokens = [
     },
   },
   {
-    id: 30,
+    id: 31,
     name: 'promote positivity instead',
-    filename: 'promote-positivity-instead.gif',
+    filename: 'promote-positivity-instead',
     width: 2400,
     height: 1920,
     metadata: {
@@ -496,9 +496,9 @@ export const tokens = [
     },
   },
   {
-    id: 31,
+    id: 32,
     name: 'provocative urban expression',
-    filename: 'provocative-urban-expression.gif',
+    filename: 'provocative-urban-expression',
     width: 1920,
     height: 2400,
     metadata: {
@@ -512,9 +512,9 @@ export const tokens = [
     },
   },
   {
-    id: 32,
+    id: 33,
     name: 'purr power revolution',
-    filename: 'purr-power-revolution.gif',
+    filename: 'purr-power-revolution',
     width: 2400,
     height: 1920,
     metadata: {
@@ -528,9 +528,9 @@ export const tokens = [
     },
   },
   {
-    id: 33,
+    id: 34,
     name: 'resist persist exist',
-    filename: 'resist-persist-exist.gif',
+    filename: 'resist-persist-exist',
     width: 2400,
     height: 1920,
     metadata: {
@@ -544,9 +544,9 @@ export const tokens = [
     },
   },
   {
-    id: 34,
+    id: 35,
     name: 'saving the world',
-    filename: 'saving-the-world.gif',
+    filename: 'saving-the-world',
     width: 2400,
     height: 1920,
     metadata: {
@@ -560,9 +560,9 @@ export const tokens = [
     },
   },
   {
-    id: 35,
+    id: 36,
     name: 'sex with cops',
-    filename: 'sex-with-cops.gif',
+    filename: 'sex-with-cops',
     width: 2400,
     height: 1920,
     metadata: {
@@ -576,9 +576,9 @@ export const tokens = [
     },
   },
   {
-    id: 36,
+    id: 37,
     name: 'shadow portal escape',
-    filename: 'shadow-portal-escape.gif',
+    filename: 'shadow-portal-escape',
     width: 1920,
     height: 2400,
     metadata: {
@@ -592,9 +592,9 @@ export const tokens = [
     },
   },
   {
-    id: 37,
+    id: 38,
     name: 'silent poison spreads',
-    filename: 'silent-poison-spreads.gif',
+    filename: 'silent-poison-spreads',
     width: 1600,
     height: 2400,
     metadata: {
@@ -608,9 +608,9 @@ export const tokens = [
     },
   },
   {
-    id: 38,
+    id: 39,
     name: 'smudged heartbreak tales',
-    filename: 'smudged-heartbreak-tales.gif',
+    filename: 'smudged-heartbreak-tales',
     width: 2400,
     height: 1920,
     metadata: {
@@ -624,9 +624,9 @@ export const tokens = [
     },
   },
   {
-    id: 39,
+    id: 40,
     name: 'sow love dogma',
-    filename: 'sow-love-dogma.gif',
+    filename: 'sow-love-dogma',
     width: 1920,
     height: 2400,
     metadata: {
@@ -640,9 +640,9 @@ export const tokens = [
     },
   },
   {
-    id: 40,
+    id: 41,
     name: 'stormy hearts resist',
-    filename: 'stormy-hearts-resist.gif',
+    filename: 'stormy-hearts-resist',
     width: 1600,
     height: 2400,
     metadata: {
@@ -656,9 +656,9 @@ export const tokens = [
     },
   },
   {
-    id: 41,
+    id: 42,
     name: 'suck melting chains',
-    filename: 'suck-melting-chains.gif',
+    filename: 'suck-melting-chains',
     width: 2400,
     height: 1920,
     metadata: {
@@ -672,9 +672,9 @@ export const tokens = [
     },
   },
   {
-    id: 42,
+    id: 43,
     name: 'tears fuel art',
-    filename: 'tears-fuel-art.gif',
+    filename: 'tears-fuel-art',
     width: 1920,
     height: 2400,
     metadata: {
@@ -688,9 +688,9 @@ export const tokens = [
     },
   },
   {
-    id: 43,
+    id: 44,
     name: 'unmask forgotten triumphs',
-    filename: 'unmask-forgotten-triumphs.gif',
+    filename: 'unmask-forgotten-triumphs',
     width: 2400,
     height: 1920,
     metadata: {
@@ -704,9 +704,9 @@ export const tokens = [
     },
   },
   {
-    id: 44,
+    id: 45,
     name: 'void breeds division',
-    filename: 'void-breeds-division.gif',
+    filename: 'void-breeds-division',
     width: 1920,
     height: 2400,
     metadata: {
@@ -720,9 +720,9 @@ export const tokens = [
     },
   },
   {
-    id: 45,
+    id: 46,
     name: 'warning toxic glow',
-    filename: 'warning-toxic-glow.gif',
+    filename: 'warning-toxic-glow',
     width: 1600,
     height: 2400,
     metadata: {
@@ -736,9 +736,9 @@ export const tokens = [
     },
   },
   {
-    id: 46,
+    id: 47,
     name: 'whispers conceal truth',
-    filename: 'whispers-conceal-truth.gif',
+    filename: 'whispers-conceal-truth',
     width: 1600,
     height: 2400,
     metadata: {
@@ -752,9 +752,9 @@ export const tokens = [
     },
   },
   {
-    id: 47,
+    id: 48,
     name: 'whispers echo on',
-    filename: 'whispers-echo-on.gif',
+    filename: 'whispers-echo-on',
     width: 1920,
     height: 2400,
     metadata: {
@@ -768,9 +768,9 @@ export const tokens = [
     },
   },
   {
-    id: 48,
+    id: 49,
     name: 'whispers fade away',
-    filename: 'whispers-fade-away.gif',
+    filename: 'whispers-fade-away',
     width: 2400,
     height: 1920,
     metadata: {
@@ -784,9 +784,9 @@ export const tokens = [
     },
   },
   {
-    id: 49,
+    id: 50,
     name: 'wipe transform empower',
-    filename: 'wipe-transform-empower.gif',
+    filename: 'wipe-transform-empower',
     width: 2400,
     height: 1920,
     metadata: {

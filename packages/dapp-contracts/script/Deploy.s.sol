@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity >=0.8.23 <0.9.0;
+pragma solidity 0.8.23;
 
 import {Glitch} from '../src/Glitch.sol';
 import {GlitchAuction} from '../src/GlitchAuction.sol';
@@ -31,10 +31,27 @@ contract DeployLocal is BaseScript {
     address deployer = broadcaster;
     address minter = broadcaster;
     string memory baseURI = 'http://localhost:3000/arts/';
-    uint256 startTime = block.timestamp + 3600 * 0.5;
-    uint256 endTime = startTime + 3600 * 0.5;
-    uint256 minBidIncrementInWei = 0.01 ether;
-    uint256 startAmountInWei = 0.005 ether;
+    uint256 startTime = block.timestamp + (3600 * 0.1);
+    uint256 endTime = startTime + (3600 * 1);
+    uint256 minBidIncrementInWei = 0.005 ether;
+    uint256 startAmountInWei = 0.04 ether;
+
+    vm.startBroadcast();
+    glitch = _deployGlitch(deployer, minter, baseURI);
+    auction = _deployAuction(address(glitch), deployer, startTime, endTime, minBidIncrementInWei, startAmountInWei);
+    vm.stopBroadcast();
+  }
+}
+
+contract DeploySepolia is BaseScript {
+  function run() public returns (Glitch glitch, GlitchAuction auction) {
+    address deployer = broadcaster;
+    address minter = broadcaster;
+    string memory baseURI = 'https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/metadata/';
+    uint256 startTime = block.timestamp + (3600 * 0.5);
+    uint256 endTime = startTime + (3600 * 5);
+    uint256 minBidIncrementInWei = 0.005 ether;
+    uint256 startAmountInWei = 0.04 ether;
 
     vm.startBroadcast();
     glitch = _deployGlitch(deployer, minter, baseURI);

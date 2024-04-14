@@ -6,6 +6,14 @@ const nextConfig = {
     config.externals.push("pino-pretty")
     return config
   },
+  async rewrites() {
+    return [
+        {
+          source: '/edition/metadata/:dir/:file',
+          destination: '/edition/metadata/:dir/:file.json',
+        }
+      ]
+  }
 }
 
 module.exports = nextConfig
