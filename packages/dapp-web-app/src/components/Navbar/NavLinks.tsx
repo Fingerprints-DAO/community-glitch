@@ -88,10 +88,12 @@ export const NavLinks = (props: GridProps) => {
           {/* <Wallet buttonWidth={'auto'} ml={{ base: 0, sm: 6 }} /> */}
           <Button
             ml={{ base: 0, sm: 6 }}
-            onClick={() => {}}
+            as={Link}
             variant={'outline'}
             fontWeight={'normal'}
             size={'xs'}
+            href={'https://www.addevent.com/event/Kk21244343'}
+            target="_blank"
           >
             add to calendar
           </Button>
