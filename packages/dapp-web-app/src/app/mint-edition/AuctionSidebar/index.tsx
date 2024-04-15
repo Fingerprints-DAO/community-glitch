@@ -128,7 +128,7 @@ export const AuctionSidebar = (props: FlexProps) => {
                       end date:
                     </Text>{' '}
                     <Text as={'span'}>
-                      may 5, 2024 11:59 p.m. et / may 6, 5:59 a.m. cet
+                      may 5, 2024 11:59 p.m. edt / may 6, 5:59 a.m. cest
                     </Text>
                   </ListItem>
                   <ListItem mb={2}>
@@ -136,7 +136,7 @@ export const AuctionSidebar = (props: FlexProps) => {
                       price:
                     </Text>{' '}
                     <Text as={'span'}>
-                      0.03 <EtherSymbol />
+                      0.025 <EtherSymbol />
                     </Text>
                   </ListItem>
                   <ListItem mb={2}>

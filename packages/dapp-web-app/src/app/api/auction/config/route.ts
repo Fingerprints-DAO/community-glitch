@@ -7,7 +7,7 @@ export async function GET() {
     startTime: 1714064400,
     endTime: 1714323600,
     minBidIncrementInWei: 0.005,
-    startAmountInWei: 0.06,
+    startAmountInWei: 0.04,
   }
   if (process.env.NEXT_PUBLIC_WEB3_NETWORK === 'mainnet') {
     return Response.json({ ...auctionConfig })

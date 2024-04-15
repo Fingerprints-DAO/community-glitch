@@ -123,7 +123,7 @@ export default function About() {
           <LineSpace />
           April 25, 2024 at 1:00 p.m. ET / 7:00 p.m. CET
           <br />
-          0.06
+          0.04
           <EtherSymbol /> starting bid
           <br />3 days
         </SubSection>
@@ -131,7 +131,7 @@ export default function About() {
         <SubSection title="edition mint">
           April 28, 2024 1:00 p.m. ET / 7:00 p.m. CET
           <br />
-          0.03
+          0.025
           <EtherSymbol /> fixed price
           <br />7 days
           <LineSpace />
