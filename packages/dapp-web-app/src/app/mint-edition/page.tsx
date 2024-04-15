@@ -77,7 +77,7 @@ export default function Auction() {
           mt={8}
         >
           <Box flex={3}>
-            <DynamicArtGrid divisorOpt={{ base: 25, sm: 22, md: 30, lg: 26 }} />
+            <DynamicArtGrid divisorOpt={{ base: 45, sm: 22, md: 38, lg: 30 }} />
           </Box>
           <AuctionSidebar flex={3} />
         </Flex>
