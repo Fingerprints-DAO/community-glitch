@@ -1,6 +1,3 @@
-import { Box, Link as ChakraLink } from '@chakra-ui/react'
-import Link from 'next/link'
-
 const LineSpace = () => (
   <>
     <br />

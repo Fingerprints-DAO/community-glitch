@@ -154,7 +154,7 @@ export default function Auction() {
                       Bidding start price:
                     </Text>{' '}
                     <Text as={'span'}>
-                      0.06 <EtherSymbol />
+                      0.04 <EtherSymbol />
                     </Text>
                   </ListItem>
                   <ListItem>

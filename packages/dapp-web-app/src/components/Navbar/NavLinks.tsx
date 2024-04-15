@@ -15,7 +15,7 @@ import { useAccount } from 'wagmi'
 
 const nav = [
   { href: '/about', label: 'about', isDisabled: false },
-  { href: '/about#prints', label: 'print claim', isDisabled: false },
+  { href: '/print-claim', label: 'print claim', isDisabled: false },
   {
     href: '/one-one-auction',
     label: '1/1 auction',
