@@ -20,13 +20,11 @@ const nav = [
     href: '/one-one-auction',
     label: '1/1 auction',
     isDisabled: false,
-    // tooltip: 'starts on April 25, 2024 at 1:00 p.m. ET / 7:00 p.m. CET',
   },
   {
     href: '/mint-edition',
     label: 'mint edition',
     isDisabled: false,
-    // tooltip: 'starts on Sunday, April 28 at 1 PM EDT / 7pm CEST',
   },
 ]
 
@@ -85,18 +83,7 @@ export const NavLinks = (props: GridProps) => {
               isActive={false}
             />
           ) : null}
-          {/* <Wallet buttonWidth={'auto'} ml={{ base: 0, sm: 6 }} /> */}
-          <Button
-            ml={{ base: 0, sm: 6 }}
-            as={Link}
-            variant={'outline'}
-            fontWeight={'normal'}
-            size={'xs'}
-            href={'https://www.addevent.com/event/Kk21244343'}
-            target="_blank"
-          >
-            add to calendar
-          </Button>
+          <Wallet buttonWidth={'auto'} ml={{ base: 0, sm: 6 }} />
         </Flex>
       </GridItem>
     </Grid>
