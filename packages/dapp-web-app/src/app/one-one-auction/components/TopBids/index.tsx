@@ -6,7 +6,7 @@ import { TableRow } from 'components/CustomTable/TableRow'
 import { formatToEtherStringBN } from 'utils/price'
 import { isUserAddress, shortenAddress } from 'utils/string'
 import { useAuctionContext } from 'contexts/AuctionContext'
-import { AuctionState } from 'types/auction'
+import { SalesState } from 'types/auction'
 
 type TopBidsType = {
   bids: ReturnType<typeof cleanEmptyBids>
@@ -15,7 +15,7 @@ type TopBidsType = {
 export const TopBids = ({ bids, onViewAll }: TopBidsType) => {
   const { address: userAddress } = useAccount()
   const { auctionState } = useAuctionContext()
-  const auctionEnded = auctionState === AuctionState.ENDED
+  const auctionEnded = auctionState === SalesState.ENDED
   return (
     <Box>
       <Text fontWeight={'bold'}>

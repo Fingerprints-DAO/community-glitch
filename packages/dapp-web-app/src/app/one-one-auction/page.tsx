@@ -20,6 +20,7 @@ import { ReactNode, useEffect, useState } from 'react'
 import { AuctionProvider } from 'contexts/AuctionContext'
 import { AuctionSidebar } from './components/AuctionSidebar'
 import { getSmallTokenPath } from 'utils/tokens'
+import { EtherSymbol } from 'components/EtherSymbol'
 
 const TextSection = ({
   title,
@@ -154,13 +155,17 @@ export default function Auction() {
                     <Text as={'span'} fontWeight={'bold'}>
                       Bidding start price:
                     </Text>{' '}
-                    <Text as={'span'}>0.06 ETH</Text>
+                    <Text as={'span'}>
+                      0.06 <EtherSymbol />
+                    </Text>
                   </ListItem>
                   <ListItem>
                     <Text as={'span'} fontWeight={'bold'}>
                       Minimum increase bid:
                     </Text>{' '}
-                    <Text as={'span'}>0.005 ETH</Text>
+                    <Text as={'span'}>
+                      0.005 <EtherSymbol />
+                    </Text>
                   </ListItem>
                   <ListItem>
                     <Text as={'span'} fontWeight={'bold'}>

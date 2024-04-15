@@ -1,6 +1,6 @@
 import { GetFilterLogsReturnType } from 'viem/actions'
 
-export enum AuctionState {
+export enum SalesState {
   IDLE,
   NOT_STARTED,
   STARTED,

@@ -1,8 +1,8 @@
 'use client'
 import { useAuctionContext } from 'contexts/AuctionContext'
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 import { useCallback, useEffect, useState } from 'react'
-import { AuctionState } from 'types/auction'
+import { SalesState } from 'types/auction'
 import { Interval } from 'types/interval'
 
 const timeToGo = (time: number) => {
@@ -33,9 +33,16 @@ export const displayCountdown = (endTime: number) => {
     .padStart(2, '0')}`
 }
 
-const useCountdownTime = () => {
-  const { startTime, endTime, auctionState } = useAuctionContext()
-
+export type UseCountdownTimeProps = {
+  startTime: Dayjs
+  endTime: Dayjs
+  salesState: SalesState
+}
+const useCountdownTime = ({
+  startTime,
+  endTime,
+  salesState,
+}: UseCountdownTimeProps) => {
   const [countdown, setCountdown] = useState(0)
   const [countdownInMili, setCountdownInMili] = useState(0)
 
@@ -43,13 +50,13 @@ const useCountdownTime = () => {
     let time = 0
 
     if (
-      auctionState === AuctionState.NOT_STARTED ||
-      auctionState === AuctionState.IDLE
+      salesState === SalesState.NOT_STARTED ||
+      salesState === SalesState.IDLE
     ) {
       time = startTime.valueOf() ?? 0
     }
 
-    if (auctionState === AuctionState.STARTED) {
+    if (salesState === SalesState.STARTED) {
       time = endTime.valueOf() ?? 0
     }
 
@@ -58,7 +65,7 @@ const useCountdownTime = () => {
     const minutes = handleMinutes(time ?? 0)
 
     setCountdown(minutes)
-  }, [auctionState, startTime, endTime])
+  }, [salesState, startTime, endTime])
 
   useEffect(() => {
     const interval = setInterval(handleTime, Interval.Timer)

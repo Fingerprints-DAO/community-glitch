@@ -19,14 +19,14 @@ const nav = [
   {
     href: '/one-one-auction',
     label: '1/1 auction',
-    isDisabled: true,
-    tooltip: 'starts on April 25, 2024 at 1:00 p.m. ET / 7:00 p.m. CET',
+    isDisabled: false,
+    // tooltip: 'starts on April 25, 2024 at 1:00 p.m. ET / 7:00 p.m. CET',
   },
   {
     href: '/mint-edition',
     label: 'mint edition',
-    isDisabled: true,
-    tooltip: 'starts on Sunday, April 28 at 1 PM EDT / 7pm CEST',
+    isDisabled: false,
+    // tooltip: 'starts on Sunday, April 28 at 1 PM EDT / 7pm CEST',
   },
 ]
 
