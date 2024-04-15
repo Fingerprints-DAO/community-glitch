@@ -22,7 +22,7 @@ import {
 import useCountdownTime from 'hooks/use-countdown-timer'
 import Countdown from 'components/Countdown'
 import { useAuctionContext } from 'contexts/AuctionContext'
-import { AuctionState, BidLogsType } from 'types/auction'
+import { SalesState, BidLogsType } from 'types/auction'
 import ForceConnectButton from 'components/ForceConnectButton'
 import { parseEther } from 'ethers'
 import {
@@ -41,11 +41,11 @@ import useGetTopBids from 'hooks/use-get-top-bids'
 import { ClaimButton } from '../ClaimButton'
 import useTxToast from 'hooks/use-tx-toast'
 
-const getCountdownText = (state: AuctionState) => {
-  if (state === AuctionState.IDLE || state === AuctionState.NOT_STARTED) {
+const getCountdownText = (state: SalesState) => {
+  if (state === SalesState.IDLE || state === SalesState.NOT_STARTED) {
     return 'auction starts in: '
   }
-  if (state === AuctionState.STARTED) {
+  if (state === SalesState.STARTED) {
     return 'remaining time: '
   }
   return 'auction ended'
@@ -54,13 +54,17 @@ const getCountdownText = (state: AuctionState) => {
 const auctionContract = getContractAddressesForChainOrThrow(getChainId())
 
 export const AuctionSidebar = () => {
-  const { auctionState } = useAuctionContext()
+  const { auctionState, startTime, endTime } = useAuctionContext()
   const [bidAmount, setBidAmount] = useState('')
   const publicClient = usePublicClient()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { data: minimumBid, refetch: refetchMinimumBid } =
     useReadAuctionGetMinimumBid()
-  const { countdownInMili } = useCountdownTime()
+  const { countdownInMili } = useCountdownTime({
+    salesState: auctionState,
+    startTime,
+    endTime,
+  })
   const { topBids, myBids, refetchBids } = useGetTopBids()
   const bid = useWriteAuctionBid()
   const bidTx = useWaitForTransactionReceipt({
@@ -73,9 +77,8 @@ export const AuctionSidebar = () => {
   const [allBids, setAllBids] = useState<BidLogsType>([])
 
   const auctionNotStartedAndNotIdle =
-    auctionState !== AuctionState.IDLE &&
-    auctionState !== AuctionState.NOT_STARTED
-  const auctionEnded = auctionState === AuctionState.ENDED
+    auctionState !== SalesState.IDLE && auctionState !== SalesState.NOT_STARTED
+  const auctionEnded = auctionState === SalesState.ENDED
 
   const onBid = async () => {
     await bid.writeContractAsync(
@@ -169,7 +172,7 @@ export const AuctionSidebar = () => {
         rounded={'none'}
         noOfLines={8}
         skeletonHeight={'10px'}
-        isLoaded={auctionState !== AuctionState.IDLE}
+        isLoaded={auctionState !== SalesState.IDLE}
         fadeDuration={0.6}
       >
         <Flex flexDir={'column'} gap={8} w={'full'}>
@@ -210,7 +213,7 @@ export const AuctionSidebar = () => {
             </Flex>
           )}
 
-          {auctionState === AuctionState.STARTED && (
+          {auctionState === SalesState.STARTED && (
             <ForceConnectButton buttonText="connect to bid">
               <Box>
                 <Flex justifyContent={'space-between'} gap={2}>

@@ -13,13 +13,13 @@ import {
   HandledAuctionConfig,
   HandledAuctionConfigToDayJs,
 } from 'app/one-one-auction/data-handler'
-import { AuctionData, AuctionState } from 'types/auction'
+import { AuctionData, SalesState } from 'types/auction'
 import { useBoolean } from '@chakra-ui/react'
 
 export const AuctionContext = createContext<
   HandledAuctionConfigToDayJs &
     AuctionData & {
-      auctionState: AuctionState
+      auctionState: SalesState
       burnedTokensIds: number[]
       isLoadingBurnedCall: boolean
     }
@@ -31,7 +31,7 @@ export const AuctionContext = createContext<
   currentPrice: 0n,
   minted: 0n,
   maxSupply: 0n,
-  auctionState: AuctionState.NOT_STARTED,
+  auctionState: SalesState.NOT_STARTED,
   burnedTokensIds: [],
   isLoadingBurnedCall: true,
 })
@@ -43,19 +43,19 @@ const getCurrentState = (
   endTime?: HandledAuctionConfigToDayJs['endTime'],
 ) => {
   if (!startTime || !endTime) {
-    return AuctionState.IDLE
+    return SalesState.IDLE
   }
   const now = dayjs()
 
   if (now.isAfter(endTime)) {
-    return AuctionState.ENDED
+    return SalesState.ENDED
   }
 
   if (now.isAfter(startTime)) {
-    return AuctionState.STARTED
+    return SalesState.STARTED
   }
 
-  return AuctionState.NOT_STARTED
+  return SalesState.NOT_STARTED
 }
 
 export const AuctionProvider = ({
@@ -70,9 +70,7 @@ export const AuctionProvider = ({
   const [isLoadingBurnedCall, setIsLoadingBurnedCall] = useBoolean(true)
 
   // Add useState for auctionState
-  const [auctionState, setAuctionState] = useState<AuctionState>(
-    AuctionState.IDLE,
-  )
+  const [auctionState, setAuctionState] = useState<SalesState>(SalesState.IDLE)
   const intervalRef = useRef<NodeJS.Timeout>()
 
   useEffect(() => {

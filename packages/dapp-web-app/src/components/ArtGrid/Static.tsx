@@ -1,5 +1,11 @@
 'use client'
-import { Box, Flex, Skeleton, useBreakpointValue } from '@chakra-ui/react'
+import {
+  Box,
+  Flex,
+  FlexProps,
+  Skeleton,
+  useBreakpointValue,
+} from '@chakra-ui/react'
 import ChakraNextImageLoader from 'components/ChakraNextImageLoader'
 import { useAuctionContext } from 'contexts/AuctionContext'
 import { tokens } from 'data/tokens'
@@ -13,14 +19,16 @@ const randomTokens = [...tokens].sort(() => Math.random() - 0.5)
 const StaticTokenPreview = ({
   token,
   version,
+  divisorOpt = { base: 40, sm: 18, md: 15, lg: 12 },
 }: {
   token: (typeof tokens)[0]
   version: string
+  divisorOpt?: Partial<Record<string, number>>
 }) => {
-  const divisor = useBreakpointValue(
-    { base: 40, sm: 18, md: 15, lg: 12 },
-    { ssr: true, fallback: 'base' },
-  )
+  const divisor = useBreakpointValue(divisorOpt, {
+    ssr: true,
+    fallback: 'base',
+  })
 
   if (!divisor) {
     return <Skeleton w={'full'} h={'20px'} rounded={0} />
@@ -45,17 +53,26 @@ const StaticTokenPreview = ({
     </Box>
   )
 }
-export const StaticArtGrid = () => {
+export const StaticArtGrid = ({
+  divisorOpt,
+  ...props
+}: FlexProps & { divisorOpt?: Partial<Record<string, number>> }) => {
   return (
     <Flex
-      as={'main'}
+      as={'section'}
       flexDir={'row'}
       flexWrap={'wrap'}
       justifyContent={'flex-start'}
       alignContent={'flex-start'}
+      {...props}
     >
       {randomTokens.map((token) => (
-        <StaticTokenPreview key={token.id} token={token} version={'A'} />
+        <StaticTokenPreview
+          key={token.id}
+          token={token}
+          version={'A'}
+          divisorOpt={divisorOpt}
+        />
       ))}
     </Flex>
   )
