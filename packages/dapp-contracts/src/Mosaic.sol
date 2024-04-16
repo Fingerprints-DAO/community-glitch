@@ -7,7 +7,6 @@ import {ERC721Enumerable} from '@openzeppelin/contracts/token/ERC721/extensions/
 import {ERC721URIStorage} from '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
 import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
-import {console2} from 'forge-std/src/console2.sol';
 
 /**
  * @title Mosaic
@@ -86,20 +85,26 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
    * @param _amount The amount of tokens to mint
    */
   function mint(address recipient, uint8 _amount) external payable {
-    if (recipient == address(0)) revert ZeroAddress();
-    if (_amount > MAX_NUMBER_PER_MINT) revert MaxNumberOfMintedTokensExceeded();
-
-    uint256 tokenId = _nextTokenId + 1;
-    if (tokenId > MAX_SUPPLY) revert MaxSupplyExceeded();
-
     if (msg.value < PRICE_PER_TOKEN * _amount) revert InsufficientFunds();
 
-    for (uint8 i = 0; i < _amount; i++) {
-      _mint(recipient, ++_nextTokenId);
-    }
+    _mintTokens(recipient, _amount);
   }
 
+  /**
+   * @dev Owner mints for free a new token and assigns it to the specified recipient
+   * @param recipient The address to receive the minted token
+   * @param _amount The amount of tokens to mint
+   */
   function ownerMint(address recipient, uint8 _amount) external _onlyOwner {
+    _mintTokens(recipient, _amount);
+  }
+
+  /**
+   * @dev Internal function to mint tokens
+   * @param recipient The address to receive the minted tokens
+   * @param _amount The amount of tokens to mint
+   */
+  function _mintTokens(address recipient, uint8 _amount) internal {
     if (recipient == address(0)) revert ZeroAddress();
     if (_amount > MAX_NUMBER_PER_MINT) revert MaxNumberOfMintedTokensExceeded();
 
