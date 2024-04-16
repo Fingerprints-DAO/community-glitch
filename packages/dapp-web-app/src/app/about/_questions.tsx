@@ -7,6 +7,54 @@ const LineSpace = () => (
 
 export const questions = [
   {
+    question: 'What are the degradation dynamics?',
+    answer: (
+      <>
+        &rsquo;glitch&lsquo; is dynamic conceptual blockchain art and an
+        experiment in how to introduce degradation in a digital artwork. In this
+        respect it is also a commentary on secondary market dynamics. It is
+        intended to be fun and playful. The degradation is part of the artwork
+        and a degraded artwork is still an artwork.
+        <LineSpace />
+        1. The initial collector receives an original photo with liminal
+        animation as GIF-file.
+        <br />
+        2. After the first sale or transfer, the animation disappears, leaving
+        only the photo.
+        <br />
+        3. After the second sale or transfer the photo fades 50%.
+        <br />
+        4. After the third sale or transfer the photo will disappear leaving
+        only a placeholder.
+        <br />
+        <LineSpace />
+        You can refresh your art to the mint original clicking the refresh
+        button on the specific token page of your piece. The refresh will
+        perform a blockchain transaction involving paying a small fee.
+      </>
+    ),
+  },
+  {
+    question:
+      'How can I refresh my art to the mint original if has been degraded?',
+    answer: (
+      <>
+        You can refresh your art to the mint original clicking the refresh
+        button on the specific token page of your piece. The refresh will
+        perform a blockchain transaction involving paying a small fee of 0.004 Ξ
+        <LineSpace />
+        The fee is intended as a substitute for creator royalties. When trading
+        on a marketplace the glitch tokens are 0% creator fee, so royalties
+        free. By refreshing your art you are supporting the project and the
+        artist.
+      </>
+    ),
+  },
+  {
+    question: 'What is the copyright licence for the 1/1s?',
+    answer: <>The glitch animations are Creative Commons Zero (CC0) license.</>,
+  },
+  {
     question:
       'How will the Ranked auction with rebate work for the 1/1s? Can I choose which piece from the auction I want to bid on?',
     answer: (
@@ -73,6 +121,14 @@ export const allowListQuestions = [
 ]
 
 export const printsQuestions = [
+  {
+    question: 'What is the copyright licence for the prints?',
+    answer: (
+      <>
+        Prints are Creative Commons Attribution-NonCommercial (CC BY NC) license
+      </>
+    ),
+  },
   {
     question:
       'I collected a 1 of 1. How do I acquire a physical print from Assembly?',

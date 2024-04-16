@@ -15,6 +15,7 @@ import {
 import FullPageTemplate from 'components/Templates/FullPage'
 import { questions, allowListQuestions, printsQuestions } from './_questions'
 import { EtherSymbol } from 'components/EtherSymbol'
+import ChakraNextImageLoader from 'components/ChakraNextImageLoader'
 
 const Section = ({
   title = '',
@@ -92,6 +93,18 @@ export default function About() {
         Collectors can pay to restore the image to the minted original, or
         choose to burn the token to redeem it for a limited edition, physical
         fine art print through a collaboration with Assembly.
+        <Box maxW={'100%'} w={'md'} mx={'auto'} pt={8}>
+          <ChakraNextImageLoader
+            src={'/glitch-steps-ani.gif'}
+            alt={'Trade steps'}
+            imageWidth={1024}
+            imageHeight={1024}
+            imageProps={{
+              priority: true,
+              unoptimized: true,
+            }}
+          />
+        </Box>
       </Section>
       <Section title="misha de ridder">
         misha de ridder is a visual artist making conceptual photo and video
