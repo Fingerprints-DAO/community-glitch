@@ -13,8 +13,14 @@ import {
   TextProps,
 } from '@chakra-ui/react'
 import FullPageTemplate from 'components/Templates/FullPage'
-import { questions, allowListQuestions, printsQuestions } from './_questions'
+import {
+  questions,
+  allowListQuestions,
+  printsQuestions,
+  mintEditionQuestions,
+} from './_questions'
 import { EtherSymbol } from 'components/EtherSymbol'
+import ChakraNextImageLoader from 'components/ChakraNextImageLoader'
 
 const Section = ({
   title = '',
@@ -92,6 +98,18 @@ export default function About() {
         Collectors can pay to restore the image to the minted original, or
         choose to burn the token to redeem it for a limited edition, physical
         fine art print through a collaboration with Assembly.
+        <Box maxW={'100%'} w={'md'} mx={'auto'} pt={8}>
+          <ChakraNextImageLoader
+            src={'/glitch-steps-ani.gif'}
+            alt={'Trade steps'}
+            imageWidth={1024}
+            imageHeight={1024}
+            imageProps={{
+              priority: true,
+              unoptimized: true,
+            }}
+          />
+        </Box>
       </Section>
       <Section title="misha de ridder">
         misha de ridder is a visual artist making conceptual photo and video
@@ -195,6 +213,35 @@ export default function About() {
             One of ones
           </SectionSubtitle>
           {questions.map((item, index) => (
+            <AccordionItem as={'article'} key={index}>
+              {({ isExpanded }) => (
+                <>
+                  <h2>
+                    <AccordionButton py={6}>
+                      <Box as="span" flex="1" textAlign="left">
+                        <Text
+                          as="h2"
+                          fontSize="lg"
+                          display="block"
+                          fontWeight={'bold'}
+                        >
+                          {item.question}
+                        </Text>
+                      </Box>
+                      <Text fontSize={'2xl'}>{isExpanded ? '-' : '+'}</Text>
+                    </AccordionButton>
+                  </h2>
+                  <AccordionPanel py={6}>{item.answer}</AccordionPanel>
+                </>
+              )}
+            </AccordionItem>
+          ))}
+        </Accordion>
+        <Accordion id={'mint-edition'} mt={8}>
+          <SectionSubtitle my={4} textDecor={'underline'}>
+            Mint edition
+          </SectionSubtitle>
+          {mintEditionQuestions.map((item, index) => (
             <AccordionItem as={'article'} key={index}>
               {({ isExpanded }) => (
                 <>
