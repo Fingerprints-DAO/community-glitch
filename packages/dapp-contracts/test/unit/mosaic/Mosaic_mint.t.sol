@@ -1,16 +1,18 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.23;
 
-import {PRBTest} from '@prb/test/src/PRBTest.sol';
 import {console2} from 'forge-std/src/console2.sol';
+import {Merkle} from 'murky-merkle/src/Merkle.sol';
+import {Mosaic} from '../../../src/Mosaic.sol';
+import {PRBTest} from '@prb/test/src/PRBTest.sol';
 import {StdCheats} from 'forge-std/src/StdCheats.sol';
 import {stdError} from 'forge-std/src/stdError.sol';
 import {TestHelpers} from '../../../script/Helpers.s.sol';
 
-import {Mosaic} from '../../../src/Mosaic.sol';
-
 contract MosaicMintTest is PRBTest, StdCheats, TestHelpers {
   Mosaic internal mosaic;
+  address internal alice = vm.addr(3);
+  address internal bob = vm.addr(4);
   uint256 private constant price = 0.025 ether;
 
   /// @dev A function invoked before each test_ case is run.
@@ -25,7 +27,7 @@ contract MosaicMintTest is PRBTest, StdCheats, TestHelpers {
 
     // Act and Assert
     vm.expectRevert(abi.encodeWithSelector(Mosaic.ZeroAddress.selector));
-    mosaic.mint(recipient, 1);
+    mosaic.mint{value: price}(recipient, 1);
   }
 
   function test_shouldMintSpecifiedAmountOfTokensByAdmin() public {
@@ -75,7 +77,7 @@ contract MosaicMintTest is PRBTest, StdCheats, TestHelpers {
 
     // Act and Assert
     vm.expectRevert(abi.encodeWithSelector(Mosaic.MaxNumberOfMintedTokensExceeded.selector));
-    mosaic.mint{value: price}(recipient, amountToMint);
+    mosaic.mint{value: price * amountToMint}(recipient, amountToMint);
   }
 
   function test_mintAndWithdraw() public {
@@ -117,5 +119,84 @@ contract MosaicMintTest is PRBTest, StdCheats, TestHelpers {
     // Act and Assert
     vm.expectRevert(abi.encodeWithSelector(Mosaic.OnlyOwner.selector));
     mosaic.ownerMint(caller, 1);
+  }
+
+  function test_claimAllowlisted() public {
+    // Arrange
+    uint8 amountToMint = 5;
+
+    // Create merkle root and set it
+    Merkle m = new Merkle();
+    bytes32[] memory data = new bytes32[](2);
+    data[0] = keccak256(abi.encodePacked(alice));
+    data[1] = keccak256(abi.encodePacked(bob));
+    bytes32 root = m.getRoot(data);
+
+    // Act
+    vm.prank(address(this));
+    mosaic.setMerkleRoots(root);
+    bytes32[] memory proof = m.getProof(data, 0); // will get proof for 0x2 value
+
+    vm.prank(alice);
+    mosaic.claim(proof, alice, amountToMint);
+
+    // Assert
+    for (uint i = 1; i < amountToMint + 1; i++) {
+      assertEq(mosaic.ownerOf(i), alice, 'Incorrect token owner');
+    }
+  }
+
+  function test_cannotReuseProof() public {
+    // Arrange
+    uint8 amountToMint = 5;
+
+    // Create merkle root and set it
+    Merkle m = new Merkle();
+    bytes32[] memory data = new bytes32[](2);
+    data[0] = keccak256(abi.encodePacked(alice));
+    data[1] = keccak256(abi.encodePacked(bob));
+    bytes32 root = m.getRoot(data);
+
+    // Act
+    vm.prank(address(this));
+    mosaic.setMerkleRoots(root);
+    bytes32[] memory proof = m.getProof(data, 0); // will get proof for 0x2 value
+
+    vm.prank(alice);
+    mosaic.claim(proof, alice, amountToMint);
+
+    // Assert
+    for (uint i = 1; i < amountToMint + 1; i++) {
+      assertEq(mosaic.ownerOf(i), alice, 'Incorrect token owner');
+    }
+
+    // Act and Assert
+    vm.expectRevert(abi.encodeWithSelector(Mosaic.InvalidProof.selector));
+    mosaic.claim(proof, bob, amountToMint);
+  }
+
+  function test_cannotClaimWithInvalidProof() public {
+    // Arrange
+    uint8 amountToMint = 5;
+
+    // Create merkle root and set it
+    Merkle m = new Merkle();
+    bytes32[] memory data = new bytes32[](2);
+    data[0] = keccak256(abi.encodePacked(alice));
+    data[1] = keccak256(abi.encodePacked(bob));
+    bytes32 root = m.getRoot(data);
+
+    // Act
+    vm.prank(address(this));
+    mosaic.setMerkleRoots(root);
+
+    bytes32[] memory fakeData = new bytes32[](2);
+    data[0] = keccak256(abi.encodePacked(address(this)));
+    data[1] = keccak256(abi.encodePacked(bob));
+    bytes32[] memory proof = m.getProof(fakeData, 0); // will get proof for 0x2 value
+
+    // Act and Assert
+    vm.expectRevert(abi.encodeWithSelector(Mosaic.InvalidProof.selector));
+    mosaic.claim(proof, bob, amountToMint);
   }
 }

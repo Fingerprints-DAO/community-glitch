@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.23;
 
-import {Strings} from '@openzeppelin/contracts/utils/Strings.sol';
+import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {ERC721} from '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import {ERC721Enumerable} from '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol';
 import {ERC721URIStorage} from '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
+import {MerkleProof} from '@openzeppelin/contracts/utils/cryptography/MerkleProof.sol';
 import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
-import {Address} from '@openzeppelin/contracts/utils/Address.sol';
+import {Strings} from '@openzeppelin/contracts/utils/Strings.sol';
 
 /**
  * @title Mosaic
@@ -43,30 +44,26 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
    */
   error InsufficientFunds();
 
-  // Events
   /**
-   * @dev Event emitted when a new token is minted.
-   * @param recipient The address of the token recipient.
-   * @param tokenId The unique identifier of the minted token.
+   * @dev Error emitted when the provided proof is invalid.
    */
-  event Minted(address indexed recipient, uint256 indexed tokenId);
+  error InvalidProof();
 
   uint256 private _nextTokenId;
   string private baseURI; /// @notice The base URI of the contract.
+  mapping(bytes32 proof => bool) private usedProofs; /// @notice The used proofs.
   uint16 private constant MAX_SUPPLY = 510; /// @notice The maximum number of tokens that can be minted.
   uint8 private constant MAX_NUMBER_PER_MINT = 10; /// @notice The maximum number of tokens that can be minted at once.
   uint256 public constant PRICE_PER_TOKEN = 0.025 ether; /// @notice The price of a refresh token.
   address payable public fundsReceiverAddress; /// @notice The address of the funds receiver.
+  bytes32 public allowlistRoot; /// @notice The root of the allowlist merkle tree.
 
   /**
    * @dev Constructor function
    * @param initialOwner The initial owner of the contract
    * @param _baseUri The base URI of the contract
    */
-  constructor(
-    address initialOwner,
-    string memory _baseUri
-  ) ERC721('mosaic text', 'MOSAIC') Ownable(initialOwner) {
+  constructor(address initialOwner, string memory _baseUri) ERC721('mosaic text', 'MOSAIC') Ownable(initialOwner) {
     baseURI = _baseUri;
     fundsReceiverAddress = payable(initialOwner);
   }
@@ -77,6 +74,14 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
   modifier _onlyOwner() {
     if (_msgSender() != owner()) revert OnlyOwner();
     _;
+  }
+
+  /**
+   * @dev Allows the owner to set the first tier merkle root.
+   * @param _allowlistRoot The new first tier merkle root.
+   */
+  function setMerkleRoots(bytes32 _allowlistRoot) external onlyOwner {
+    allowlistRoot = _allowlistRoot;
   }
 
   /**
@@ -97,6 +102,13 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
    */
   function ownerMint(address recipient, uint8 _amount) external _onlyOwner {
     _mintTokens(recipient, _amount);
+  }
+
+  function claim(bytes32[] calldata proof, address recipient, uint8 _amount) external {
+    if (!checkMerkleProof(proof, _msgSender(), allowlistRoot)) revert InvalidProof();
+
+    _mintTokens(recipient, _amount);
+    usedProofs[keccak256(abi.encodePacked(proof))] = true;
   }
 
   /**
@@ -135,13 +147,26 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     fundsReceiverAddress = payable(newFundsReceiverAddress);
   }
 
-
   /**
    * @dev Withdraws the contract balance to the funds receiver address
    * @dev Only the owner can call this function
    */
   function withdraw() external _onlyOwner {
     fundsReceiverAddress.sendValue(address(this).balance);
+  }
+
+  /**
+   * @dev Checks if a merkle proof is valid.
+   * @param _merkleProof The merkle proof to be checked.
+   * @param _address The address to be checked.
+   * @param _root The merkle root.
+   */
+  function checkMerkleProof(bytes32[] calldata _merkleProof, address _address, bytes32 _root) public view returns (bool) {
+    bytes32 leaf = keccak256(abi.encodePacked(_address));
+
+    if (usedProofs[keccak256(abi.encodePacked(_merkleProof))]) revert InvalidProof();
+
+    return MerkleProof.verify(_merkleProof, _root, leaf);
   }
 
   /**
