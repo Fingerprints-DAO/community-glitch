@@ -1,3 +1,5 @@
+import { EtherSymbol } from 'components/EtherSymbol'
+
 const LineSpace = () => (
   <>
     <br />
@@ -41,7 +43,8 @@ export const questions = [
       <>
         You can refresh your art to the mint original clicking the refresh
         button on the specific token page of your piece. The refresh will
-        perform a blockchain transaction involving paying a small fee of 0.004 Ξ
+        perform a blockchain transaction involving paying a small fee of 0.004
+        <EtherSymbol />
         <LineSpace />
         The fee is intended as a substitute for creator royalties. When trading
         on a marketplace the glitch tokens are 0% creator fee, so royalties
@@ -160,6 +163,9 @@ export const printsQuestions = [
       </>
     ),
   },
+]
+
+export const mintEditionQuestions = [
   {
     question: 'What are the mechanics for the fading of the 510 editions?',
     answer: (
