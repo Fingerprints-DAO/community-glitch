@@ -562,4 +562,28 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     auction.adminMintRemaining(alice);
     vm.stopPrank();
   }
+
+  function test_oneBidderMintAll() public {
+    // Arrange
+    address bidder = vm.addr(51);
+    vm.deal(bidder, 100 ether);
+
+    vm.warp(startTime + 1);
+
+    // Act
+    vm.startPrank(bidder);
+    uint256 i;
+    while (i < 50) {
+      auction.bid{value: 0.5 ether}(0.5 ether, fakeMerkleProof);
+      ++i;
+    }
+    vm.stopPrank();
+    vm.warp(endTime + 1);
+
+    auction.claimAll(bidder);
+
+    // Assert
+    assertEq(glitch.balanceOf(bidder), 50, 'Bidder should own 50 NFT');
+    assertEq(bidder.balance, 100 ether - 50 * 0.5 ether, 'Bidder balance should be zero');
+  }
 }
