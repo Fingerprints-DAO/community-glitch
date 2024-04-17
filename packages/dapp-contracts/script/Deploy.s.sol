@@ -3,6 +3,7 @@ pragma solidity 0.8.23;
 
 import {Glitch} from '../src/Glitch.sol';
 import {GlitchAuction} from '../src/GlitchAuction.sol';
+import {Mosaic} from '../src/Mosaic.sol';
 
 import {BaseScript} from './Base.s.sol';
 
@@ -17,20 +18,23 @@ contract Deploy is BaseScript {
     uint256 startTime,
     uint256 endTime,
     uint256 minBidIncrementInWei,
-    uint256 startAmountInWei
-  ) public broadcast returns (Glitch glitch, GlitchAuction auction) {
+    uint256 startAmountInWei,
+    string memory baseURIMosaic
+  ) public broadcast returns (Glitch glitch, GlitchAuction auction, Mosaic mosaic) {
     vm.startBroadcast();
     glitch = _deployGlitch(deployer, minter, baseURI);
     auction = _deployAuction(address(glitch), deployer, startTime, endTime, minBidIncrementInWei, startAmountInWei);
+    mosaic = _deployMosaic(deployer, baseURIMosaic);
     vm.stopBroadcast();
   }
 }
 
 contract DeployLocal is BaseScript {
-  function run() public returns (Glitch glitch, GlitchAuction auction) {
+  function run() public returns (Glitch glitch, GlitchAuction auction, Mosaic mosaic) {
     address deployer = broadcaster;
     address minter = broadcaster;
     string memory baseURI = 'http://localhost:3000/arts/';
+    string memory baseURIMosaic = 'http://localhost:3000/mosaics/';
     uint256 startTime = block.timestamp + (3600 * 0.1);
     uint256 endTime = startTime + (3600 * 1);
     uint256 minBidIncrementInWei = 0.005 ether;
@@ -39,15 +43,17 @@ contract DeployLocal is BaseScript {
     vm.startBroadcast();
     glitch = _deployGlitch(deployer, minter, baseURI);
     auction = _deployAuction(address(glitch), deployer, startTime, endTime, minBidIncrementInWei, startAmountInWei);
+    mosaic = _deployMosaic(deployer, baseURIMosaic);
     vm.stopBroadcast();
   }
 }
 
 contract DeploySepolia is BaseScript {
-  function run() public returns (Glitch glitch, GlitchAuction auction) {
+  function run() public returns (Glitch glitch, GlitchAuction auction, Mosaic mosaic) {
     address deployer = broadcaster;
     address minter = broadcaster;
     string memory baseURI = 'https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/metadata/';
+    string memory baseURIMosaic = 'https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/mosaic/metadata/';
     uint256 startTime = block.timestamp + (3600 * 0.5);
     uint256 endTime = startTime + (3600 * 5);
     uint256 minBidIncrementInWei = 0.005 ether;
@@ -56,6 +62,7 @@ contract DeploySepolia is BaseScript {
     vm.startBroadcast();
     glitch = _deployGlitch(deployer, minter, baseURI);
     auction = _deployAuction(address(glitch), deployer, startTime, endTime, minBidIncrementInWei, startAmountInWei);
+    mosaic = _deployMosaic(deployer, baseURIMosaic);
     vm.stopBroadcast();
   }
 }
