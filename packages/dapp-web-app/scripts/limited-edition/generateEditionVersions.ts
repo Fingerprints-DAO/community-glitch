@@ -2,6 +2,7 @@
 const csv = require('csv-parser')
 const fs = require('fs-extra')
 const path = require('path')
+const images = require('../data/images-props.json')
 
 const outputDirs = ['A', 'B', 'C', 'D'] // Nomes das pastas de saída
 const website =
@@ -17,309 +18,6 @@ enum VERSIONS {
   'C' = 'C',
   'D' = 'D',
 }
-
-const images = [
-  {
-    class: 'img',
-    image: 'end-is-near',
-    name: 'end is near',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-2',
-    image: 'dark-words-stain',
-    name: 'dark words stain',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-2',
-    image: 'create-with-pain',
-    name: 'create with pain',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-2',
-    image: 'devil-bets-lose',
-    name: 'devil bets lose',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'embrace-illuminate-resist',
-    name: 'embrace illuminate resist',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'eyes-wide-awake',
-    name: 'eyes wide awake',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-4',
-    image: 'amnesia-breeds-repetition',
-    name: 'amnesia breeds repetition',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'fades-fangs-vanish',
-    name: 'fades fangs vanish',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-2',
-    image: 'healing-through-abandonment',
-    name: 'healing through abandonment',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'sex-with-cops',
-    name: 'sex with cops',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'eat-the-rich',
-    name: 'eat the rich',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'delete-dull-minds',
-    name: 'delete dull minds',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'defy-ooze-obliterate',
-    name: 'defy ooze obliterate',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'blossoms-reclaim-concrete',
-    name: 'blossoms reclaim concrete',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-4',
-    image: 'blue-memories-fade',
-    name: 'blue memories fade',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'joy-conquers-sorrow',
-    name: 'joy conquers sorrow',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'grind-rise-learn',
-    name: 'grind rise learn',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'unmask-forgotten-triumphs',
-    name: 'unmask forgotten triumphs',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'wipe-transform-empower',
-    name: 'wipe transform empower',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-4',
-    image: 'fading-pain-canvas',
-    name: 'fading pain canvas',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-2',
-    image: 'gaps-perpetuate-injustice',
-    name: 'gaps perpetuate injustice',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'smudged-heartbreak-tales',
-    name: 'smudged heartbreak tales',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-4',
-    image: 'ignorance-to-empathy',
-    name: 'ignorance to empathy',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'passion-persists-here',
-    name: 'passion persists here',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-4',
-    image: 'kill-the-poor',
-    name: 'kill the poor',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'promote-positivity-instead',
-    name: 'promote positivity instead',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'healing-amidst-neglect',
-    name: 'healing amidst neglect',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-2',
-    image: 'forget-me-not',
-    name: 'forget me not',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'resist-persist-exist',
-    name: 'resist persist exist',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-2',
-    image: 'notes-numb-minds',
-    name: 'notes numb minds',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-2',
-    image: 'embrace-olive-diversity',
-    name: 'embrace olive diversity',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'preserve-the-untold',
-    name: 'preserve the untold',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-4',
-    image: 'provocative-urban-expression',
-    name: 'provocative urban expression',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'mindful-mimicry-unleashed',
-    name: 'mindful mimicry unleashed',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'saving-the-world',
-    name: 'saving the world',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'purr-power-revolution',
-    name: 'purr power revolution',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-4',
-    image: 'shadow-portal-escape',
-    name: 'shadow portal escape',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-4',
-    image: 'whispers-echo-on',
-    name: 'whispers echo on',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-4',
-    image: 'infernal-blaze-unraveling',
-    name: 'infernal blaze unraveling',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-2',
-    image: 'silent-poison-spreads',
-    name: 'silent poison spreads',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-4',
-    image: 'sow-love-dogma',
-    name: 'sow love dogma',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-2',
-    image: 'stormy-hearts-resist',
-    name: 'stormy hearts resist',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'no-easy-solutions',
-    name: 'no easy solutions',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'nights-silent-scream',
-    name: 'nights silent scream',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'suck-melting-chains',
-    name: 'suck melting chains',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-4',
-    image: 'tears-fuel-art',
-    name: 'tears fuel art',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-4',
-    image: 'void-breeds-division',
-    name: 'void breeds division',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img',
-    image: 'whispers-fade-away',
-    name: 'whispers fade away',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-2',
-    image: 'warning-toxic-glow',
-    name: 'warning toxic glow',
-    version: VERSIONS.A,
-  },
-  {
-    class: 'img-2',
-    image: 'whispers-conceal-truth',
-    name: 'whispers conceal truth',
-    version: VERSIONS.A,
-  },
-]
 
 // 1 - 10 are full / so most value
 
@@ -440,7 +138,7 @@ function shuffleArray(array: any[]) {
 }
 
 async function creaVersionFiles() {
-  const dirPath = path.join(__dirname, 'versions')
+  const dirPath = path.join(__dirname, '../data')
 
   const fileContent = generateArrays()
 
@@ -461,7 +159,11 @@ async function creaVersionFiles() {
     ']'
 
   // Escrever no arquivo usando writeFileSync
-  fs.writeFileSync(path.join(dirPath, 'tokens.json'), formattedContent, 'utf8')
+  fs.writeFileSync(
+    path.join(dirPath, 'one-one-tokens-versions.json'),
+    formattedContent,
+    'utf8',
+  )
 }
 
 creaVersionFiles().then(() => console.log('JSON files generated successfully'))
