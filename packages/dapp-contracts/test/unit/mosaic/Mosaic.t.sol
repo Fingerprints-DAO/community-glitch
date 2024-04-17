@@ -41,7 +41,7 @@ contract MosaicTest is PRBTest, StdCheats {
     string memory baseURI = 'http://example.com/';
 
     // Act
-    mosaic.mint(msg.sender, 1);
+    mosaic.mint{value: 0.025 ether}(msg.sender, 1);
     mosaic.setBaseURI(baseURI);
 
     // assert if tokenURI containes baseURI
