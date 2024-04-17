@@ -47,7 +47,6 @@
         display: inline;
       }
 
-      /* Tamanhos padrões */
       .img { width: 156px; height: auto; }
       .img-2 { width: 104px; height: auto; }
       .img-4 { width: 124px; height: auto; }
@@ -65,160 +64,220 @@
         .img-2 { width: 43.5px; height: auto; }
         .img-4 { width: 52px; height: auto; }
       }
+
+
+      .zoomed1 .img { width: 312px; height: auto; }
+      .zoomed1 .img-2 { width: 208px; height: auto; }
+      .zoomed1 .img-4 { width: 248px; height: auto; }
+
+      .zoomed2 .img { width: 468px; height: auto; }
+      .zoomed2 .img-2 { width: 312px; height: auto; }
+      .zoomed2 .img-4 { width: 372px; height: auto; }
+
+      .btns {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        z-index: 9999;
+      }
+      button {
+        background-color: #fff;
+        border: 2px solid #000;
+        color: #000;
+        cursor: pointer;
+        margin-left: 0;
+        opacity: 0.8;
+        transition: all 0.2s ease;
+        font-size: 25px;
+        width: 30px;
+        height: 30px;
+        text-align: center;
+        vertical-align: middle;
+        line-height: 25px;
+        outline: none;
+      }
+      button:hover {
+        opacity: 1;
+      }
+      button:active {
+        opacity: 1;
+        background-color: #000;
+        border-color: #fff;
+        color: #fff;
+      }
     </style>
   </head>
   <body>
-    <div class="frame">
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/suck-melting-chains_B.gif" target="_blank">
-          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/suck-melting-chains_Bs.gif" alt="suck melting chains">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/eyes-wide-awake_B.gif" target="_blank">
-          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/eyes-wide-awake_Bs.gif" alt="eyes wide awake">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/amnesia-breeds-repetition_B.gif" target="_blank">
-          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/amnesia-breeds-repetition_Bs.gif" alt="amnesia breeds repetition">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/delete-dull-minds_B.gif" target="_blank">
-          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/delete-dull-minds_Bs.gif" alt="delete dull minds">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/whispers-conceal-truth_B.gif" target="_blank">
-          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/whispers-conceal-truth_Bs.gif" alt="whispers conceal truth">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/sex-with-cops_B.gif" target="_blank">
-          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/sex-with-cops_Bs.gif" alt="sex with cops">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/create-with-pain_B.gif" target="_blank">
-          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/create-with-pain_Bs.gif" alt="create with pain">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/wipe-transform-empower_B.gif" target="_blank">
-          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/wipe-transform-empower_Bs.gif" alt="wipe transform empower">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/devil-bets-lose_B.gif" target="_blank">
-          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/devil-bets-lose_Bs.gif" alt="devil bets lose">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/dark-words-stain_B.gif" target="_blank">
-          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/dark-words-stain_Bs.gif" alt="dark words stain">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/no-easy-solutions_B.gif" target="_blank">
-          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/no-easy-solutions_Bs.gif" alt="no easy solutions">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/healing-amidst-neglect_B.gif" target="_blank">
-          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/healing-amidst-neglect_Bs.gif" alt="healing amidst neglect">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/blue-memories-fade_B.gif" target="_blank">
-          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/blue-memories-fade_Bs.gif" alt="blue memories fade">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/sow-love-dogma_B.gif" target="_blank">
-          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/sow-love-dogma_Bs.gif" alt="sow love dogma">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/passion-persists-here_B.gif" target="_blank">
-          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/passion-persists-here_Bs.gif" alt="passion persists here">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/warning-toxic-glow_B.gif" target="_blank">
-          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/warning-toxic-glow_Bs.gif" alt="warning toxic glow">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/fades-fangs-vanish_B.gif" target="_blank">
-          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/fades-fangs-vanish_Bs.gif" alt="fades fangs vanish">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/smudged-heartbreak-tales_B.gif" target="_blank">
-          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/smudged-heartbreak-tales_Bs.gif" alt="smudged heartbreak tales">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/saving-the-world_B.gif" target="_blank">
-          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/saving-the-world_Bs.gif" alt="saving the world">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/shadow-portal-escape_B.gif" target="_blank">
-          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/shadow-portal-escape_Bs.gif" alt="shadow portal escape">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/blossoms-reclaim-concrete_B.gif" target="_blank">
-          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/blossoms-reclaim-concrete_Bs.gif" alt="blossoms reclaim concrete">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/whispers-fade-away_B.gif" target="_blank">
-          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/whispers-fade-away_Bs.gif" alt="whispers fade away">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/embrace-illuminate-resist_B.gif" target="_blank">
-          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/embrace-illuminate-resist_Bs.gif" alt="embrace illuminate resist">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/notes-numb-minds_B.gif" target="_blank">
-          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/notes-numb-minds_Bs.gif" alt="notes numb minds">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/fading-pain-canvas_B.gif" target="_blank">
-          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/fading-pain-canvas_Bs.gif" alt="fading pain canvas">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/unmask-forgotten-triumphs_B.gif" target="_blank">
-          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/unmask-forgotten-triumphs_Bs.gif" alt="unmask forgotten triumphs">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/healing-through-abandonment_A.gif" target="_blank">
-          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/healing-through-abandonment_As.gif" alt="healing through abandonment">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/embrace-olive-diversity_A.gif" target="_blank">
-          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/embrace-olive-diversity_As.gif" alt="embrace olive diversity">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/eat-the-rich_A.gif" target="_blank">
-          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/eat-the-rich_As.gif" alt="eat the rich">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/kill-the-poor_A.gif" target="_blank">
-          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/kill-the-poor_As.gif" alt="kill the poor">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/infernal-blaze-unraveling_A.gif" target="_blank">
-          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/infernal-blaze-unraveling_As.gif" alt="infernal blaze unraveling">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/tears-fuel-art_A.gif" target="_blank">
-          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/tears-fuel-art_As.gif" alt="tears fuel art">
+    <div class="frame" id="frame">
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/preserve-the-untold_A.gif" target="_blank">
+          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/preserve-the-untold_As.gif" alt="preserve the untold">
         </a>
         <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/grind-rise-learn_A.gif" target="_blank">
           <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/grind-rise-learn_As.gif" alt="grind rise learn">
         </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/provocative-urban-expression_A.gif" target="_blank">
-          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/provocative-urban-expression_As.gif" alt="provocative urban expression">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/silent-poison-spreads_A.gif" target="_blank">
-          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/silent-poison-spreads_As.gif" alt="silent poison spreads">
-        </a>
         <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/mindful-mimicry-unleashed_A.gif" target="_blank">
           <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/mindful-mimicry-unleashed_As.gif" alt="mindful mimicry unleashed">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/end-is-near_A.gif" target="_blank">
-          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/end-is-near_As.gif" alt="end is near">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/ignorance-to-empathy_A.gif" target="_blank">
-          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/ignorance-to-empathy_As.gif" alt="ignorance to empathy">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/gaps-perpetuate-injustice_A.gif" target="_blank">
-          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/gaps-perpetuate-injustice_As.gif" alt="gaps perpetuate injustice">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/defy-ooze-obliterate_A.gif" target="_blank">
-          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/defy-ooze-obliterate_As.gif" alt="defy ooze obliterate">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/joy-conquers-sorrow_A.gif" target="_blank">
-          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/joy-conquers-sorrow_As.gif" alt="joy conquers sorrow">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/preserve-the-untold_A.gif" target="_blank">
-          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/preserve-the-untold_As.gif" alt="preserve the untold">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/forget-me-not_A.gif" target="_blank">
-          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/forget-me-not_As.gif" alt="forget me not">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/stormy-hearts-resist_A.gif" target="_blank">
-          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/stormy-hearts-resist_As.gif" alt="stormy hearts resist">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/resist-persist-exist_A.gif" target="_blank">
-          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/resist-persist-exist_As.gif" alt="resist persist exist">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/void-breeds-division_A.gif" target="_blank">
-          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/void-breeds-division_As.gif" alt="void breeds division">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/whispers-echo-on_A.gif" target="_blank">
-          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/whispers-echo-on_As.gif" alt="whispers echo on">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/nights-silent-scream_A.gif" target="_blank">
-          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/nights-silent-scream_As.gif" alt="nights silent scream">
-        </a>
-        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/promote-positivity-instead_A.gif" target="_blank">
-          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/promote-positivity-instead_As.gif" alt="promote positivity instead">
         </a>
         <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/purr-power-revolution_A.gif" target="_blank">
           <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/purr-power-revolution_As.gif" alt="purr power revolution">
         </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/suck-melting-chains_B.gif" target="_blank">
+          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/suck-melting-chains_Bs.gif" alt="suck melting chains">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/promote-positivity-instead_B.gif" target="_blank">
+          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/promote-positivity-instead_Bs.gif" alt="promote positivity instead">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/warning-toxic-glow_A.gif" target="_blank">
+          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/warning-toxic-glow_As.gif" alt="warning toxic glow">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/sow-love-dogma_A.gif" target="_blank">
+          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/sow-love-dogma_As.gif" alt="sow love dogma">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/create-with-pain_A.gif" target="_blank">
+          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/create-with-pain_As.gif" alt="create with pain">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/fading-pain-canvas_A.gif" target="_blank">
+          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/fading-pain-canvas_As.gif" alt="fading pain canvas">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/dark-words-stain_A.gif" target="_blank">
+          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/dark-words-stain_As.gif" alt="dark words stain">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/shadow-portal-escape_B.gif" target="_blank">
+          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/shadow-portal-escape_Bs.gif" alt="shadow portal escape">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/stormy-hearts-resist_B.gif" target="_blank">
+          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/stormy-hearts-resist_Bs.gif" alt="stormy hearts resist">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/saving-the-world_B.gif" target="_blank">
+          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/saving-the-world_Bs.gif" alt="saving the world">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/devil-bets-lose_A.gif" target="_blank">
+          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/devil-bets-lose_As.gif" alt="devil bets lose">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/silent-poison-spreads_B.gif" target="_blank">
+          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/silent-poison-spreads_Bs.gif" alt="silent poison spreads">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/kill-the-poor_B.gif" target="_blank">
+          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/kill-the-poor_Bs.gif" alt="kill the poor">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/whispers-echo-on_B.gif" target="_blank">
+          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/whispers-echo-on_Bs.gif" alt="whispers echo on">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/delete-dull-minds_B.gif" target="_blank">
+          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/delete-dull-minds_Bs.gif" alt="delete dull minds">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/eyes-wide-awake_A.gif" target="_blank">
+          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/eyes-wide-awake_As.gif" alt="eyes wide awake">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/end-is-near_B.gif" target="_blank">
+          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/end-is-near_Bs.gif" alt="end is near">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/void-breeds-division_B.gif" target="_blank">
+          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/void-breeds-division_Bs.gif" alt="void breeds division">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/defy-ooze-obliterate_A.gif" target="_blank">
+          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/defy-ooze-obliterate_As.gif" alt="defy ooze obliterate">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/embrace-illuminate-resist_A.gif" target="_blank">
+          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/embrace-illuminate-resist_As.gif" alt="embrace illuminate resist">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/whispers-fade-away_A.gif" target="_blank">
+          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/whispers-fade-away_As.gif" alt="whispers fade away">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/tears-fuel-art_A.gif" target="_blank">
+          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/tears-fuel-art_As.gif" alt="tears fuel art">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/amnesia-breeds-repetition_A.gif" target="_blank">
+          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/amnesia-breeds-repetition_As.gif" alt="amnesia breeds repetition">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/gaps-perpetuate-injustice_A.gif" target="_blank">
+          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/gaps-perpetuate-injustice_As.gif" alt="gaps perpetuate injustice">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/healing-through-abandonment_B.gif" target="_blank">
+          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/healing-through-abandonment_Bs.gif" alt="healing through abandonment">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/resist-persist-exist_B.gif" target="_blank">
+          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/resist-persist-exist_Bs.gif" alt="resist persist exist">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/infernal-blaze-unraveling_B.gif" target="_blank">
+          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/infernal-blaze-unraveling_Bs.gif" alt="infernal blaze unraveling">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/notes-numb-minds_A.gif" target="_blank">
+          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/notes-numb-minds_As.gif" alt="notes numb minds">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/nights-silent-scream_B.gif" target="_blank">
+          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/nights-silent-scream_Bs.gif" alt="nights silent scream">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/no-easy-solutions_B.gif" target="_blank">
+          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/no-easy-solutions_Bs.gif" alt="no easy solutions">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/ignorance-to-empathy_B.gif" target="_blank">
+          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/ignorance-to-empathy_Bs.gif" alt="ignorance to empathy">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/eat-the-rich_B.gif" target="_blank">
+          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/eat-the-rich_Bs.gif" alt="eat the rich">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/fades-fangs-vanish_A.gif" target="_blank">
+          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/fades-fangs-vanish_As.gif" alt="fades fangs vanish">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/blue-memories-fade_B.gif" target="_blank">
+          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/blue-memories-fade_Bs.gif" alt="blue memories fade">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/passion-persists-here_B.gif" target="_blank">
+          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/passion-persists-here_Bs.gif" alt="passion persists here">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/embrace-olive-diversity_B.gif" target="_blank">
+          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/embrace-olive-diversity_Bs.gif" alt="embrace olive diversity">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/healing-amidst-neglect_A.gif" target="_blank">
+          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/healing-amidst-neglect_As.gif" alt="healing amidst neglect">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/sex-with-cops_B.gif" target="_blank">
+          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/sex-with-cops_Bs.gif" alt="sex with cops">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/joy-conquers-sorrow_B.gif" target="_blank">
+          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/joy-conquers-sorrow_Bs.gif" alt="joy conquers sorrow">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/forget-me-not_A.gif" target="_blank">
+          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/forget-me-not_As.gif" alt="forget me not">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/blossoms-reclaim-concrete_A.gif" target="_blank">
+          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/blossoms-reclaim-concrete_As.gif" alt="blossoms reclaim concrete">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/provocative-urban-expression_B.gif" target="_blank">
+          <img class="img-4" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/provocative-urban-expression_Bs.gif" alt="provocative urban expression">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/smudged-heartbreak-tales_B.gif" target="_blank">
+          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/smudged-heartbreak-tales_Bs.gif" alt="smudged heartbreak tales">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/unmask-forgotten-triumphs_A.gif" target="_blank">
+          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/unmask-forgotten-triumphs_As.gif" alt="unmask forgotten triumphs">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/whispers-conceal-truth_A.gif" target="_blank">
+          <img class="img-2" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/whispers-conceal-truth_As.gif" alt="whispers conceal truth">
+        </a>
+        <a href="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/wipe-transform-empower_B.gif" target="_blank">
+          <img class="img" src="https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/wipe-transform-empower_Bs.gif" alt="wipe transform empower">
+        </a>
     </div>
+      <div class="btns">
+      <button onclick="toggleClassName('add')">+</button>
+      <button onclick="toggleClassName('remove')">-</button>
+      </div>
+
+    <script>
+    var zoomedTimes = 0;
+    var limit = 2;
+    function toggleClassName(action) {
+      var div = document.getElementById('frame');
+      var className = 'zoomed';
+
+      if (action === 'add' && zoomedTimes < limit) {
+          div.classList.add(className + (++zoomedTimes));
+      } else if (action === 'remove' && zoomedTimes > 0) {
+          div.classList.remove(className + (zoomedTimes--));
+      }
+    }
+    </script>
   </body>
 </html>
