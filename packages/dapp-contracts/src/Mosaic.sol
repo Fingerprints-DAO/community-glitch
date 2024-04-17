@@ -51,10 +51,11 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
 
   uint256 private _nextTokenId;
   string private baseURI; /// @notice The base URI of the contract.
-  mapping(bytes32 proof => bool) private usedProofs; /// @notice The used proofs.
+  mapping(bytes32 proof => bool used) private usedProofs; /// @notice The used proofs.
   uint16 private constant MAX_SUPPLY = 510; /// @notice The maximum number of tokens that can be minted.
   uint8 private constant MAX_NUMBER_PER_MINT = 10; /// @notice The maximum number of tokens that can be minted at once.
   uint256 public constant PRICE_PER_TOKEN = 0.025 ether; /// @notice The price of a refresh token.
+  uint16 public constant DISCOUNT = 150; /// @notice 10% discount for allowlisted users.
   address payable public fundsReceiverAddress; /// @notice The address of the funds receiver.
   bytes32 public allowlistRoot; /// @notice The root of the allowlist merkle tree.
 
@@ -104,8 +105,10 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     _mintTokens(recipient, _amount);
   }
 
-  function claim(bytes32[] calldata proof, address recipient, uint8 _amount) external {
+  function claim(bytes32[] calldata proof, address recipient, uint8 _amount) external payable  {
     if (!checkMerkleProof(proof, _msgSender(), _amount, allowlistRoot)) revert InvalidProof();
+
+    if (msg.value < ((PRICE_PER_TOKEN * _amount) - ((PRICE_PER_TOKEN * DISCOUNT) / 1000) * _amount)) revert InsufficientFunds();
 
     _mintTokens(recipient, _amount);
     usedProofs[keccak256(abi.encodePacked(proof))] = true;
