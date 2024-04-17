@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      :root {
+        --variable-collection-fp-links: rgba(110, 204, 221, 1);
+        --variable-collection-bg-color: rgba(254, 249, 255, 1);
+      }
+      html, body, div, span, applet, object, iframe,
+      h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+      a, abbr, acronym, address, big, cite, code,
+      del, dfn, em, img, ins, kbd, q, s, samp,
+      small, strike, strong, sub, sup, tt, var,
+      b, u, i, center,
+      dl, dt, dd, ol, ul, li,
+      fieldset, form, label, legend,
+      table, caption, tbody, tfoot, thead, tr, th, td,
+      article, aside, canvas, details, embed, 
+      figure, figcaption, footer, header, hgroup, 
+      menu, nav, output, ruby, section, summary,
+      time, mark, audio, video {
+          margin: 0;
+          padding: 0;
+          border: 0;
+          font-size: 100%;
+          font: inherit;
+          vertical-align: baseline;
+      }
+      a {
+        display: inline-flex;
+      }
+      .frame {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        align-items: flex-start;
+        gap: 0px 0px;
+        position: relative;
+      }
+
+
+      .frame img {
+        position: relative;
+        object-fit: cover;
+        display: inline;
+      }
+
+      /* Tamanhos padrões */
+      .img { width: 156px; height: auto; }
+      .img-2 { width: 104px; height: auto; }
+      .img-4 { width: 124px; height: auto; }
+
+      /* Ajustes para telas médias (md) */
+      @media (max-width: 768px) {
+        .img { width: 91px; height: auto; }
+        .img-2 { width: 60.9px; height: auto; }
+        .img-4 { width: 72.8px; height: auto; }
+      }
+
+      /* Ajustes para telas pequenas (sm) */
+      @media (max-width: 576px) {
+        .img { width: 65px; height: auto; }  
+        .img-2 { width: 43.5px; height: auto; }
+        .img-4 { width: 52px; height: auto; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="frame">
+      {{#each images}}
+        <a href="{{../fullImagePath}}{{this.image}}_{{this.version}}.gif" target="_blank">
+          <img class="{{this.class}}" src="{{../imagePath}}{{this.image}}_{{this.version}}s.gif" alt="{{this.name}}">
+        </a>
+      {{/each}}
+    </div>
+  </body>
+</html>

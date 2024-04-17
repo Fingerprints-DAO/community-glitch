@@ -1,3 +1,4 @@
+// @ts-nocheck
 const csv = require('csv-parser')
 const fs = require('fs-extra')
 const path = require('path')
@@ -86,7 +87,6 @@ async function createJsonFiles() {
       if (dir !== 'A') {
         content = {
           ...content,
-          image: dir === 'D' ? `${imagePath}empty.png` : content.image,
           attributes: [
             { trait_type: 'seconds', value: '0' },
             {
