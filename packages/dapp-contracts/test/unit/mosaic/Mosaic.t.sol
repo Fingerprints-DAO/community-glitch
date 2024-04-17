@@ -48,4 +48,13 @@ contract MosaicTest is PRBTest, StdCheats {
     string memory tokenURI = mosaic.tokenURI(1);
     assertEq(tokenURI, string(abi.encodePacked(baseURI, '1')), 'Token URI does not contain base URI');
   }
+
+  function test_setZeroFundReceiver() public {
+    // Arrange
+    address zeroAddress = address(0);
+
+    // Act and Assert
+    vm.expectRevert(abi.encodeWithSelector(Mosaic.ZeroAddress.selector));
+    mosaic.setFundsReceiverAddress(zeroAddress);
+  }
 }

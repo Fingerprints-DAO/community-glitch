@@ -149,6 +149,31 @@ contract MosaicMintTest is PRBTest, StdCheats, TestHelpers {
     }
   }
 
+  function test_claimWithProofButInsufficientFunds() public {
+    // Arrange
+    uint8 amountToMint = 5;
+
+    // Create merkle root and set it
+    Merkle m = new Merkle();
+    bytes32[] memory data = new bytes32[](2);
+    data[0] = keccak256(bytes.concat(keccak256(abi.encode(alice, amountToMint))));
+    data[1] = keccak256(bytes.concat(keccak256(abi.encode(bob, amountToMint))));
+    bytes32 root = m.getRoot(data);
+
+    // Act
+    vm.prank(address(this));
+    mosaic.setMerkleRoots(root);
+    bytes32[] memory proof = m.getProof(data, 0); // will get proof for 0x2 value
+
+    uint256 value = 1;
+    vm.deal(alice, 0.01 ether);
+    vm.prank(alice);
+
+    // Act and Assert
+    vm.expectRevert(abi.encodeWithSelector(Mosaic.InsufficientFunds.selector));
+    mosaic.claim{value: value}(proof, alice, amountToMint);
+  }
+
   function test_cannotReuseProof() public {
     // Arrange
     uint8 amountToMint = 5;
