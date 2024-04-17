@@ -105,7 +105,7 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
   }
 
   function claim(bytes32[] calldata proof, address recipient, uint8 _amount) external {
-    if (!checkMerkleProof(proof, _msgSender(), allowlistRoot)) revert InvalidProof();
+    if (!checkMerkleProof(proof, _msgSender(), _amount, allowlistRoot)) revert InvalidProof();
 
     _mintTokens(recipient, _amount);
     usedProofs[keccak256(abi.encodePacked(proof))] = true;
@@ -161,8 +161,8 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
    * @param _address The address to be checked.
    * @param _root The merkle root.
    */
-  function checkMerkleProof(bytes32[] calldata _merkleProof, address _address, bytes32 _root) public view returns (bool) {
-    bytes32 leaf = keccak256(abi.encodePacked(_address));
+  function checkMerkleProof(bytes32[] calldata _merkleProof, address _address, uint8 _amount, bytes32 _root) public view returns (bool) {
+        bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(_address, _amount))));
 
     if (usedProofs[keccak256(abi.encodePacked(_merkleProof))]) revert InvalidProof();
 
