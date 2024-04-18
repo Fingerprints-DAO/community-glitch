@@ -120,7 +120,7 @@ export const AuctionSidebar = (props: FlexProps) => {
                       start date:
                     </Text>{' '}
                     <Text as={'span'}>
-                      sunday, april 28 at 1 PM edt / 7pm cest
+                      sunday, april 28 at 1pm edt / 7pm cest
                     </Text>
                   </ListItem>
                   <ListItem mb={2}>
