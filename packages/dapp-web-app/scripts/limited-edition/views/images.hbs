@@ -49,92 +49,71 @@
         transition: all 0.05s cubic-bezier(0.46, 0.03, 0.52, 0.96);
       }
 
-      .img { width: 156px; height: auto; }
-      .img-2 { width: 104px; height: auto; }
-      .img-4 { width: 124px; height: auto; }
+      .img { 
+        width: 172.8px;
+        height: 216px;
+      } 
+      .img1 { 
+        width: 216px;
+        height: 172.8px;
+      }
+      .img2 { 
+        width: 144px;
+        height: 216px;
+      }
+      .img3 { 
+        width: 144px;
+        height: 172.8px;
+      }
 
       /* Ajustes para telas médias (md) */
       @media (max-width: 768px) {
-        .img { width: 91px; height: auto; }
-        .img-2 { width: 60.9px; height: auto; }
-        .img-4 { width: 72.8px; height: auto; }
+        .img { 
+          width: 96px;
+          height: 120px;
+        } 
+        .img1 { 
+          width: 120px;
+          height: 96px;
+        }
+        .img2 { 
+          width: 80px;
+          height: 120px;
+        }
+        .img3 { 
+          width: 80px;
+          height: 96px;
+        }
       }
 
       /* Ajustes para telas pequenas (sm) */
       @media (max-width: 576px) {
-        .img { width: 65px; height: auto; }  
-        .img-2 { width: 43.5px; height: auto; }
-        .img-4 { width: 52px; height: auto; }
-      }
-
-
-      .zoomed1 .img { width: 312px; height: auto; }
-      .zoomed1 .img-2 { width: 208px; height: auto; }
-      .zoomed1 .img-4 { width: 248px; height: auto; }
-
-      .zoomed2 .img { width: 468px; height: auto; }
-      .zoomed2 .img-2 { width: 312px; height: auto; }
-      .zoomed2 .img-4 { width: 372px; height: auto; }
-
-      .btns {
-        position: fixed;
-        bottom: 10px;
-        right: 10px;
-        z-index: 9999;
-      }
-      button {
-        background-color: #fff;
-        border: 2px solid #000;
-        color: #000;
-        cursor: pointer;
-        margin-left: 0;
-        opacity: 0.8;
-        transition: all 0.2s ease;
-        font-size: 25px;
-        width: 30px;
-        height: 30px;
-        text-align: center;
-        vertical-align: middle;
-        line-height: 25px;
-        outline: none;
-      }
-      button:hover {
-        opacity: 1;
-      }
-      button:active {
-        opacity: 1;
-        background-color: #000;
-        border-color: #fff;
-        color: #fff;
+        .img { 
+          width: 67.2px;
+          height: 84px;
+        } 
+        .img1 { 
+          width: 84px;
+          height: 67.2px;
+        }
+        .img2 { 
+          width: 56px;
+          height: 84px;
+        }
+        .img3 { 
+          width: 56px;
+          height: 67.2px;
+        }
       }
     </style>
   </head>
   <body>
-    <div class="frame" id="frame">
+    <div class="frame">
       {{#each images}}
         <a href="{{../fullImagePath}}{{this.image}}_{{this.version}}.gif" target="_blank">
           <img class="{{this.class}}" src="{{../imagePath}}{{this.image}}_{{this.version}}s.gif" alt="{{this.name}}">
         </a>
       {{/each}}
     </div>
-      <div class="btns">
-      <button onclick="toggleClassName('add')">+</button>
-      <button onclick="toggleClassName('remove')">-</button>
-      </div>
-
-    <script>
-    var zoomedTimes = 0;
-    var limit = 2;
-    function toggleClassName(action) {
-      var div = document.getElementById('frame');
-      var className = 'zoomed';
-
-      if (action === 'add' && zoomedTimes < limit) {
-          div.classList.add(className + (++zoomedTimes));
-      } else if (action === 'remove' && zoomedTimes > 0) {
-          div.classList.remove(className + (zoomedTimes--));
-      }
-    }
-    </script>
   </body>
 </html>
