@@ -138,7 +138,7 @@ export default function Auction() {
                       Start date:
                     </Text>{' '}
                     <Text as={'span'}>
-                      Thursday, April 25 at 1 PM EDT / 7pm CEST
+                      Thursday, April 25 at 1pm EDT / 7pm CEST
                     </Text>
                   </ListItem>
                   <ListItem>
@@ -146,7 +146,7 @@ export default function Auction() {
                       End date:
                     </Text>{' '}
                     <Text as={'span'}>
-                      Sunday, April 28 at 1 PM EDT / 7pm CEST
+                      Sunday, April 28 at 1pm EDT / 7pm CEST
                     </Text>
                   </ListItem>
                   <ListItem>
@@ -182,12 +182,35 @@ export default function Auction() {
             </Box>
             <Box as={'section'}>
               <TextSection title="Description">
-                50 photos of erased graffiti are animated to gifs by inserting
-                liminal afterimages of what was: faces, text, indecipherable
-                symbols. A series of abstract painting-like images blurring the
-                border between photography, painting and digital image and
-                animation. Information that has been erased becomes information
-                again.
+                glitch by misha de ridder, released by Fingerprints, is a
+                collection of 50 animated GIFs, stemming from photographs of
+                erased graffiti. The act of erasing can involve both destruction
+                and generation, transformation and reimagination — allowing for
+                new possibilities to emerge.
+                <br />
+                <br />
+                Playing with notions of loss and re-coding, misha has
+                re-animated the graffiti, inserting liminal afterimages of what
+                was once there: faces, text, and indecipherable symbols. The
+                result is a series of images that blur the lines between
+                abstract painting, photography, animation, and token art. glitch
+                meditates on the idea of “unwanted information,” — the
+                delineation between messages that are wanted, seen, and
+                proliferated, and those that are not. Like memes for the public
+                space, graffiti is a subversive, spontaneous form of
+                communication meant for the masses.
+                <br />
+                <br />
+                As a commentary on secondary market dynamics, misha has also
+                introduced a twist: each time a token is traded, the artwork
+                changes. On the first trade, the animation vanishes. Subsequent
+                trades cause the image to fade, until eventually, the token
+                points to a blank placeholder.
+                <br />
+                <br />
+                Collectors can pay to restore the image to the minted original,
+                or choose to burn the token to redeem it for a limited edition,
+                physical fine art print through a collaboration with Assembly.
               </TextSection>
             </Box>
             <Box as={'section'}>
