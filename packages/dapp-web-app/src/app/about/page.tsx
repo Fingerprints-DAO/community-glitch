@@ -139,7 +139,7 @@ export default function About() {
         <SubSection title="1/1 auction">
           Ranked auction with rebate
           <LineSpace />
-          April 25, 2024 at 1:00 p.m. ET / 7:00 p.m. CET
+          Thursday, April 25 at 1pm EDT / 7pm CEST
           <br />
           0.04
           <EtherSymbol /> starting bid
@@ -147,7 +147,7 @@ export default function About() {
         </SubSection>
         <LineSpace />
         <SubSection title="edition mint">
-          April 28, 2024 1:00 p.m. ET / 7:00 p.m. CET
+          Sunday, April 28 at 1pm EDT / 7pm CEST
           <br />
           0.025
           <EtherSymbol /> fixed price
