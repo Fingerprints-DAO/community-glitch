@@ -54,8 +54,8 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
   mapping(bytes32 proof => bool used) private usedProofs; /// @notice The used proofs.
   uint16 private constant MAX_SUPPLY = 510; /// @notice The maximum number of tokens that can be minted.
   uint8 private constant MAX_NUMBER_PER_MINT = 10; /// @notice The maximum number of tokens that can be minted at once.
-  uint256 public constant PRICE_PER_TOKEN = 0.025 ether; /// @notice The price of a refresh token.
-  uint16 public constant DISCOUNT = 150; /// @notice 10% discount for allowlisted users.
+  uint16 public constant DISCOUNT_PERCENTAGE = 150; /// @notice 15% discount for allowlisted users.
+  uint256 public tokenPrice = 0.025 ether; /// @notice The price of a refresh token.
   address payable public fundsReceiverAddress; /// @notice The address of the funds receiver.
   bytes32 public allowlistRoot; /// @notice The root of the allowlist merkle tree.
 
@@ -86,12 +86,20 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
   }
 
   /**
+   * @dev Allows the owner to set the price of a token
+   * @param _tokenPrice The new price of a token
+   */
+  function setTokenPrice(uint256 _tokenPrice) external onlyOwner {
+    tokenPrice = _tokenPrice;
+  }
+
+  /**
    * @dev Mints a new token and assigns it to the specified recipient
    * @param recipient The address to receive the minted token
    * @param _amount The amount of tokens to mint
    */
   function mint(address recipient, uint8 _amount) external payable {
-    if (msg.value < PRICE_PER_TOKEN * _amount) revert InsufficientFunds();
+    if (msg.value < tokenPrice * _amount) revert InsufficientFunds();
 
     _mintTokens(recipient, _amount);
   }
@@ -108,7 +116,7 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
   function claim(bytes32[] calldata proof, address recipient, uint8 _amount) external payable  {
     if (!checkMerkleProof(proof, _msgSender(), _amount, allowlistRoot)) revert InvalidProof();
 
-    if (msg.value < ((PRICE_PER_TOKEN * _amount) - ((PRICE_PER_TOKEN * DISCOUNT) / 1000) * _amount)) revert InsufficientFunds();
+    if (msg.value < ((tokenPrice * _amount) - ((tokenPrice * DISCOUNT_PERCENTAGE) / 1000) * _amount)) revert InsufficientFunds();
 
     _mintTokens(recipient, _amount);
     usedProofs[keccak256(abi.encodePacked(proof))] = true;
@@ -127,7 +135,7 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     if (tokenId > MAX_SUPPLY) revert MaxSupplyExceeded();
 
     for (uint8 i = 0; i < _amount; i++) {
-      _mint(recipient, ++_nextTokenId);
+      _safeMint(recipient, ++_nextTokenId);
     }
   }
 
