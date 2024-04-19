@@ -14,6 +14,7 @@ contract MosaicMintTest is PRBTest, StdCheats, TestHelpers {
   address internal alice = vm.addr(3);
   address internal bob = vm.addr(4);
   uint256 private constant price = 0.025 ether;
+  bytes32[] private emptyProof = new bytes32[](2);
 
   function setUp() public virtual {
     uint256 _startTime = block.timestamp - 1000;
@@ -30,7 +31,7 @@ contract MosaicMintTest is PRBTest, StdCheats, TestHelpers {
 
     // Act and Assert
     vm.expectRevert(abi.encodeWithSelector(Mosaic.InvalidStartEndTime.selector, _startTime, _endTime));
-    mosaic.mint{value: price}(address(0x123), 1);
+    mosaic.mint{value: price}(address(0x123), 1, emptyProof);
   }
 
   function test_shouldNotMintIfInvalidTimeEnded() public {
@@ -41,7 +42,7 @@ contract MosaicMintTest is PRBTest, StdCheats, TestHelpers {
 
     // Act and Assert
     vm.expectRevert(abi.encodeWithSelector(Mosaic.InvalidStartEndTime.selector, _startTime, _endTime));
-    mosaic.mint{value: price}(address(0x123), 1);
+    mosaic.mint{value: price}(address(0x123), 1, emptyProof);
   }
 
   function test_shouldRevertIfRecipientAddressIsInvalid() public {
@@ -50,7 +51,7 @@ contract MosaicMintTest is PRBTest, StdCheats, TestHelpers {
 
     // Act and Assert
     vm.expectRevert(abi.encodeWithSelector(Mosaic.ZeroAddress.selector));
-    mosaic.mint{value: price}(recipient, 1);
+    mosaic.mint{value: price}(recipient, 1, emptyProof);
   }
 
   function test_shouldMintSpecifiedAmountOfTokensByAdmin() public {
@@ -60,7 +61,7 @@ contract MosaicMintTest is PRBTest, StdCheats, TestHelpers {
 
     // Act
     vm.prank(address(this));
-    mosaic.mint{value: price * amountToMint}(recipient, amountToMint);
+    mosaic.mint{value: price * amountToMint}(recipient, amountToMint, emptyProof);
 
     // Assert
     for (uint i = 1; i < amountToMint + 1; i++) {
@@ -75,7 +76,7 @@ contract MosaicMintTest is PRBTest, StdCheats, TestHelpers {
     // Act
     vm.prank(address(this));
     vm.expectRevert(abi.encodeWithSelector(Mosaic.InsufficientFunds.selector));
-    mosaic.mint{value: 0}(recipient, 1);
+    mosaic.mint{value: 0}(recipient, 1, emptyProof);
   }
 
   function test_shouldRevertIfMaxSupplyIsExceeded() public {
@@ -86,11 +87,11 @@ contract MosaicMintTest is PRBTest, StdCheats, TestHelpers {
     // Act and Assert
     for (uint i = 0; i < amountToMint; i++) {
       vm.prank(address(this));
-      mosaic.mint{value: price}(recipient, 1);
+      mosaic.mint{value: price}(recipient, 1, emptyProof);
     }
 
     vm.expectRevert(abi.encodeWithSelector(Mosaic.MaxSupplyExceeded.selector));
-    mosaic.mint{value: price}(recipient, 1);
+    mosaic.mint{value: price}(recipient, 1, emptyProof);
   }
 
   function test_shouldRevertIfMaxNumberPerMintIsExceeded() public {
@@ -100,7 +101,7 @@ contract MosaicMintTest is PRBTest, StdCheats, TestHelpers {
 
     // Act and Assert
     vm.expectRevert(abi.encodeWithSelector(Mosaic.MaxNumberOfMintedTokensExceeded.selector));
-    mosaic.mint{value: price * amountToMint}(recipient, amountToMint);
+    mosaic.mint{value: price * amountToMint}(recipient, amountToMint, emptyProof);
   }
 
   function test_mintAndWithdraw() public {
@@ -111,7 +112,7 @@ contract MosaicMintTest is PRBTest, StdCheats, TestHelpers {
 
     vm.prank(address(this));
     mosaic.setFundsReceiverAddress(newFundsReceiverAddress);
-    mosaic.mint{value: price * amountToMint}(recipient, amountToMint);
+    mosaic.mint{value: price * amountToMint}(recipient, amountToMint, emptyProof);
 
     // Assert
     uint256 balanceBefore = address(newFundsReceiverAddress).balance;
@@ -223,5 +224,32 @@ contract MosaicMintTest is PRBTest, StdCheats, TestHelpers {
     // Act and Assert
     vm.expectRevert(abi.encodeWithSelector(Mosaic.InvalidProof.selector));
     mosaic.claim(proof, bob, amountToMint);
+  }
+
+  function test_discoutedMint() public {
+    // Arrange
+    uint8 amountToMint = 5;
+
+    // Create merkle root and set it
+    Merkle m = new Merkle();
+    bytes32[] memory data = new bytes32[](2);
+    data[0] = keccak256(bytes.concat(keccak256(abi.encode(alice))));
+    data[1] = keccak256(bytes.concat(keccak256(abi.encode(bob))));
+    bytes32 root = m.getRoot(data);
+
+    // Act
+    vm.prank(address(this));
+    mosaic.setDiscountAllowlistRoot(root);
+    bytes32[] memory proof = m.getProof(data, 0);
+
+    uint256 value = ((price * amountToMint) * (100 - mosaic.DISCOUNT_PERCENTAGE())) / 100;
+    vm.deal(alice, 100 ether);
+    vm.prank(alice);
+    mosaic.mint{value: value}(alice, amountToMint, proof);
+
+    // Assert
+    for (uint i = 1; i < amountToMint + 1; i++) {
+      assertEq(mosaic.ownerOf(i), alice, 'Incorrect token owner');
+    }
   }
 }

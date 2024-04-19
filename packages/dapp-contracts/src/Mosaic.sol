@@ -64,7 +64,7 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
   mapping(bytes32 proof => bool used) private usedProofs; /// @notice The used proofs.
   uint16 private constant MAX_SUPPLY = 510; /// @notice The maximum number of tokens that can be minted.
   uint8 private constant MAX_NUMBER_PER_MINT = 10; /// @notice The maximum number of tokens that can be minted at once.
-  uint16 public constant DISCOUNT_PERCENTAGE = 150; /// @notice 15% discount for allowlisted users.
+  uint16 public constant DISCOUNT_PERCENTAGE = 15; /// @notice 15% discount for allowlisted users.
   uint256 public tokenPrice = 0.025 ether; /// @notice The price of a refresh token.
   address payable public fundsReceiverAddress; /// @notice The address of the funds receiver.
   bytes32 private discountAllowlistRoot; /// @notice The root of the discount allowlist merkle tree.
@@ -129,7 +129,6 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     _config = Config({startTime: _startTime, endTime: _endTime});
   }
 
-
   /**
    * @dev Allows the owner to set the root of the discount allowlist merkle tree
    * @param _allowlistRoot The new root of the discount allowlist merkle tree
@@ -155,12 +154,29 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
   }
 
   /**
+   * @dev Calculates the price of minting a specified amount of tokens
+   * @param _amount The amount of tokens to mint
+   * @param _isDiscounted Whether the user is on the discount allowlist
+   * @return The price of minting the specified amount of tokens
+   */
+  function calculatePrice(uint8 _amount, bool _isDiscounted) public view returns (uint256) {
+    uint256 price = tokenPrice * _amount;
+    if (_isDiscounted) {
+      price = (price * (100 - DISCOUNT_PERCENTAGE)) / 100;
+    }
+    return price;
+  }
+
+  /**
    * @dev Mints a new token and assigns it to the specified recipient
    * @param recipient The address to receive the minted token
    * @param _amount The amount of tokens to mint
    */
-  function mint(address recipient, uint8 _amount) external payable validConfig validTime {
-    if (msg.value < tokenPrice * _amount) revert InsufficientFunds();
+  function mint(address recipient, uint8 _amount, bytes32[] calldata _merkleProof) external payable validConfig validTime {
+    bool isDiscounted = checkDiscountMerkleProof(_merkleProof, _msgSender());
+
+    uint256 price = calculatePrice(_amount, isDiscounted);
+    if (msg.value < price) revert InsufficientFunds();
 
     _mintTokens(recipient, _amount);
   }
@@ -175,7 +191,7 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
   }
 
   function claim(bytes32[] calldata proof, address recipient, uint8 _amount) external validConfig validTime {
-    if (!checkMerkleProof(proof, _msgSender(), _amount, freeClaimAllowlistRoot)) revert InvalidProof();
+    if (!checkFreeClaimAllowlist(proof, _msgSender(), _amount)) revert InvalidProof();
 
     _mintTokens(recipient, _amount);
     usedProofs[keccak256(abi.encodePacked(proof))] = true;
@@ -229,14 +245,25 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
    * @dev Checks if a merkle proof is valid.
    * @param _merkleProof The merkle proof to be checked.
    * @param _address The address to be checked.
-   * @param _root The merkle root.
    */
-  function checkMerkleProof(bytes32[] calldata _merkleProof, address _address, uint8 _amount, bytes32 _root) public view returns (bool) {
+  function checkFreeClaimAllowlist(bytes32[] calldata _merkleProof, address _address, uint8 _amount) public view returns (bool) {
     bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(_address, _amount))));
 
     if (usedProofs[keccak256(abi.encodePacked(_merkleProof))]) revert InvalidProof();
 
-    return MerkleProof.verify(_merkleProof, _root, leaf);
+    return MerkleProof.verify(_merkleProof, freeClaimAllowlistRoot, leaf);
+  }
+
+  /**
+   * @dev Checks the validity of a discount Merkle proof for a given address.
+   * @param _merkleProof The Merkle proof array.
+   * @param _address The address for which the Merkle proof is being checked.
+   * @return A boolean indicating whether the Merkle proof is valid or not.
+   */
+  function checkDiscountMerkleProof(bytes32[] calldata _merkleProof, address _address) public view returns (bool) {
+    bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(_address))));
+
+    return MerkleProof.verify(_merkleProof, discountAllowlistRoot, leaf);
   }
 
   /**

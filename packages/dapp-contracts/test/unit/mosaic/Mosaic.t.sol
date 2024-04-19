@@ -12,9 +12,10 @@ import {Mosaic} from '../../../src/Mosaic.sol';
 
 contract MosaicTest is PRBTest, StdCheats {
   Mosaic internal mosaic;
+  bytes32[] private emptyProof = new bytes32[](2);
 
   function setUp() public virtual {
-      uint256 _startTime = block.timestamp - 1000;
+    uint256 _startTime = block.timestamp - 1000;
     uint256 _endTime = block.timestamp + 1000;
     mosaic = new Mosaic(address(this), 'https://google.com/');
     mosaic.setConfig(_startTime, _endTime);
@@ -42,7 +43,7 @@ contract MosaicTest is PRBTest, StdCheats {
     string memory baseURI = 'http://example.com/';
 
     // Act
-    mosaic.mint{value: 0.025 ether}(msg.sender, 1);
+    mosaic.mint{value: 0.025 ether}(msg.sender, 1, emptyProof);
     mosaic.setBaseURI(baseURI);
 
     // assert if tokenURI containes baseURI
