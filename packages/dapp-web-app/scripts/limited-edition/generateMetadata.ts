@@ -59,9 +59,7 @@ function generateMetadata(nftIndex: number) {
       },
     ],
   }
-  fs.writeJsonSync(path.join(dirPath, `${nftIndex}.json`), content, {
-    spaces: 2,
-  })
+  fs.writeJsonSync(path.join(dirPath, `${nftIndex}.json`), content)
 
   console.log(
     `Metadata generated and saved in public/mint-edition/config/${nftIndex}.json`,

@@ -2,6 +2,7 @@
 const fs = require('fs')
 const handlebars = require('handlebars')
 const path = require('path')
+const minify = require('html-minifier').minify
 
 const source = fs.readFileSync(
   path.join(__dirname, './views/images.hbs'),
@@ -9,9 +10,9 @@ const source = fs.readFileSync(
 )
 const template = handlebars.compile(source)
 const imagePath =
-  'https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/arts/'
+  'https://ipfs.io/ipfs/QmNVTPufLjgRqduLcnYwdz9S7m6MEq3cYHHGgJGB8wAp2A/NFT_v2-small/'
 const fullImagePath =
-  'https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/arts/'
+  'https://ipfs.io/ipfs/QmNVTPufLjgRqduLcnYwdz9S7m6MEq3cYHHGgJGB8wAp2A/NFT_v2/'
 
 function generateHtml(nftIndex: number) {
   const imagesConfig = require(
@@ -22,7 +23,13 @@ function generateHtml(nftIndex: number) {
 
   fs.writeFileSync(
     path.join(__dirname, `../../public/mint-edition/html/${nftIndex}.html`),
-    html,
+    minify(html, {
+      minifyCSS: true,
+      minifyJs: true,
+      removeComments: true,
+      collapseInlineTagWhitespace: true,
+      collapseWhitespace: true,
+    }),
   )
   console.log(
     `HTML gerado e salvo em public/mint-edition/html/${nftIndex}.html`,
