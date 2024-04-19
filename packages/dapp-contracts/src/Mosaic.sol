@@ -49,7 +49,17 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
    */
   error InvalidProof();
 
-  uint256 private _nextTokenId;
+  /**
+   * @dev Error emitted when the start time is greater than the end time.
+   */
+  error InvalidStartEndTime(uint256 startTime, uint256 endTime);
+
+  /**
+   * @dev Error emitted when the config has not been set.
+   */
+  error ConfigNotSet();
+
+  uint256 private _nextTokenId; /// @notice The next token ID to be minted.
   string private baseURI; /// @notice The base URI of the contract.
   mapping(bytes32 proof => bool used) private usedProofs; /// @notice The used proofs.
   uint16 private constant MAX_SUPPLY = 510; /// @notice The maximum number of tokens that can be minted.
@@ -58,6 +68,15 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
   uint256 public tokenPrice = 0.025 ether; /// @notice The price of a refresh token.
   address payable public fundsReceiverAddress; /// @notice The address of the funds receiver.
   bytes32 public allowlistRoot; /// @notice The root of the allowlist merkle tree.
+  Config private _config; /// @notice The mint configuration.
+
+  /// @dev Represents the mint configuration.
+  struct Config {
+    /// @notice The start time of the mint.
+    uint256 startTime;
+    /// @notice The end time of the mint.
+    uint256 endTime;
+  }
 
   /**
    * @dev Constructor function
@@ -75,6 +94,38 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
   modifier _onlyOwner() {
     if (_msgSender() != owner()) revert OnlyOwner();
     _;
+  }
+
+  /**
+   * @dev Modifier to check if the configuration is valid.
+   * @dev Throws ConfigNotSet error if the start time is not set.
+   */
+  modifier validConfig() {
+    if (_config.startTime == 0) revert ConfigNotSet();
+    _;
+  }
+
+  /**
+   * @dev Modifier to check if the current block timestamp is within the specified start and end time.
+   * @dev Throws InvalidStartEndTime error if the current timestamp is not between the start and end time.
+   */
+  modifier validTime() {
+    Config memory config = _config;
+    if (block.timestamp >= config.endTime || block.timestamp <= config.startTime) revert InvalidStartEndTime(config.startTime, config.endTime);
+    _;
+  }
+
+  /**
+   * @notice Sets the configuration parameters for the auction.
+   * @dev This function can only be called by an admin. It can be used to set the start time, end time,
+   *  minimum bid increment in WEI, and starting bid amount.
+   * @param _startTime Auction start time
+   * @param _endTime Auction end time
+   */
+  function setConfig(uint256 _startTime, uint256 _endTime) external _onlyOwner {
+    if (_startTime == 0 || _startTime >= _endTime) revert InvalidStartEndTime(_startTime, _endTime);
+
+    _config = Config({startTime: _startTime, endTime: _endTime});
   }
 
   /**
@@ -98,7 +149,7 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
    * @param recipient The address to receive the minted token
    * @param _amount The amount of tokens to mint
    */
-  function mint(address recipient, uint8 _amount) external payable {
+  function mint(address recipient, uint8 _amount) external payable validConfig validTime {
     if (msg.value < tokenPrice * _amount) revert InsufficientFunds();
 
     _mintTokens(recipient, _amount);
@@ -113,7 +164,7 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     _mintTokens(recipient, _amount);
   }
 
-  function claim(bytes32[] calldata proof, address recipient, uint8 _amount) external  {
+  function claim(bytes32[] calldata proof, address recipient, uint8 _amount) external validConfig validTime {
     if (!checkMerkleProof(proof, _msgSender(), _amount, allowlistRoot)) revert InvalidProof();
 
     _mintTokens(recipient, _amount);
@@ -171,7 +222,7 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
    * @param _root The merkle root.
    */
   function checkMerkleProof(bytes32[] calldata _merkleProof, address _address, uint8 _amount, bytes32 _root) public view returns (bool) {
-        bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(_address, _amount))));
+    bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(_address, _amount))));
 
     if (usedProofs[keccak256(abi.encodePacked(_merkleProof))]) revert InvalidProof();
 
@@ -203,5 +254,13 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
    */
   function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721URIStorage, ERC721Enumerable) returns (bool) {
     return super.supportsInterface(interfaceId);
+  }
+
+  /**
+   * @dev Returns the current configuration of the auction.
+   * @return The auction configuration.
+   */
+  function getConfig() external view returns (Config memory) {
+    return _config;
   }
 }

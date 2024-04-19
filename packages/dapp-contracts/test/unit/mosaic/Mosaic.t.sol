@@ -13,10 +13,11 @@ import {Mosaic} from '../../../src/Mosaic.sol';
 contract MosaicTest is PRBTest, StdCheats {
   Mosaic internal mosaic;
 
-  /// @dev A function invoked before each test_ case is run.
   function setUp() public virtual {
-    // Instantiate the contract-under-test.
+      uint256 _startTime = block.timestamp - 1000;
+    uint256 _endTime = block.timestamp + 1000;
     mosaic = new Mosaic(address(this), 'https://google.com/');
+    mosaic.setConfig(_startTime, _endTime);
   }
 
   // DEPLOY
@@ -56,5 +57,43 @@ contract MosaicTest is PRBTest, StdCheats {
     // Act and Assert
     vm.expectRevert(abi.encodeWithSelector(Mosaic.ZeroAddress.selector));
     mosaic.setFundsReceiverAddress(zeroAddress);
+  }
+
+  function test_setTokenPrice() public {
+    // Arrange
+    uint256 newTokenPrice = 0.1 ether;
+
+    // Act
+    mosaic.setTokenPrice(newTokenPrice);
+
+    // Assert
+    assertEq(mosaic.tokenPrice(), newTokenPrice, 'Token price not set');
+  }
+
+  function test_setConfig() public {
+    // Arrange
+    uint256 startTime = block.timestamp;
+    uint256 endTime = startTime + 100;
+
+    // Act
+    mosaic.setConfig(startTime, endTime);
+  }
+
+  function test_invalidConfig() public {
+    // Arrange
+    uint256 startTime = 0;
+    uint256 endTime = 100;
+
+    // Act and Assert
+    vm.expectRevert(abi.encodeWithSelector(Mosaic.InvalidStartEndTime.selector, startTime, endTime));
+    mosaic.setConfig(startTime, endTime);
+
+    // Arrange
+    uint256 startTime2 = 1;
+    uint256 endTime2 = 0;
+
+    // Act and Assert
+    vm.expectRevert(abi.encodeWithSelector(Mosaic.InvalidStartEndTime.selector, startTime2, endTime2));
+    mosaic.setConfig(startTime2, endTime2);
   }
 }

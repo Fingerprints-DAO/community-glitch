@@ -15,10 +15,33 @@ contract MosaicMintTest is PRBTest, StdCheats, TestHelpers {
   address internal bob = vm.addr(4);
   uint256 private constant price = 0.025 ether;
 
-  /// @dev A function invoked before each test_ case is run.
   function setUp() public virtual {
-    // Instantiate the contract-under-test.
+    uint256 _startTime = block.timestamp - 1000;
+    uint256 _endTime = block.timestamp + 1000;
     mosaic = new Mosaic(address(this), 'https://google.com/');
+    mosaic.setConfig(_startTime, _endTime);
+  }
+
+  function test_shouldNotMintIfInvalidTimeNotStarted() public {
+    // Arrange
+    uint256 _startTime = block.timestamp + 10000;
+    uint256 _endTime = block.timestamp + 100000;
+    mosaic.setConfig(_startTime, _endTime);
+
+    // Act and Assert
+    vm.expectRevert(abi.encodeWithSelector(Mosaic.InvalidStartEndTime.selector, _startTime, _endTime));
+    mosaic.mint{value: price}(address(0x123), 1);
+  }
+
+  function test_shouldNotMintIfInvalidTimeEnded() public {
+    // Arrange
+    uint256 _startTime = block.timestamp - 10000;
+    uint256 _endTime = block.timestamp - 1000;
+    mosaic.setConfig(_startTime, _endTime);
+
+    // Act and Assert
+    vm.expectRevert(abi.encodeWithSelector(Mosaic.InvalidStartEndTime.selector, _startTime, _endTime));
+    mosaic.mint{value: price}(address(0x123), 1);
   }
 
   function test_shouldRevertIfRecipientAddressIsInvalid() public {
