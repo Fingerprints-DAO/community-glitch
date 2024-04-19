@@ -193,8 +193,8 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
   function claim(bytes32[] calldata proof, address recipient, uint8 _amount) external validConfig validTime {
     if (!checkFreeClaimAllowlist(proof, _msgSender(), _amount)) revert InvalidProof();
 
-    _mintTokens(recipient, _amount);
     usedProofs[keccak256(abi.encodePacked(proof))] = true;
+    _mintTokens(recipient, _amount);
   }
 
   /**
