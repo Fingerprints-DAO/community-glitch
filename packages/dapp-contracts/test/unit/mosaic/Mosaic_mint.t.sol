@@ -138,40 +138,14 @@ contract MosaicMintTest is PRBTest, StdCheats, TestHelpers {
     mosaic.setMerkleRoots(root);
     bytes32[] memory proof = m.getProof(data, 0); // will get proof for 0x2 value
 
-    uint256 value = (price * amountToMint) - ((price * mosaic.DISCOUNT_PERCENTAGE() / 1000) * amountToMint);
     vm.deal(alice, 100 ether);
     vm.prank(alice);
-    mosaic.claim{value: value}(proof, alice, amountToMint);
+    mosaic.claim(proof, alice, amountToMint);
 
     // Assert
     for (uint i = 1; i < amountToMint + 1; i++) {
       assertEq(mosaic.ownerOf(i), alice, 'Incorrect token owner');
     }
-  }
-
-  function test_claimWithProofButInsufficientFunds() public {
-    // Arrange
-    uint8 amountToMint = 5;
-
-    // Create merkle root and set it
-    Merkle m = new Merkle();
-    bytes32[] memory data = new bytes32[](2);
-    data[0] = keccak256(bytes.concat(keccak256(abi.encode(alice, amountToMint))));
-    data[1] = keccak256(bytes.concat(keccak256(abi.encode(bob, amountToMint))));
-    bytes32 root = m.getRoot(data);
-
-    // Act
-    vm.prank(address(this));
-    mosaic.setMerkleRoots(root);
-    bytes32[] memory proof = m.getProof(data, 0); // will get proof for 0x2 value
-
-    uint256 value = 1;
-    vm.deal(alice, 0.01 ether);
-    vm.prank(alice);
-
-    // Act and Assert
-    vm.expectRevert(abi.encodeWithSelector(Mosaic.InsufficientFunds.selector));
-    mosaic.claim{value: value}(proof, alice, amountToMint);
   }
 
   function test_cannotReuseProof() public {
@@ -190,10 +164,8 @@ contract MosaicMintTest is PRBTest, StdCheats, TestHelpers {
     vm.prank(address(this));
     bytes32[] memory proof = m.getProof(data, 0); // will get proof for 0x2 value
 
-    uint256 value = (price * amountToMint) - ((price * mosaic.DISCOUNT_PERCENTAGE() / 1000) * amountToMint);
-    vm.deal(alice, 100 ether);
     vm.prank(alice);
-    mosaic.claim{value: value}(proof, alice, amountToMint);
+    mosaic.claim(proof, alice, amountToMint);
 
     // Assert
     for (uint i = 1; i < amountToMint + 1; i++) {
@@ -225,9 +197,8 @@ contract MosaicMintTest is PRBTest, StdCheats, TestHelpers {
     data[1] = keccak256(abi.encodePacked(bob));
     bytes32[] memory proof = m.getProof(fakeData, 0); // will get proof for 0x2 value
 
-    uint256 value = price - ((price * mosaic.DISCOUNT_PERCENTAGE() / 1000) * amountToMint);
     // Act and Assert
     vm.expectRevert(abi.encodeWithSelector(Mosaic.InvalidProof.selector));
-    mosaic.claim{value: value}(proof, bob, amountToMint);
+    mosaic.claim(proof, bob, amountToMint);
   }
 }

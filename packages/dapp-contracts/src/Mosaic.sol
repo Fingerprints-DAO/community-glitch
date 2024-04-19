@@ -113,10 +113,8 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     _mintTokens(recipient, _amount);
   }
 
-  function claim(bytes32[] calldata proof, address recipient, uint8 _amount) external payable  {
+  function claim(bytes32[] calldata proof, address recipient, uint8 _amount) external  {
     if (!checkMerkleProof(proof, _msgSender(), _amount, allowlistRoot)) revert InvalidProof();
-
-    if (msg.value < ((tokenPrice * _amount) - ((tokenPrice * DISCOUNT_PERCENTAGE) / 1000) * _amount)) revert InsufficientFunds();
 
     _mintTokens(recipient, _amount);
     usedProofs[keccak256(abi.encodePacked(proof))] = true;
