@@ -8,7 +8,8 @@
     "prebuild": "yarn wagmi generate",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "generateHtmls": "yarn ts-node scripts/limited-edition/generateEditionVersions.ts && yarn ts-node scripts/limited-edition/generateConfig.ts && yarn ts-node scripts/limited-edition/generateHtmls.ts"
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
