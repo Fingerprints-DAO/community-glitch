@@ -42,11 +42,12 @@ function generateMetadata(nftIndex: number) {
   )
   const htmlUrl = `${mintEditionPath}html/${nftIndex}.html`
   const versions = tokensVersions[nftIndex - 1]
+  const image = `${mintEditionPath}thumbnails/${nftIndex}.png`
 
   const content = {
     name: imagesConfig.name,
     background_color: 'ffffff',
-    image: htmlUrl,
+    image,
     animation_url: htmlUrl,
     external_url: htmlUrl,
     description,
