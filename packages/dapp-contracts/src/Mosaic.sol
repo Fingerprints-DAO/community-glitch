@@ -67,7 +67,8 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
   uint16 public constant DISCOUNT_PERCENTAGE = 150; /// @notice 15% discount for allowlisted users.
   uint256 public tokenPrice = 0.025 ether; /// @notice The price of a refresh token.
   address payable public fundsReceiverAddress; /// @notice The address of the funds receiver.
-  bytes32 public allowlistRoot; /// @notice The root of the allowlist merkle tree.
+  bytes32 private discountAllowlistRoot; /// @notice The root of the discount allowlist merkle tree.
+  bytes32 private freeClaimAllowlistRoot; /// @notice The root of the free claim allowlist merkle tree.
   Config private _config; /// @notice The mint configuration.
 
   /// @dev Represents the mint configuration.
@@ -128,12 +129,21 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     _config = Config({startTime: _startTime, endTime: _endTime});
   }
 
+
   /**
-   * @dev Allows the owner to set the first tier merkle root.
-   * @param _allowlistRoot The new first tier merkle root.
+   * @dev Allows the owner to set the root of the discount allowlist merkle tree
+   * @param _allowlistRoot The new root of the discount allowlist merkle tree
    */
-  function setMerkleRoots(bytes32 _allowlistRoot) external onlyOwner {
-    allowlistRoot = _allowlistRoot;
+  function setDiscountAllowlistRoot(bytes32 _allowlistRoot) external _onlyOwner {
+    discountAllowlistRoot = _allowlistRoot;
+  }
+
+  /**
+   * @dev Allows the owner to set the root of the free claim allowlist merkle tree
+   * @param _allowlistRoot The new root of the free claim allowlist merkle tree
+   */
+  function setFreeClaimAllowlistRoot(bytes32 _allowlistRoot) external _onlyOwner {
+    freeClaimAllowlistRoot = _allowlistRoot;
   }
 
   /**
@@ -165,7 +175,7 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
   }
 
   function claim(bytes32[] calldata proof, address recipient, uint8 _amount) external validConfig validTime {
-    if (!checkMerkleProof(proof, _msgSender(), _amount, allowlistRoot)) revert InvalidProof();
+    if (!checkMerkleProof(proof, _msgSender(), _amount, freeClaimAllowlistRoot)) revert InvalidProof();
 
     _mintTokens(recipient, _amount);
     usedProofs[keccak256(abi.encodePacked(proof))] = true;

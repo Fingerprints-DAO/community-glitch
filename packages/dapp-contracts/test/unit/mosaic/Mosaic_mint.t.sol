@@ -158,7 +158,7 @@ contract MosaicMintTest is PRBTest, StdCheats, TestHelpers {
 
     // Act
     vm.prank(address(this));
-    mosaic.setMerkleRoots(root);
+    mosaic.setFreeClaimAllowlistRoot(root);
     bytes32[] memory proof = m.getProof(data, 0); // will get proof for 0x2 value
 
     vm.deal(alice, 100 ether);
@@ -183,7 +183,7 @@ contract MosaicMintTest is PRBTest, StdCheats, TestHelpers {
     bytes32 root = m.getRoot(data);
 
     // Act
-    mosaic.setMerkleRoots(root);
+    mosaic.setFreeClaimAllowlistRoot(root);
     vm.prank(address(this));
     bytes32[] memory proof = m.getProof(data, 0); // will get proof for 0x2 value
 
@@ -213,7 +213,7 @@ contract MosaicMintTest is PRBTest, StdCheats, TestHelpers {
 
     // Act
     vm.prank(address(this));
-    mosaic.setMerkleRoots(root);
+    mosaic.setFreeClaimAllowlistRoot(root);
 
     bytes32[] memory fakeData = new bytes32[](2);
     data[0] = keccak256(abi.encodePacked(address(this)));
