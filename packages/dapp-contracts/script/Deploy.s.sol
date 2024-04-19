@@ -44,6 +44,7 @@ contract DeployLocal is BaseScript {
     glitch = _deployGlitch(deployer, minter, baseURI);
     auction = _deployAuction(address(glitch), deployer, startTime, endTime, minBidIncrementInWei, startAmountInWei);
     mosaic = _deployMosaic(deployer, baseURIMosaic);
+    mosaic.setConfig(startTime, endTime);
     vm.stopBroadcast();
   }
 }
@@ -63,6 +64,7 @@ contract DeploySepolia is BaseScript {
     glitch = _deployGlitch(deployer, minter, baseURI);
     auction = _deployAuction(address(glitch), deployer, startTime, endTime, minBidIncrementInWei, startAmountInWei);
     mosaic = _deployMosaic(deployer, baseURIMosaic);
+    mosaic.setConfig(startTime, endTime);
     vm.stopBroadcast();
   }
 }
