@@ -10,9 +10,9 @@ const source = fs.readFileSync(
 )
 const template = handlebars.compile(source)
 const imagePath =
-  'https://ipfs.io/ipfs/QmNVTPufLjgRqduLcnYwdz9S7m6MEq3cYHHGgJGB8wAp2A/NFT_v2-small/'
+  'https://ipfs.io/ipfs/QmYU6QY5Pt9MoMsKZ7ay7TPEsTYf9UXJv6KFRwzLWu5utj/NFT_v2-small/'
 const fullImagePath =
-  'https://ipfs.io/ipfs/QmNVTPufLjgRqduLcnYwdz9S7m6MEq3cYHHGgJGB8wAp2A/NFT_v2/'
+  'https://ipfs.io/ipfs/QmYU6QY5Pt9MoMsKZ7ay7TPEsTYf9UXJv6KFRwzLWu5utj/NFT_v2/'
 
 function generateHtml(nftIndex: number) {
   const imagesConfig = require(
