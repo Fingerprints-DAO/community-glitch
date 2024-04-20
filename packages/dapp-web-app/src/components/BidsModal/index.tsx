@@ -73,8 +73,9 @@ const BidsModal = ({ bids, onClose }: LastBidsProps) => {
                 address={
                   isUserAddress(userAddress, bid.args.bidder)
                     ? 'you'
-                    : shortenAddress(bid.args.bidder, 5, 6)
+                    : shortenAddress(bid.args.bidder, 8, 13)
                 }
+                fullAddress={bid.args.bidder}
                 isHighlighted={isUserAddress(userAddress, bid.args.bidder)}
               />
             ))}

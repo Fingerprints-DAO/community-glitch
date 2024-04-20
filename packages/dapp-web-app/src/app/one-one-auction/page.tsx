@@ -123,7 +123,7 @@ export default function Auction() {
           gap={10}
           mt={8}
         >
-          <Flex flexDir={'column'} gap={10}>
+          <Flex flexDir={'column'} gap={10} flex={6}>
             <Box as="section">
               <Text as={'h1'} fontSize={'4xl'}>
                 1/1 auction
@@ -260,7 +260,7 @@ export default function Auction() {
               </Text>
             </Box>
           </Flex>
-          <AuctionSidebar />
+          <AuctionSidebar flex={3} w={'auto'} mx="auto" />
         </Flex>
       </FullPageTemplate>
     </AuctionProvider>
