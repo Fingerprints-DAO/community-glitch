@@ -1,4 +1,12 @@
-// SPDX-License-Identifier: MIT
+/**
+ * @title Glitch 1/1s NFT contract - glitch by misha de ridder
+ * @author https://arod.studio/
+ * This contract is used to manage ERC721 Glitch tokens by misha de ridder
+ * arod.studio created this contract to have mechanics asked by misha
+ *
+ * SPDX-License-Identifier: MIT
+ * @custom:security-contact arod.mail@proton.me
+ */
 pragma solidity 0.8.23;
 
 import {Strings} from '@openzeppelin/contracts/utils/Strings.sol';
@@ -12,7 +20,6 @@ import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 /**
  * @title Glitch
  * @dev ERC721 token contract representing a collection of digital artworks
- * @custom:security-contact arod.mail@proton.me
  */
 contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, ReentrancyGuard {
   using Address for address payable;
@@ -82,7 +89,7 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
 
   uint16 private constant MAX_SUPPLY = 50; /// @notice The maximum number of tokens that can be minted.
   string private baseURI; /// @notice The base URI of the contract.
-  uint256 public refreshTokenPrice = 0.025 ether; /// @notice The price of a refresh token.
+  uint256 public refreshTokenPrice = 0; /// @notice The price of a refresh token.
   address public minterContractAddress; /// @notice The address of the minter contract.
   address payable public fundsReceiverAddress; /// @notice The address of the funds receiver.
   mapping(uint256 tokenId => TokenVersion version) private _tokenVersionMap; /// @notice The version of each token.
@@ -128,6 +135,21 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
     if (_id > MAX_SUPPLY || _id == 0) revert IdOutOfBounds();
     emit Minted(recipient, _id);
     _safeMint(recipient, _id);
+  }
+
+  /**
+   * @dev Mints a new token and assigns it to the specified recipient
+   * @notice only owner.
+   * @param recipient The address to receive the minted token
+   */
+  function adminMint(address recipient, uint256[] memory _ids) external _onlyOwner {
+    if (recipient == address(0)) revert ZeroAddress();
+
+    for (uint256 i = 0; i < _ids.length; i++) {
+      if (_ids[i] > MAX_SUPPLY || _ids[i] == 0) revert IdOutOfBounds();
+      emit Minted(recipient, _ids[i]);
+      _safeMint(recipient, _ids[i]);
+    }
   }
 
   /**
@@ -213,7 +235,6 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
    * @dev Only the owner can call this function
    */
   function setRefreshTokenPrice(uint256 newRefreshTokenPriceInWei) external _onlyOwner {
-    if (newRefreshTokenPriceInWei == 0) revert InvalidPrice();
     refreshTokenPrice = newRefreshTokenPriceInWei;
   }
 

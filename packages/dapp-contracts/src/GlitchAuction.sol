@@ -1,4 +1,22 @@
-// SPDX-License-Identifier: MIT
+/**
+ *
+ * Developed by
+ *                        _       _             _ _
+ *                       | |     | |           | (_)
+ *     __ _ _ __ ___   __| |  ___| |_ _   _  __| |_  ___
+ *    / _` | '__/ _ \ / _` | / __| __| | | |/ _` | |/ _ \
+ *   | (_| | | | (_) | (_| |_\__ \ |_| |_| | (_| | | (_) |
+ *    \__,_|_|  \___/ \__,_(_)___/\__|\__,_|\__,_|_|\___/
+ *
+ *
+ * @title Auction contract
+ * @author https://arod.studio/
+ * @dev This contract is used to auction the Glitch NFTs.
+ * @website https://glitch.mishaderidder.com/
+ * SPDX-License-Identifier: MIT
+ * @custom:security-contact arod.mail@proton.me
+ */
+
 pragma solidity 0.8.23;
 
 import {IERC721} from '@openzeppelin/contracts/token/ERC721/IERC721.sol';
@@ -11,30 +29,8 @@ import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {IGlitch} from './IGlitch.sol';
 
 /**
- * @title Glitch Auction
- * @dev This is a smart contract for a glitch auction. It allows for the
- * creation and management of auctions for the digital artworks represented
- * by the Glitch contract.
- *
- * The auction contract allows for the minting of limited edition artworks,
- * which can be sold on an auction platform. The artworks are represented by
- * the Glitch contract, and the auction contract provides the mechanism
- * to manage the minting and listing of these artworks for sale.
- *
- * The auction contract allows for a variety of configuration options,
- * including the start time and duration of the auction, the price of the
- * artworks, and the whitelist of users allowed to participate in the
- * auction.
- *
- * The auction contract is designed to be flexible and extensible, allowing
- * for different discount tiers to be offered to users based on their
- * whitelisting status, and to enable the owner of the auction contract to
- * pause or unpause the auction if necessary.
- *
- * Finally, the auction contract is designed to be secure, with a focus on
- * preventing common attacks such as reentrancy and overflow/underflow
- * vulnerabilities.
- * @custom:security-contact arod.mail@proton.me
+ * @title Auction Contract
+ * @dev This contract is an auction for an ERC721 token (NFT).
  */
 contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
   using Address for address payable;
@@ -293,34 +289,17 @@ contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
    * @param _to The claimer address.
    */
   function claimAll(address _to) external validConfig whenNotPaused nonReentrant {
-    if (block.timestamp <= _config.endTime) revert AuctionNotEnded();
-    if (claimed[_to]) revert AlreadyClaimed();
-
-    uint256 nftsMinted;
-    uint256 amountSpent;
-    DiscountType discountType = DiscountType.None;
-    uint256 balance = bidBalances[_to];
-    claimed[_to] = true;
-
-    for (uint256 i; i < MAX_TOP_BIDS; ) {
-      if (topBids[i].bidder == _to) {
-        glitchAddress.mint(_to, i + 1);
-        nftsMinted++;
-        amountSpent += topBids[i].amount;
-        if (topBids[i].discountType != DiscountType.None) {
-          discountType = topBids[i].discountType;
-        }
-      }
-      unchecked {
-        ++i;
-      }
-    }
-
-    uint256 refundAmount = balance + (amountSpent - (nftsMinted * getSettledPriceWithDiscount(discountType)));
-    if (refundAmount > 0) {
-      payable(_to).sendValue(refundAmount);
-    }
+    (uint256 nftsMinted, uint256 refundAmount) = _refundAndMint(_to, true);
     emit Claimed(_to, nftsMinted, refundAmount);
+  }
+
+  /**
+   * @dev Allows admin to force refund of users after the auction ends.
+   * @dev Only admin can force refund.
+   * @param _to The claimer address.
+   */
+  function forceRefund(address _to) external validConfig _onlyOwner nonReentrant {
+    _refundAndMint(_to, false);
   }
 
   /**
@@ -365,6 +344,35 @@ contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
     uint256 salesAmountWithDiscount = getSettledPriceWithDiscount(DiscountType.FirstTier) * givenFirstTierDiscount;
     uint256 salesAmount = getSettledPrice() * salesAmountWithoutDiscount;
     treasuryWallet.sendValue(salesAmountWithDiscount + salesAmount);
+  }
+
+  function _refundAndMint(address _to, bool _shouldMint) private returns (uint256 nftsMinted, uint256 amountSpent) {
+    if (block.timestamp <= _config.endTime) revert AuctionNotEnded();
+    if (claimed[_to]) revert AlreadyClaimed();
+
+    DiscountType discountType = DiscountType.None;
+    uint256 balance = bidBalances[_to];
+    claimed[_to] = true;
+
+    for (uint256 i; i < MAX_TOP_BIDS; ) {
+      if (topBids[i].bidder == _to) {
+        if (_shouldMint) glitchAddress.mint(_to, i + 1);
+        nftsMinted++;
+        amountSpent += topBids[i].amount;
+        if (topBids[i].discountType != DiscountType.None) {
+          discountType = topBids[i].discountType;
+        }
+      }
+      unchecked {
+        ++i;
+      }
+    }
+
+    uint256 refundAmount = balance + (amountSpent - (nftsMinted * getSettledPriceWithDiscount(discountType)));
+    if (refundAmount > 0) {
+      payable(_to).sendValue(refundAmount);
+    }
+    return (nftsMinted, amountSpent);
   }
 
   /**

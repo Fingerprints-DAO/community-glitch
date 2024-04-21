@@ -91,6 +91,13 @@ export const auctionAbi = [
   },
   {
     type: 'function',
+    inputs: [{ name: '_to', internalType: 'address', type: 'address' }],
+    name: 'forceRefund',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     inputs: [],
     name: 'getConfig',
     outputs: [
@@ -464,6 +471,16 @@ export const glitchAbi = [
       },
       { name: '_baseUri', internalType: 'string', type: 'string' },
     ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'recipient', internalType: 'address', type: 'address' },
+      { name: '_ids', internalType: 'uint256[]', type: 'uint256[]' },
+    ],
+    name: 'adminMint',
+    outputs: [],
     stateMutability: 'nonpayable',
   },
   {
@@ -1197,6 +1214,15 @@ export const useWriteAuctionClaimAll = /*#__PURE__*/ createUseWriteContract({
 })
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"forceRefund"`
+ */
+export const useWriteAuctionForceRefund = /*#__PURE__*/ createUseWriteContract({
+  abi: auctionAbi,
+  address: auctionAddress,
+  functionName: 'forceRefund',
+})
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"pause"`
  */
 export const useWriteAuctionPause = /*#__PURE__*/ createUseWriteContract({
@@ -1317,6 +1343,16 @@ export const useSimulateAuctionClaimAll =
     abi: auctionAbi,
     address: auctionAddress,
     functionName: 'claimAll',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"forceRefund"`
+ */
+export const useSimulateAuctionForceRefund =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: auctionAbi,
+    address: auctionAddress,
+    functionName: 'forceRefund',
   })
 
 /**
@@ -1661,6 +1697,15 @@ export const useWriteGlitch = /*#__PURE__*/ createUseWriteContract({
 })
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"adminMint"`
+ */
+export const useWriteGlitchAdminMint = /*#__PURE__*/ createUseWriteContract({
+  abi: glitchAbi,
+  address: glitchAddress,
+  functionName: 'adminMint',
+})
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"approve"`
  */
 export const useWriteGlitchApprove = /*#__PURE__*/ createUseWriteContract({
@@ -1791,6 +1836,16 @@ export const useSimulateGlitch = /*#__PURE__*/ createUseSimulateContract({
   abi: glitchAbi,
   address: glitchAddress,
 })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"adminMint"`
+ */
+export const useSimulateGlitchAdminMint =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: glitchAbi,
+    address: glitchAddress,
+    functionName: 'adminMint',
+  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"approve"`
@@ -2211,6 +2266,15 @@ export const writeAuctionClaimAll = /*#__PURE__*/ createWriteContract({
 })
 
 /**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"forceRefund"`
+ */
+export const writeAuctionForceRefund = /*#__PURE__*/ createWriteContract({
+  abi: auctionAbi,
+  address: auctionAddress,
+  functionName: 'forceRefund',
+})
+
+/**
  * Wraps __{@link writeContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"pause"`
  */
 export const writeAuctionPause = /*#__PURE__*/ createWriteContract({
@@ -2325,6 +2389,15 @@ export const simulateAuctionClaimAll = /*#__PURE__*/ createSimulateContract({
   abi: auctionAbi,
   address: auctionAddress,
   functionName: 'claimAll',
+})
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"forceRefund"`
+ */
+export const simulateAuctionForceRefund = /*#__PURE__*/ createSimulateContract({
+  abi: auctionAbi,
+  address: auctionAddress,
+  functionName: 'forceRefund',
 })
 
 /**
@@ -2657,6 +2730,15 @@ export const writeGlitch = /*#__PURE__*/ createWriteContract({
 })
 
 /**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"adminMint"`
+ */
+export const writeGlitchAdminMint = /*#__PURE__*/ createWriteContract({
+  abi: glitchAbi,
+  address: glitchAddress,
+  functionName: 'adminMint',
+})
+
+/**
  * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"approve"`
  */
 export const writeGlitchApprove = /*#__PURE__*/ createWriteContract({
@@ -2782,6 +2864,15 @@ export const writeGlitchTransferOwnership = /*#__PURE__*/ createWriteContract({
 export const simulateGlitch = /*#__PURE__*/ createSimulateContract({
   abi: glitchAbi,
   address: glitchAddress,
+})
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"adminMint"`
+ */
+export const simulateGlitchAdminMint = /*#__PURE__*/ createSimulateContract({
+  abi: glitchAbi,
+  address: glitchAddress,
+  functionName: 'adminMint',
 })
 
 /**
