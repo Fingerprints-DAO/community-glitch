@@ -111,14 +111,8 @@ export default function Token({ id }: { id?: number }) {
           justifyContent={'center'}
           gap={10}
         >
-          <Flex
-            flexDir={'column'}
-            alignItems={'center'}
-            justifyContent={'top'}
-            bgColor={version === 'D' ? 'white' : ''}
-            flex={!version || version === 'D' ? 3 : ''}
-          >
-            {version && version !== 'D' && (
+          <Flex flexDir={'column'} alignItems={'center'} justifyContent={'top'}>
+            {version && (
               <ChakraLink
                 as={Link}
                 target="_blank"

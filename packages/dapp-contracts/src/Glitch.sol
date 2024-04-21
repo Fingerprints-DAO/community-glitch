@@ -249,6 +249,25 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
       }
     }
   }
+
+  /**
+   * @dev Returns an array of tokens owned by an address
+   * @param _owner The address of the owner
+   * @return tokenIds An array of tokens owned by an address
+   */
+  function getTokensByOwner(address _owner) public view returns (uint256[] memory tokenIds) {
+    uint256 tokenCount = balanceOf(_owner);
+    if (tokenCount == 0) {
+      return tokenIds;
+    } else {
+      tokenIds = new uint256[](tokenCount);
+      for (uint256 i = 0; i < tokenCount; i++) {
+        tokenIds[i] = tokenOfOwnerByIndex(_owner, i);
+      }
+      return tokenIds;
+    }
+  }
+
   /**
    * @dev Returns the URI of a specific token
    * @param tokenId The ID of the token

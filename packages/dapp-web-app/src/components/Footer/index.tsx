@@ -130,8 +130,7 @@ const Footer = () => {
               <Icon as={BsDiscord} w={6} h={6} display="block" />
             </Box>
           </TextToltip>
-          {/* TODO: enable it for mainnet */}
-          {/* {glitchAddress && (
+          {glitchAddress && (
             <>
               <TextToltip label="Check out on Etherscan" placement="top">
                 <Box
@@ -169,7 +168,7 @@ const Footer = () => {
                 </Box>
               </TextToltip>
             </>
-          )} */}
+          )}
         </Flex>
       </Flex>
     </Box>

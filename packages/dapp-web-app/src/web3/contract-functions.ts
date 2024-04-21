@@ -441,7 +441,7 @@ export const auctionAbi = [
 ] as const
 
 export const auctionAddress =
-  '0x2E924a9B80feE0620ba07F871bBB1BfD2741F988' as const
+  '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512' as const
 
 export const auctionConfig = {
   address: auctionAddress,
@@ -519,6 +519,15 @@ export const glitchAbi = [
     inputs: [{ name: 'tokenId', internalType: 'uint256', type: 'uint256' }],
     name: 'getTokenVersion',
     outputs: [{ name: 'versionStr', internalType: 'string', type: 'string' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_owner', internalType: 'address', type: 'address' }],
+    name: 'getTokensByOwner',
+    outputs: [
+      { name: 'tokenIds', internalType: 'uint256[]', type: 'uint256[]' },
+    ],
     stateMutability: 'view',
   },
   {
@@ -989,7 +998,7 @@ export const glitchAbi = [
 ] as const
 
 export const glitchAddress =
-  '0x6606d5C9E23dbE93eaf22287A2c3C67b22Bb37D5' as const
+  '0x5FbDB2315678afecb367f032d93F642f64180aa3' as const
 
 export const glitchConfig = { address: glitchAddress, abi: glitchAbi } as const
 
@@ -1519,6 +1528,16 @@ export const useReadGlitchGetApproved = /*#__PURE__*/ createUseReadContract({
 export const useReadGlitchGetTokenVersion = /*#__PURE__*/ createUseReadContract(
   { abi: glitchAbi, address: glitchAddress, functionName: 'getTokenVersion' },
 )
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"getTokensByOwner"`
+ */
+export const useReadGlitchGetTokensByOwner =
+  /*#__PURE__*/ createUseReadContract({
+    abi: glitchAbi,
+    address: glitchAddress,
+    functionName: 'getTokensByOwner',
+  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"isApprovedForAll"`
@@ -2508,6 +2527,15 @@ export const readGlitchGetTokenVersion = /*#__PURE__*/ createReadContract({
   abi: glitchAbi,
   address: glitchAddress,
   functionName: 'getTokenVersion',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"getTokensByOwner"`
+ */
+export const readGlitchGetTokensByOwner = /*#__PURE__*/ createReadContract({
+  abi: glitchAbi,
+  address: glitchAddress,
+  functionName: 'getTokensByOwner',
 })
 
 /**
