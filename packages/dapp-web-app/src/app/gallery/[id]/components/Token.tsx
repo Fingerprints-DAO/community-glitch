@@ -24,7 +24,7 @@ import { EtherSymbol } from 'components/EtherSymbol'
 import { tokens } from 'data/tokens'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { ReactNode } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { getExternalOpenseaUrl } from 'utils/getLink'
 import { formatToEtherStringBN } from 'utils/price'
 import { getFullTokenPath, getSmallTokenPath } from 'utils/tokens'
@@ -39,6 +39,8 @@ import {
 import { BurnModal } from './BurnModal'
 import { useAuctionContext } from 'contexts/AuctionContext'
 import ForceConnectButton from 'components/ForceConnectButton'
+import { TokenMetadata } from 'types/metadata'
+import { SalesState } from 'types/auction'
 
 const Section = ({
   title = '',
@@ -65,6 +67,8 @@ const Section = ({
 )
 
 export default function Token({ id }: { id?: number }) {
+  const { auctionState } = useAuctionContext()
+  const [tokenMetadata, setTokenMetadata] = useState<TokenMetadata>()
   const token = tokens.find((token) => token.id === id)
   const { data: version, isLoading } = useReadGlitchGetTokenVersion({
     args: [BigInt(token?.id ?? 0)],
@@ -80,6 +84,19 @@ export default function Token({ id }: { id?: number }) {
   if (!token || !id || burnedTokensIds.includes(id)) {
     redirect('/')
   }
+
+  useEffect(() => {
+    async function getMetadata() {
+      if (!version || !token?.id) return
+
+      const data: TokenMetadata = await fetch(
+        `/edition/metadata/${version}/${token.id}.json`,
+      ).then((res) => res.json())
+
+      setTokenMetadata(data)
+    }
+    getMetadata()
+  }, [token?.id, version])
 
   return (
     <>
@@ -127,17 +144,28 @@ export default function Token({ id }: { id?: number }) {
                 {token.name}
               </Heading>
               <Box fontSize={'md'} p={0}>
-                <ChakraLink
-                  as={Link}
-                  target="_blank"
-                  href={getExternalOpenseaUrl(
-                    glitchAddress,
-                    token.id.toString(),
-                  )}
-                  display={'block'}
-                >
-                  buy on opensea
-                </ChakraLink>
+                {auctionState === SalesState.ENDED && (
+                  <ChakraLink
+                    as={Link}
+                    target="_blank"
+                    href={getExternalOpenseaUrl(
+                      glitchAddress,
+                      token.id.toString(),
+                    )}
+                    display={'block'}
+                  >
+                    buy on opensea
+                  </ChakraLink>
+                )}
+                {auctionState !== SalesState.ENDED && (
+                  <ChakraLink
+                    as={Link}
+                    href={'/one-one-auction/'}
+                    display={'block'}
+                  >
+                    bid to mint
+                  </ChakraLink>
+                )}
                 {version && (
                   <ChakraLink
                     as={Link}
@@ -150,23 +178,25 @@ export default function Token({ id }: { id?: number }) {
                 )}
               </Box>
             </header>
-            <section>
-              <Heading as={'h3'} fontSize={'lg'} fontWeight={'bold'} pt={0}>
-                metadata
-              </Heading>
-              <Flex gap={4} flexWrap={'wrap'}>
-                {Object.entries(token.metadata).map(([key, value]) => (
-                  <Box key={key} mr={6}>
-                    <Text as={'span'} fontWeight="bold">
-                      {key}:{' '}
-                    </Text>
-                    <Text as={'span'}>
-                      {typeof value !== 'string' ? value.toString() : value}
-                    </Text>
-                  </Box>
-                ))}
-              </Flex>
-            </section>
+            {tokenMetadata?.attributes && (
+              <section>
+                <Heading as={'h3'} fontSize={'lg'} fontWeight={'bold'} pt={0}>
+                  metadata
+                </Heading>
+                <Flex gap={4} flexWrap={'wrap'}>
+                  {tokenMetadata.attributes.map(({ trait_type, value }) => (
+                    <Box key={trait_type} mr={6}>
+                      <Text as={'span'} fontWeight="bold">
+                        {trait_type}:{' '}
+                      </Text>
+                      <Text as={'span'}>
+                        {typeof value !== 'string' ? value : value}
+                      </Text>
+                    </Box>
+                  ))}
+                </Flex>
+              </section>
+            )}
             <section>
               <Heading as={'h4'} fontSize={'md'} pt={0}>
                 <b>price to refresh token:</b> <EtherSymbol fontSize={'8px'} />{' '}
