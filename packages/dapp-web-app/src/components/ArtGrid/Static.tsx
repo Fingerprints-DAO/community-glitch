@@ -7,12 +7,9 @@ import {
   useBreakpointValue,
 } from '@chakra-ui/react'
 import ChakraNextImageLoader from 'components/ChakraNextImageLoader'
-import { useAuctionContext } from 'contexts/AuctionContext'
 import { tokens } from 'data/tokens'
 import Link from 'next/link'
-import { useMemo } from 'react'
 import { getSmallTokenPath } from 'utils/tokens'
-import { useReadGlitchGetAllTokensVersion } from 'web3/contract-functions'
 
 const randomTokens = [...tokens].sort(() => Math.random() - 0.5)
 

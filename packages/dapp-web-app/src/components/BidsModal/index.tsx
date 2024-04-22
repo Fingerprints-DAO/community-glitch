@@ -77,6 +77,7 @@ const BidsModal = ({ bids, onClose }: LastBidsProps) => {
                 }
                 fullAddress={bid.args.bidder}
                 isHighlighted={isUserAddress(userAddress, bid.args.bidder)}
+                hash={bid.transactionHash}
               />
             ))}
         </CustomTable>
