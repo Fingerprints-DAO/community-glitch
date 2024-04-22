@@ -137,11 +137,12 @@ contract GlitchTokenVersionTest is PRBTest, StdCheats, Helpers {
     // Mint a token
     uint256 tokenId = 1;
     address recipient = address(0x1234567890);
-    uint256 refreshTokenPrice = glitch.refreshTokenPrice();
+    uint256 refreshTokenPrice = 0.2 ether;
     uint256 recipientBalance;
 
     // Act
     vm.startPrank(owner);
+    glitch.setRefreshTokenPrice(refreshTokenPrice);
     glitch.mint(owner, tokenId);
 
     glitch.transferFrom(owner, recipient, tokenId);
@@ -149,11 +150,29 @@ contract GlitchTokenVersionTest is PRBTest, StdCheats, Helpers {
     recipientBalance = recipient.balance;
 
     // Refresh the token version
-    glitch.refreshToken{value: glitch.refreshTokenPrice()}(tokenId);
+    glitch.refreshToken{value: refreshTokenPrice}(tokenId);
     vm.stopPrank();
 
     // Assert that the token version has been refreshed
     assertEq(recipient.balance, recipientBalance + refreshTokenPrice, 'Incorrect amount received');
+  }
+  function test_revertIfAmountPaidIsWrong() public {
+    // Mint a token
+    uint256 tokenId = 1;
+    address recipient = address(0x1234567890);
+    uint256 refreshTokenPrice = 0.2 ether;
+
+    // Act
+    vm.startPrank(owner);
+    glitch.setRefreshTokenPrice(refreshTokenPrice);
+    glitch.mint(owner, tokenId);
+
+    glitch.transferFrom(owner, recipient, tokenId);
+
+    // Assert
+    vm.expectRevert(abi.encodeWithSelector(Glitch.NotEnoughETH.selector));
+    glitch.refreshToken{value: 0.1 ether}(tokenId);
+    vm.stopPrank();
   }
   function test_tokenVersionCannotBeUpdatedBeyondVersionD() public {
     // Arrange

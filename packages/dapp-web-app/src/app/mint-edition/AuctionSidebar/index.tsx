@@ -120,7 +120,7 @@ export const AuctionSidebar = (props: FlexProps) => {
                       start date:
                     </Text>{' '}
                     <Text as={'span'}>
-                      sunday, april 28 at 1 PM edt / 7pm cest
+                      sunday, april 28 at 1pm edt / 7pm cest
                     </Text>
                   </ListItem>
                   <ListItem mb={2}>
@@ -128,7 +128,7 @@ export const AuctionSidebar = (props: FlexProps) => {
                       end date:
                     </Text>{' '}
                     <Text as={'span'}>
-                      may 5, 2024 11:59 p.m. edt / may 6, 5:59 a.m. cest
+                      sunday, may 5 11:59pm edt / monday, may 6, 5:59am cest
                     </Text>
                   </ListItem>
                   <ListItem mb={2}>
@@ -141,15 +141,15 @@ export const AuctionSidebar = (props: FlexProps) => {
                   </ListItem>
                   <ListItem mb={2}>
                     <Text as={'span'} fontWeight={'bold'}>
-                      supply:
-                    </Text>{' '}
-                    <Text as={'span'}>510 artworks</Text>
-                  </ListItem>
-                  <ListItem mb={2}>
-                    <Text as={'span'} fontWeight={'bold'}>
                       creator&apos;s fee:
                     </Text>{' '}
                     <Text as={'span'}>5%</Text>
+                  </ListItem>
+                  <ListItem mb={2}>
+                    <Text as={'span'} fontWeight={'bold'}>
+                      supply:
+                    </Text>{' '}
+                    <Text as={'span'}>510 artworks</Text>
                   </ListItem>
                   <ListItem mb={2}>
                     <Text as={'span'} fontWeight={'bold'}>
@@ -159,23 +159,22 @@ export const AuctionSidebar = (props: FlexProps) => {
                   </ListItem>
                 </List>
                 <Text mt={4}>
-                  As soon as the auction closes, a limited mint of 510 editions
-                  will become available, representing various mosaics of the
-                  full collection in randomized order. These images will slowly
-                  degrade as more editions are minted, until the last 10
-                  editions in the series are left completely blank. There&apos;s
-                  no way to restore, what you mint is what you get.
+                  glitch by misha de ridder, released by Fingerprints, is a
+                  collection of 50 animated GIFs, stemming from photographs of
+                  erased graffiti. The act of erasing can involve both
+                  destruction and generation, transformation and
+                  reimagination—allowing for new possibilities to emerge.
                 </Text>
                 <Text mt={4}>
-                  The first 10 collectors will receive a full rendition of the
-                  mosaic, with animations.
-                  <br />
-                  Editions from 11 - 210 will slowly lose animation steps until
-                  all animations are gone. <br />
-                  Then, from Editions 201 - 410 mosaic will gradually fade 50%.
-                  <br />
-                  Lastly from 410 - 510 the mosaic will erase to blank, the last
-                  10 will be fully blank.
+                  As soon as the 1/1 auction closes, a limited mint of 510
+                  editions will become available. The edition piece is a
+                  randomized composite image of all 50 animations, each
+                  representing one of the many possible options of the full
+                  collection mosaic, minted as HTML-page. The mint is limited to
+                  510 editions. The art is slowly degraded as more editions are
+                  minted following the steps of the 1/1s — until the last 10
+                  editions are left completely blank. There&apos;s no way to
+                  restore, what you mint is what you get.
                 </Text>
               </TextSection>
             </Box>

@@ -543,6 +543,46 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     assertEq(glitch.balanceOf(addresses[1]), 1, 'addresses[1] should own 1 NFT');
     assertEq(glitch.balanceOf(addresses[4]), 1, 'addresses[1] should own 1 NFT');
   }
+  function test_adminCanForceRefundAndMintTokens() public {
+    // Arrange
+    uint256 bidsCounter = 5;
+    address bidderDidntClaimed = addresses[4];
+
+    // act
+    vm.warp(startTime + 1);
+    for (uint256 i = 0; i < bidsCounter; i++) {
+      vm.startPrank(addresses[i]);
+      vm.deal(addresses[i], 100 ether);
+      auction.bid{value: (i + 1) * 1 ether}((i + 1) * 1 ether, fakeMerkleProof);
+      vm.stopPrank();
+    }
+
+    vm.warp(endTime + 1);
+
+    for (uint256 i = 0; i < 4; i++) {
+      auction.claimAll(addresses[i]);
+    }
+
+    GlitchAuction.Bid[50] memory topBids = auction.getTopBids();
+    uint256 bidderPosition;
+
+    for (uint256 i = 0; i < topBids.length; i++) {
+      if (topBids[i].bidder == bidderDidntClaimed) {
+        bidderPosition = i;
+        break;
+      }
+    }
+    uint256[] memory bidsToMint = new uint256[](1);
+    bidsToMint[0] = bidderPosition + 1;
+
+    vm.startPrank(owner);
+    auction.forceRefund(bidderDidntClaimed);
+    glitch.adminMint(bidderDidntClaimed, bidsToMint);
+    vm.stopPrank();
+
+    // Assert
+    assertEq(auction.claimed(bidderDidntClaimed), true, 'Bidder should be marked as claimed');
+  }
   function test_revertIfCallAdminMintRemainingBeforeAuctionEnd() public {
     // Arrange
     uint256 bidsCounter = 5;
@@ -561,5 +601,29 @@ contract GlitchEndedAuctionTest is PRBTest, StdCheats, TestHelpers {
     vm.expectRevert(GlitchAuction.AuctionNotEnded.selector);
     auction.adminMintRemaining(alice);
     vm.stopPrank();
+  }
+
+  function test_oneBidderMintAll() public {
+    // Arrange
+    address bidder = vm.addr(51);
+    vm.deal(bidder, 100 ether);
+
+    vm.warp(startTime + 1);
+
+    // Act
+    vm.startPrank(bidder);
+    uint256 i;
+    while (i < 50) {
+      auction.bid{value: 0.5 ether}(0.5 ether, fakeMerkleProof);
+      ++i;
+    }
+    vm.stopPrank();
+    vm.warp(endTime + 1);
+
+    auction.claimAll(bidder);
+
+    // Assert
+    assertEq(glitch.balanceOf(bidder), 50, 'Bidder should own 50 NFT');
+    assertEq(bidder.balance, 100 ether - 50 * 0.5 ether, 'Bidder balance should be zero');
   }
 }

@@ -1,3 +1,5 @@
+import { EtherSymbol } from 'components/EtherSymbol'
+
 const LineSpace = () => (
   <>
     <br />
@@ -6,6 +8,80 @@ const LineSpace = () => (
 )
 
 export const questions = [
+  {
+    question: 'What are the degradation dynamics?',
+    answer: (
+      <>
+        &rsquo;glitch&lsquo; is dynamic conceptual blockchain art and an
+        experiment in how to introduce degradation in a digital artwork. In this
+        respect it is also a commentary on secondary market dynamics. It is
+        intended to be fun and playful. The degradation is part of the artwork
+        and a degraded artwork is still an artwork.
+        <LineSpace />
+        1. The initial collector receives an original photo with liminal
+        animation as GIF-file.
+        <br />
+        2. After the first sale or transfer, the animation disappears, leaving
+        only the photo.
+        <br />
+        3. After the second sale or transfer the photo fades 50%.
+        <br />
+        4. After the third sale or transfer the photo will disappear leaving
+        only a placeholder.
+        <br />
+        <LineSpace />
+        You can refresh your art to the mint original clicking the refresh
+        button on the specific token page of your piece. The refresh will
+        perform a blockchain transaction involving paying a small fee.
+      </>
+    ),
+  },
+  {
+    question:
+      'How can I refresh my art to the mint original if has been degraded?',
+    answer: (
+      <>
+        You can refresh your art to the mint original clicking the refresh
+        button on the specific token page of your piece. The refresh will
+        perform a blockchain transaction involving paying a small fee of 0.004
+        <EtherSymbol />
+        <LineSpace />
+        The fee is intended as a substitute for creator royalties. When trading
+        on a marketplace the glitch tokens are 0% creator fee, so royalties
+        free. By refreshing your art you are supporting the project and the
+        artist.
+      </>
+    ),
+  },
+  {
+    question: 'Are you using smart contracts to run the dynamic mechanics?',
+    answer: (
+      <>
+        The 50 1/1s edition dynamic mechanics run on smart contracts on the
+        Ethereum blockchain and each transfer degrades the art automatically.
+        Also the artwork refresh and burn runs on a smart contract and is all
+        onchain.
+      </>
+    ),
+  },
+  {
+    question: 'How is the art stored?',
+    answer: (
+      <>
+        Initially a server is used to quickly provide the art, and then we will
+        move the art to IPFS as soon as things settle down after the claim.
+        <LineSpace />
+        misha de ridder is running a dedicated IPFS node for all his art and the
+        art he collected in his studio. You can run your own IPFS node too and
+        help to take care of the &rsquo;glitch&lsquo; art and the art of others.
+        It&apos;s easy!
+      </>
+    ),
+  },
+  {
+    question: 'What is the copyright licence for the 1/1s?',
+    answer: <>The glitch animations are Creative Commons Zero (CC0) license.</>,
+  },
   {
     question:
       'How will the Ranked auction with rebate work for the 1/1s? Can I choose which piece from the auction I want to bid on?',
@@ -74,6 +150,14 @@ export const allowListQuestions = [
 
 export const printsQuestions = [
   {
+    question: 'What is the copyright licence for the prints?',
+    answer: (
+      <>
+        Prints are Creative Commons Attribution-NonCommercial (CC BY NC) license
+      </>
+    ),
+  },
+  {
     question:
       'I collected a 1 of 1. How do I acquire a physical print from Assembly?',
     answer: (
@@ -104,6 +188,9 @@ export const printsQuestions = [
       </>
     ),
   },
+]
+
+export const mintEditionQuestions = [
   {
     question: 'What are the mechanics for the fading of the 510 editions?',
     answer: (
@@ -112,17 +199,17 @@ export const printsQuestions = [
         <LineSpace />
         11 - 110 / lose 1 animation in steps of 10 - so minus 10 animations{' '}
         <br />
-        101 - 210 / lose 4 animations in steps of 10 - so minus 40 animations
+        111 - 210 / lose 4 animations in steps of 10 - so minus 40 animations
         <br />
         now animations are all gone
         <LineSpace />
-        201 - 310 / 1 image fades 50% in steps of 10 - so 10 fade 50%
+        211 - 310 / 1 image fades 50% in steps of 10 - so 10 fade 50%
         <br />
-        301 - 410 / 4 images fade in steps of 10 - so 40 fade 50%
+        311 - 410 / 4 images fade in steps of 10 - so 40 fade 50%
         <br />
         now all are faded 50%
         <LineSpace />
-        410 - 510 / 6 images become blank in steps of 10 - last 10 will be fully
+        411 - 510 / 6 images become blank in steps of 10 - last 10 will be fully
         blank
       </>
     ),
@@ -133,6 +220,21 @@ export const printsQuestions = [
       <>
         No. Paying to refresh will only be valid for the 1/1 pieces in{' '}
         <i>glitch</i>
+      </>
+    ),
+  },
+  {
+    question: 'How is the art stored?',
+    answer: (
+      <>
+        Initially a server is used to quickly provide the art, and then we will
+        move the art to IPFS as soon as things settle down after the mints. The
+        Mint edition NFT are all fixed HTML and different according to each ID.
+        <LineSpace />
+        misha de ridder is running a dedicated IPFS node for all his art and the
+        art he collected in his studio. You can run your own IPFS node too and
+        help to take care of the &rsquo;glitch&lsquo; art and the art of others.
+        It&apos;s easy!
       </>
     ),
   },

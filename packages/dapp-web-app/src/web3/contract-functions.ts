@@ -91,6 +91,13 @@ export const auctionAbi = [
   },
   {
     type: 'function',
+    inputs: [{ name: '_to', internalType: 'address', type: 'address' }],
+    name: 'forceRefund',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     inputs: [],
     name: 'getConfig',
     outputs: [
@@ -441,7 +448,7 @@ export const auctionAbi = [
 ] as const
 
 export const auctionAddress =
-  '0x2E924a9B80feE0620ba07F871bBB1BfD2741F988' as const
+  '0x9d60ca402220e46ca7876dD7aF503e082082B31D' as const
 
 export const auctionConfig = {
   address: auctionAddress,
@@ -464,6 +471,16 @@ export const glitchAbi = [
       },
       { name: '_baseUri', internalType: 'string', type: 'string' },
     ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'recipient', internalType: 'address', type: 'address' },
+      { name: '_ids', internalType: 'uint256[]', type: 'uint256[]' },
+    ],
+    name: 'adminMint',
+    outputs: [],
     stateMutability: 'nonpayable',
   },
   {
@@ -519,6 +536,15 @@ export const glitchAbi = [
     inputs: [{ name: 'tokenId', internalType: 'uint256', type: 'uint256' }],
     name: 'getTokenVersion',
     outputs: [{ name: 'versionStr', internalType: 'string', type: 'string' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_owner', internalType: 'address', type: 'address' }],
+    name: 'getTokensByOwner',
+    outputs: [
+      { name: 'tokenIds', internalType: 'uint256[]', type: 'uint256[]' },
+    ],
     stateMutability: 'view',
   },
   {
@@ -989,7 +1015,7 @@ export const glitchAbi = [
 ] as const
 
 export const glitchAddress =
-  '0x6606d5C9E23dbE93eaf22287A2c3C67b22Bb37D5' as const
+  '0x86e263CaDD1caCE347A752Fe84C065823BcA66a1' as const
 
 export const glitchConfig = { address: glitchAddress, abi: glitchAbi } as const
 
@@ -1188,6 +1214,15 @@ export const useWriteAuctionClaimAll = /*#__PURE__*/ createUseWriteContract({
 })
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"forceRefund"`
+ */
+export const useWriteAuctionForceRefund = /*#__PURE__*/ createUseWriteContract({
+  abi: auctionAbi,
+  address: auctionAddress,
+  functionName: 'forceRefund',
+})
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"pause"`
  */
 export const useWriteAuctionPause = /*#__PURE__*/ createUseWriteContract({
@@ -1308,6 +1343,16 @@ export const useSimulateAuctionClaimAll =
     abi: auctionAbi,
     address: auctionAddress,
     functionName: 'claimAll',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"forceRefund"`
+ */
+export const useSimulateAuctionForceRefund =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: auctionAbi,
+    address: auctionAddress,
+    functionName: 'forceRefund',
   })
 
 /**
@@ -1521,6 +1566,16 @@ export const useReadGlitchGetTokenVersion = /*#__PURE__*/ createUseReadContract(
 )
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"getTokensByOwner"`
+ */
+export const useReadGlitchGetTokensByOwner =
+  /*#__PURE__*/ createUseReadContract({
+    abi: glitchAbi,
+    address: glitchAddress,
+    functionName: 'getTokensByOwner',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"isApprovedForAll"`
  */
 export const useReadGlitchIsApprovedForAll =
@@ -1639,6 +1694,15 @@ export const useReadGlitchTotalSupply = /*#__PURE__*/ createUseReadContract({
 export const useWriteGlitch = /*#__PURE__*/ createUseWriteContract({
   abi: glitchAbi,
   address: glitchAddress,
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"adminMint"`
+ */
+export const useWriteGlitchAdminMint = /*#__PURE__*/ createUseWriteContract({
+  abi: glitchAbi,
+  address: glitchAddress,
+  functionName: 'adminMint',
 })
 
 /**
@@ -1772,6 +1836,16 @@ export const useSimulateGlitch = /*#__PURE__*/ createUseSimulateContract({
   abi: glitchAbi,
   address: glitchAddress,
 })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"adminMint"`
+ */
+export const useSimulateGlitchAdminMint =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: glitchAbi,
+    address: glitchAddress,
+    functionName: 'adminMint',
+  })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"approve"`
@@ -2192,6 +2266,15 @@ export const writeAuctionClaimAll = /*#__PURE__*/ createWriteContract({
 })
 
 /**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"forceRefund"`
+ */
+export const writeAuctionForceRefund = /*#__PURE__*/ createWriteContract({
+  abi: auctionAbi,
+  address: auctionAddress,
+  functionName: 'forceRefund',
+})
+
+/**
  * Wraps __{@link writeContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"pause"`
  */
 export const writeAuctionPause = /*#__PURE__*/ createWriteContract({
@@ -2306,6 +2389,15 @@ export const simulateAuctionClaimAll = /*#__PURE__*/ createSimulateContract({
   abi: auctionAbi,
   address: auctionAddress,
   functionName: 'claimAll',
+})
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link auctionAbi}__ and `functionName` set to `"forceRefund"`
+ */
+export const simulateAuctionForceRefund = /*#__PURE__*/ createSimulateContract({
+  abi: auctionAbi,
+  address: auctionAddress,
+  functionName: 'forceRefund',
 })
 
 /**
@@ -2511,6 +2603,15 @@ export const readGlitchGetTokenVersion = /*#__PURE__*/ createReadContract({
 })
 
 /**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"getTokensByOwner"`
+ */
+export const readGlitchGetTokensByOwner = /*#__PURE__*/ createReadContract({
+  abi: glitchAbi,
+  address: glitchAddress,
+  functionName: 'getTokensByOwner',
+})
+
+/**
  * Wraps __{@link readContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"isApprovedForAll"`
  */
 export const readGlitchIsApprovedForAll = /*#__PURE__*/ createReadContract({
@@ -2626,6 +2727,15 @@ export const readGlitchTotalSupply = /*#__PURE__*/ createReadContract({
 export const writeGlitch = /*#__PURE__*/ createWriteContract({
   abi: glitchAbi,
   address: glitchAddress,
+})
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"adminMint"`
+ */
+export const writeGlitchAdminMint = /*#__PURE__*/ createWriteContract({
+  abi: glitchAbi,
+  address: glitchAddress,
+  functionName: 'adminMint',
 })
 
 /**
@@ -2754,6 +2864,15 @@ export const writeGlitchTransferOwnership = /*#__PURE__*/ createWriteContract({
 export const simulateGlitch = /*#__PURE__*/ createSimulateContract({
   abi: glitchAbi,
   address: glitchAddress,
+})
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchAbi}__ and `functionName` set to `"adminMint"`
+ */
+export const simulateGlitchAdminMint = /*#__PURE__*/ createSimulateContract({
+  abi: glitchAbi,
+  address: glitchAddress,
+  functionName: 'adminMint',
 })
 
 /**

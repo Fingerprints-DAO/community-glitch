@@ -144,4 +144,16 @@ contract GlitchMintTest is PRBTest, StdCheats, TestHelpers {
     assertEq(glitch.balanceOf(alice), 1, 'Incorrect token balance');
     assertEq(glitch.totalSupply(), 1, 'Incorrect total supply');
   }
+
+  function test_revertIfIDIsBiggerThanMaxSupply() public {
+    // Arrange
+    address alice = address(0x123);
+    uint256 tokenId = 51;
+
+    // Assert
+    vm.prank(address(this));
+    vm.expectRevert(abi.encodeWithSelector(Glitch.IdOutOfBounds.selector));
+    glitch.mint(alice, tokenId);
+    vm.stopPrank();
+  }
 }

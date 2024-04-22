@@ -37,25 +37,24 @@ const TokenPreview = ({
       maxW={`${token.width / divisor}px`}
       w={'100%'}
     >
-      {version === 'D' && (
-        <Box as={'span'} bgColor={'white'} w={'full'} h={'100%'} />
-      )}
-      {version !== 'D' && (
-        <ChakraNextImageLoader
-          src={getSmallTokenPath(token.filename, version)}
-          alt={`${token.name}`}
-          imageWidth={token.width}
-          imageHeight={token.height}
-          imageProps={{
-            priority: true,
-            unoptimized: true,
-          }}
-        />
-      )}
+      <ChakraNextImageLoader
+        src={getSmallTokenPath(token.filename, version)}
+        alt={`${token.name}`}
+        imageWidth={token.width}
+        imageHeight={token.height}
+        imageProps={{
+          priority: true,
+          unoptimized: true,
+        }}
+      />
     </Box>
   )
 }
-export const ArtGrid = () => {
+export const ArtGrid = ({
+  displayTokensIds,
+}: {
+  displayTokensIds?: number[]
+}) => {
   const { burnedTokensIds, isLoadingBurnedCall } = useAuctionContext()
   const { data: tokensVersion = [], isLoading } =
     useReadGlitchGetAllTokensVersion()
@@ -70,6 +69,10 @@ export const ArtGrid = () => {
       ),
     [tokensVersion],
   )
+  const tokensHandled = useMemo(() => {
+    if (!displayTokensIds) return randomTokens
+    return randomTokens.filter((token) => displayTokensIds.includes(token.id))
+  }, [displayTokensIds])
 
   return (
     <Flex
@@ -79,7 +82,7 @@ export const ArtGrid = () => {
       justifyContent={'flex-start'}
       alignContent={'flex-start'}
     >
-      {randomTokens.map(
+      {tokensHandled.map(
         (token) =>
           !burnedTokensIds.includes(token.id) && (
             <TokenPreview

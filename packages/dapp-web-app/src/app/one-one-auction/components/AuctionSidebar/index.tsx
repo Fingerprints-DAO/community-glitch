@@ -11,6 +11,8 @@ import {
   Input,
   SkeletonText,
   useDisclosure,
+  FlexProps,
+  Collapse,
 } from '@chakra-ui/react'
 import Link from 'next/link'
 import { formatToEtherStringBN } from 'utils/price'
@@ -40,6 +42,7 @@ import { TopBids } from '../TopBids'
 import useGetTopBids from 'hooks/use-get-top-bids'
 import { ClaimButton } from '../ClaimButton'
 import useTxToast from 'hooks/use-tx-toast'
+import { useDiscount } from 'hooks/use-discount'
 
 const getCountdownText = (state: SalesState) => {
   if (state === SalesState.IDLE || state === SalesState.NOT_STARTED) {
@@ -53,7 +56,7 @@ const getCountdownText = (state: SalesState) => {
 
 const auctionContract = getContractAddressesForChainOrThrow(getChainId())
 
-export const AuctionSidebar = () => {
+export const AuctionSidebar = (props: FlexProps) => {
   const { auctionState, startTime, endTime } = useAuctionContext()
   const [bidAmount, setBidAmount] = useState('')
   const publicClient = usePublicClient()
@@ -75,6 +78,12 @@ export const AuctionSidebar = () => {
     useTxToast()
   const [outbids, setOutbids] = useState<BidLogsType>([])
   const [allBids, setAllBids] = useState<BidLogsType>([])
+  const {
+    value: discountValue,
+    hasDiscount,
+    merkleProof,
+    isLoading: discountIsLoading,
+  } = useDiscount()
 
   const auctionNotStartedAndNotIdle =
     auctionState !== SalesState.IDLE && auctionState !== SalesState.NOT_STARTED
@@ -83,12 +92,7 @@ export const AuctionSidebar = () => {
   const onBid = async () => {
     await bid.writeContractAsync(
       {
-        args: [
-          parseEther(bidAmount),
-          [
-            '0x0000000000000000000000000000000000000000000000000000000000000000',
-          ],
-        ],
+        args: [parseEther(bidAmount), merkleProof],
         value: parseEther(bidAmount),
       },
       {
@@ -101,6 +105,19 @@ export const AuctionSidebar = () => {
         },
       },
     )
+  }
+
+  const onChangeValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value
+    value = value.replace(/[^\d.]/g, '')
+
+    if (value.includes('.')) {
+      const parts = value.split('.')
+      parts[1] = parts[1].slice(0, 3)
+      value = parts.join('.')
+    }
+
+    setBidAmount(value)
   }
 
   useEffect(() => {
@@ -166,6 +183,7 @@ export const AuctionSidebar = () => {
       border={'1px solid black'}
       bgColor={'white'}
       w={'full'}
+      {...props}
     >
       <SkeletonText
         as={'div'}
@@ -213,60 +231,82 @@ export const AuctionSidebar = () => {
             </Flex>
           )}
 
-          {auctionState === SalesState.STARTED && (
-            <ForceConnectButton buttonText="connect to bid">
-              <Box>
-                <Flex justifyContent={'space-between'} gap={2}>
-                  <InputGroup variant={'unstyled'}>
-                    <InputLeftAddon fontSize={'12px'} pt={1}>
-                      Ξ
-                    </InputLeftAddon>
-                    <Input
-                      placeholder={`${formatToEtherStringBN(minimumBid)} or more`}
+          <div>
+            <Collapse
+              in={userAccount.isConnected && hasDiscount}
+              animateOpacity
+            >
+              <Text
+                fontSize={'sm'}
+                as={'div'}
+                bgColor={'gray.200'}
+                p={2}
+                mb={3}
+              >
+                You&apos;re elegible to get {discountValue}% discount
+                <InfoTooltip
+                  label="Discounts are applied on rebate of the winning bids. Check out our FAQ on about page."
+                  iconProps={{ mt: '-1px', ml: 1 }}
+                />
+              </Text>
+            </Collapse>
+            {auctionState === SalesState.STARTED && (
+              <ForceConnectButton buttonText="connect to bid">
+                <Box>
+                  <Flex justifyContent={'space-between'} gap={2}>
+                    <InputGroup variant={'unstyled'}>
+                      <InputLeftAddon fontSize={'12px'} pt={1}>
+                        Ξ
+                      </InputLeftAddon>
+                      <Input
+                        placeholder={`${formatToEtherStringBN(minimumBid)} or more`}
+                        size={'md'}
+                        colorScheme="blackAlpha"
+                        pattern="\d*\.?\d*"
+                        onChange={onChangeValue}
+                        value={bidAmount}
+                      />
+                    </InputGroup>
+
+                    <Button
+                      variant={'solid'}
                       size={'md'}
-                      colorScheme="blackAlpha"
-                      type="number"
-                      onChange={(e) => setBidAmount(e.target.value)}
-                      value={bidAmount}
-                    />
-                  </InputGroup>
-                  <Button
-                    variant={'solid'}
-                    size={'md'}
-                    px={8}
-                    onClick={onBid}
-                    isDisabled={
-                      bid.isPending ||
-                      Number(bidAmount) <
-                        Number(formatToEtherStringBN(minimumBid))
+                      px={8}
+                      onClick={onBid}
+                      isDisabled={
+                        discountIsLoading ||
+                        bid.isPending ||
+                        Number(bidAmount) <
+                          Number(formatToEtherStringBN(minimumBid))
+                      }
+                      isLoading={bid.isPending || discountIsLoading}
+                    >
+                      place bid
+                    </Button>
+                  </Flex>
+                  <Text
+                    mt={2}
+                    fontSize={'sm'}
+                    as={'div'}
+                    onClick={() =>
+                      setBidAmount(formatToEtherStringBN(minimumBid))
                     }
-                    isLoading={bid.isPending}
+                    _hover={{ cursor: 'pointer' }}
                   >
-                    place bid
-                  </Button>
-                </Flex>
-                <Text
-                  mt={2}
-                  fontSize={'sm'}
-                  as={'div'}
-                  onClick={() =>
-                    setBidAmount(formatToEtherStringBN(minimumBid))
-                  }
-                  _hover={{ cursor: 'pointer' }}
-                >
-                  minimum bid is{' '}
-                  <Text fontSize={'9px'} as={'span'}>
-                    Ξ
+                    minimum bid is{' '}
+                    <Text fontSize={'9px'} as={'span'}>
+                      Ξ
+                    </Text>
+                    {formatToEtherStringBN(minimumBid)}
+                    <InfoTooltip
+                      label="Bid at least this amount to be in top 50 and be able to mint"
+                      iconProps={{ mt: '-1px', ml: 1 }}
+                    />
                   </Text>
-                  {formatToEtherStringBN(minimumBid)}
-                  <InfoTooltip
-                    label="Bid at least this amount to be in top 50 and be able to mint"
-                    iconProps={{ mt: '-1px', ml: 1 }}
-                  />
-                </Text>
-              </Box>
-            </ForceConnectButton>
-          )}
+                </Box>
+              </ForceConnectButton>
+            )}
+          </div>
           {auctionNotStartedAndNotIdle && (
             <>
               <Box>
@@ -304,6 +344,7 @@ export const AuctionSidebar = () => {
                 <ClaimButton
                   nftsToClaim={myBids.length}
                   bidSpended={myBids.reduce((a, b) => a + b.amount, 0n)}
+                  discountValue={discountValue}
                 />
               </ForceConnectButton>
             </Box>

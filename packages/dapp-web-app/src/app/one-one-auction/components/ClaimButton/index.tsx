@@ -5,6 +5,7 @@ import useTxToast from 'hooks/use-tx-toast'
 import { useEffect, useMemo } from 'react'
 import { formatToEtherStringBN } from 'utils/price'
 import { pluralize } from 'utils/string'
+import { formatEther } from 'viem'
 import { useAccount, useWaitForTransactionReceipt } from 'wagmi'
 import {
   useReadAuctionBidBalances,
@@ -16,11 +17,13 @@ import {
 export type ClaimButtonType = {
   nftsToClaim?: number
   bidSpended?: bigint
+  discountValue?: number | null
 }
 
 export const ClaimButton = ({
   nftsToClaim = 0,
   bidSpended = 0n,
+  discountValue = 0,
 }: ClaimButtonType) => {
   const { address: userAddress } = useAccount()
   const { data: balance = 0n } = useReadAuctionBidBalances({
@@ -39,9 +42,18 @@ export const ClaimButton = ({
   })
   const refundToClaim = useMemo(() => {
     if (nftsToClaim < 1) return 0n
-    const baseCosts = BigInt(nftsToClaim) * settledPrice
+    const discountFactor = 1000000000000000000n
+    const discountNumerator =
+      (BigInt(100 - (discountValue ?? 100)) * discountFactor) / 100n
+
+    const price = discountValue
+      ? (settledPrice * discountNumerator) / discountFactor
+      : settledPrice
+
+    const baseCosts = BigInt(nftsToClaim) * price
+
     return bidSpended - baseCosts
-  }, [bidSpended, nftsToClaim, settledPrice])
+  }, [bidSpended, discountValue, nftsToClaim, settledPrice])
   const isAbleToClaim = nftsToClaim > 0 || balance > 0
 
   const onClick = () => {
@@ -98,7 +110,7 @@ export const ClaimButton = ({
       {!alreadyClaimed && (
         <Text textAlign={'center'} fontSize={'xs'} mt={1}>
           {pluralize(nftsToClaim, 'art', 'arts')} and <EtherSymbol />
-          {formatToEtherStringBN(balance + refundToClaim)} to refund
+          {formatToEtherStringBN(balance + BigInt(refundToClaim))} to refund
         </Text>
       )}
     </>

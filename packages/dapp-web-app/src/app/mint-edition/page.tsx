@@ -6,7 +6,6 @@ import { tokens } from 'data/tokens'
 import { ReactNode, useEffect, useState } from 'react'
 import { AuctionProvider } from 'contexts/AuctionContext'
 import { AuctionSidebar } from './AuctionSidebar'
-import StaticArtGrid from 'components/ArtGrid/Static'
 import dynamic from 'next/dynamic'
 
 const DynamicArtGrid = dynamic(() => import('components/ArtGrid/Static'), {

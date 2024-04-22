@@ -39,6 +39,7 @@ export const TopBids = ({ bids, onViewAll }: TopBidsType) => {
                     ? 'you'
                     : shortenAddress(bid.bidder, 5, 6)
                 }
+                fullAddress={bid.bidder}
                 isHighlighted={isUserAddress(userAddress, bid.bidder)}
               />
             ))}

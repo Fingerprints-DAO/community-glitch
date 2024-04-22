@@ -14,9 +14,9 @@
     "chainId": 31337
   },
   "11155111": {
-    "Glitch": "0x6606d5C9E23dbE93eaf22287A2c3C67b22Bb37D5",
-    "GlitchAuction": "0x2E924a9B80feE0620ba07F871bBB1BfD2741F988",
-    "startBlock": 5684055,
+    "Glitch": "0x86e263CaDD1caCE347A752Fe84C065823BcA66a1",
+    "GlitchAuction": "0x9d60ca402220e46ca7876dD7aF503e082082B31D",
+    "startBlock": 5748652,
     "endBlock": 10000000,
     "chainId": 11155111
   }
