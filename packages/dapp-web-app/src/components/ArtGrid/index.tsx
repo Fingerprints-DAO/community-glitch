@@ -69,7 +69,6 @@ export const ArtGrid = ({
       ),
     [tokensVersion],
   )
-  console.log('displayTokensIds', displayTokensIds)
   const tokensHandled = useMemo(() => {
     if (!displayTokensIds) return randomTokens
     return randomTokens.filter((token) => displayTokensIds.includes(token.id))
