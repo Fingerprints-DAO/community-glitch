@@ -2,19 +2,19 @@
 pragma solidity 0.8.23;
 
 import {BaseScript} from './Base.s.sol';
-import {Mosaic} from '../src/Mosaic.sol';
+import {GlitchyGridGrid} from '../src/GlitchyGridGrid.sol';
 
-contract SetMerkleRootMosaic is BaseScript {
+contract SetMerkleRootGlitchy is BaseScript {
   function run() external {
-    address mosaicAddress = vm.envAddress('MOSAIC_ADDRESS');
+    address glitchyAddress = vm.envAddress('GLITCHY_ADDRESS');
     bytes32 freeClaimAllowlistRoot = vm.envBytes32('FREE_CLAIM_ALLOWLIST_ROOT');
     bytes32 discountAllowlistRoot = vm.envBytes32('DISCOUNT_ALLOWLIST_ROOT');
 
-    Mosaic mosaic = Mosaic(mosaicAddress);
+    GlitchyGridGrid glitchy = GlitchyGridGrid(glitchyAddress);
 
     vm.startBroadcast(broadcaster);
-    mosaic.setFreeClaimAllowlistRoot(freeClaimAllowlistRoot);
-    mosaic.setDiscountAllowlistRoot(discountAllowlistRoot);
+    glitchy.setFreeClaimAllowlistRoot(freeClaimAllowlistRoot);
+    glitchy.setDiscountAllowlistRoot(discountAllowlistRoot);
     vm.stopBroadcast();
   }
 }

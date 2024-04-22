@@ -8,24 +8,24 @@ import {stdError} from 'forge-std/src/stdError.sol';
 import {ERC721} from '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import {IERC721Errors} from '@openzeppelin/contracts/interfaces/draft-IERC6093.sol';
 
-import {Mosaic} from '../../../src/Mosaic.sol';
+import {GlitchyGridGrid} from '../../../src/GlitchyGridGrid.sol';
 
-contract MosaicTest is PRBTest, StdCheats {
-  Mosaic internal mosaic;
+contract GlitchyGridGridTest is PRBTest, StdCheats {
+  GlitchyGridGrid internal glitchy;
   bytes32[] private emptyProof = new bytes32[](2);
 
   function setUp() public virtual {
     uint256 _startTime = block.timestamp - 1000;
     uint256 _endTime = block.timestamp + 1000;
-    mosaic = new Mosaic(address(this), 'https://google.com/');
-    mosaic.setConfig(_startTime, _endTime);
+    glitchy = new GlitchyGridGrid(address(this), 'https://google.com/');
+    glitchy.setConfig(_startTime, _endTime);
   }
 
   // DEPLOY
   function test_deployWithInitialOwner() public {
     address initialOwner = address(0x123);
-    Mosaic newMosaic = new Mosaic(initialOwner, 'https://google.com/');
-    assertEq(newMosaic.owner(), initialOwner, 'Incorrect initial owner');
+    GlitchyGridGrid newGlitchyGridGrid = new GlitchyGridGrid(initialOwner, 'https://google.com/');
+    assertEq(newGlitchyGridGrid.owner(), initialOwner, 'Incorrect initial owner');
   }
 
   // token uri
@@ -35,7 +35,7 @@ contract MosaicTest is PRBTest, StdCheats {
 
     // Act and Assert
     vm.expectRevert(abi.encodeWithSelector(IERC721Errors.ERC721NonexistentToken.selector, 1));
-    mosaic.tokenURI(tokenId);
+    glitchy.tokenURI(tokenId);
   }
 
   function test_baseUriValueCanBeSet() public {
@@ -43,11 +43,11 @@ contract MosaicTest is PRBTest, StdCheats {
     string memory baseURI = 'http://example.com/';
 
     // Act
-    mosaic.mint{value: 0.025 ether}(msg.sender, 1, emptyProof);
-    mosaic.setBaseURI(baseURI);
+    glitchy.mint{value: 0.025 ether}(msg.sender, 1, emptyProof);
+    glitchy.setBaseURI(baseURI);
 
     // assert if tokenURI containes baseURI
-    string memory tokenURI = mosaic.tokenURI(1);
+    string memory tokenURI = glitchy.tokenURI(1);
     assertEq(tokenURI, string(abi.encodePacked(baseURI, '1')), 'Token URI does not contain base URI');
   }
 
@@ -56,8 +56,8 @@ contract MosaicTest is PRBTest, StdCheats {
     address zeroAddress = address(0);
 
     // Act and Assert
-    vm.expectRevert(abi.encodeWithSelector(Mosaic.ZeroAddress.selector));
-    mosaic.setFundsReceiverAddress(zeroAddress);
+    vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.ZeroAddress.selector));
+    glitchy.setFundsReceiverAddress(zeroAddress);
   }
 
   function test_setTokenPrice() public {
@@ -65,10 +65,10 @@ contract MosaicTest is PRBTest, StdCheats {
     uint256 newTokenPrice = 0.1 ether;
 
     // Act
-    mosaic.setTokenPrice(newTokenPrice);
+    glitchy.setTokenPrice(newTokenPrice);
 
     // Assert
-    assertEq(mosaic.tokenPrice(), newTokenPrice, 'Token price not set');
+    assertEq(glitchy.tokenPrice(), newTokenPrice, 'Token price not set');
   }
 
   function test_setConfig() public {
@@ -77,7 +77,7 @@ contract MosaicTest is PRBTest, StdCheats {
     uint256 endTime = startTime + 100;
 
     // Act
-    mosaic.setConfig(startTime, endTime);
+    glitchy.setConfig(startTime, endTime);
   }
 
   function test_invalidConfig() public {
@@ -86,15 +86,15 @@ contract MosaicTest is PRBTest, StdCheats {
     uint256 endTime = 100;
 
     // Act and Assert
-    vm.expectRevert(abi.encodeWithSelector(Mosaic.InvalidStartEndTime.selector, startTime, endTime));
-    mosaic.setConfig(startTime, endTime);
+    vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.InvalidStartEndTime.selector, startTime, endTime));
+    glitchy.setConfig(startTime, endTime);
 
     // Arrange
     uint256 startTime2 = 1;
     uint256 endTime2 = 0;
 
     // Act and Assert
-    vm.expectRevert(abi.encodeWithSelector(Mosaic.InvalidStartEndTime.selector, startTime2, endTime2));
-    mosaic.setConfig(startTime2, endTime2);
+    vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.InvalidStartEndTime.selector, startTime2, endTime2));
+    glitchy.setConfig(startTime2, endTime2);
   }
 }

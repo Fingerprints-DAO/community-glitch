@@ -10,11 +10,11 @@ import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
 import {Strings} from '@openzeppelin/contracts/utils/Strings.sol';
 
 /**
- * @title Mosaic
+ * @title GlitchyGridGrid
  * @dev ERC721 token contract representing a collection of digital artworks
  * @custom:security-contact arod.mail@proton.me
  */
-contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
+contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
   using Address for address payable;
 
   // Errors
@@ -84,7 +84,7 @@ contract Mosaic is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
    * @param initialOwner The initial owner of the contract
    * @param _baseUri The base URI of the contract
    */
-  constructor(address initialOwner, string memory _baseUri) ERC721('mosaic text', 'MOSAIC') Ownable(initialOwner) {
+  constructor(address initialOwner, string memory _baseUri) ERC721('glitchy grid grid', 'GGG') Ownable(initialOwner) {
     baseURI = _baseUri;
     fundsReceiverAddress = payable(initialOwner);
   }
