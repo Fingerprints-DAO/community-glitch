@@ -18,7 +18,7 @@ export const questions = [
         intended to be fun and playful. The degradation is part of the artwork
         and a degraded artwork is still an artwork.
         <LineSpace />
-        1. The initial collector receives an original photo with liminal
+        1. The initial collector receives an original photo with subliminal
         animation as GIF-file.
         <br />
         2. After the first sale or transfer, the animation disappears, leaving
@@ -130,6 +130,21 @@ export const allowListQuestions = [
     question: 'How will the allowlist work?',
     answer:
       'Members of partner communities and collectors of select works by misha de ridder will be granted a 15% discount at mint for both the 1/1 auction and the edition mint.',
+  },
+  {
+    question: 'How do discounts work?',
+    answer: (
+      <>
+        Certain communities and holders of NFT could be eligible for a discount
+        if they correctly filled out the allowlist form provided to them.
+        Discounts work only by minting on the website - not directly on
+        Etherscan.
+        <LineSpace />
+        For the 1/1 auction pieces, discounts will be applied when the user
+        claims the nfts and refunds. They must bid and commit ETH to bid, then
+        we calculate the refund based on lowest bid + discount.
+      </>
+    ),
   },
   {
     question:
