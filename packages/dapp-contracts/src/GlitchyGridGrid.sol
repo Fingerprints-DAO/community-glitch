@@ -192,7 +192,14 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
     _mintTokens(recipient, _amount);
   }
 
-  function claim(bytes32[] calldata proof, address recipient, uint8 _amount) external validConfig validTime {
+
+  /**
+   * @dev Allows to claim tokens for free using a merkle proof
+   * @param recipient The address to receive the minted tokens
+   * @param _amount The amount of tokens to mint
+   * @param proof The merkle proof to be checked
+   */
+  function claim(address recipient,uint8 _amount, bytes32[] calldata proof) external validConfig validTime {
     if (!checkFreeClaimAllowlist(proof, _msgSender(), _amount)) revert InvalidProof();
 
     usedProofs[keccak256(abi.encodePacked(proof))] = true;

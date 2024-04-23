@@ -179,7 +179,7 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
 
     vm.deal(alice, 100 ether);
     vm.prank(alice);
-    glitchy.claim(proof, alice, amountToMint);
+    glitchy.claim(alice, amountToMint, proof);
 
     // Assert
     for (uint i = 1; i < amountToMint + 1; i++) {
@@ -204,7 +204,7 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
     bytes32[] memory proof = m.getProof(data, 0); // will get proof for 0x2 value
 
     vm.prank(alice);
-    glitchy.claim(proof, alice, amountToMint);
+    glitchy.claim(alice, amountToMint, proof);
 
     // Assert
     for (uint i = 1; i < amountToMint + 1; i++) {
@@ -213,7 +213,7 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
 
     // Act and Assert
     vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.InvalidProof.selector));
-    glitchy.claim(proof, bob, amountToMint);
+    glitchy.claim(bob, amountToMint, proof);
   }
 
   function test_cannotClaimWithInvalidProof() public {
@@ -238,7 +238,7 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
 
     // Act and Assert
     vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.InvalidProof.selector));
-    glitchy.claim(proof, bob, amountToMint);
+    glitchy.claim(bob, amountToMint, proof);
   }
 
   function test_discoutedMint() public {
