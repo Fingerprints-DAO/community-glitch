@@ -175,11 +175,9 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
    */
   function mint(address recipient, uint8 _amount, bytes32[] calldata _merkleProof) external payable validConfig validTime {
     bool isDiscounted = checkDiscountMerkleProof(_merkleProof, _msgSender());
-    console2.log('isDiscounted', isDiscounted);
 
     uint256 price = calculatePrice(_amount, isDiscounted);
-    console2.log('price', price);
-    console2.log('msg.value', msg.value);
+
     if (msg.value < price) revert InsufficientFunds();
 
     _mintTokens(recipient, _amount);
@@ -210,8 +208,7 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
     if (recipient == address(0)) revert ZeroAddress();
     if (_amount > MAX_NUMBER_PER_MINT) revert MaxNumberOfMintedTokensExceeded();
 
-    uint256 tokenId = _nextTokenId + 1;
-    if (tokenId > MAX_SUPPLY) revert MaxSupplyExceeded();
+    if (_nextTokenId + _amount > MAX_SUPPLY) revert MaxSupplyExceeded();
 
     for (uint8 i = 0; i < _amount; i++) {
       _safeMint(recipient, ++_nextTokenId);

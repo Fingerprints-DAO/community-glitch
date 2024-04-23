@@ -94,6 +94,21 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
     glitchy.mint{value: price}(recipient, 1, emptyProof);
   }
 
+  function test_shouldRevertIfMaxSupplyIsExceedRegresion() public {
+    // Arrange
+    address recipient = address(0x123);
+    uint256 amountToMint = 508;
+
+    // Act and Assert
+    for (uint i = 0; i < amountToMint; i++) {
+      vm.prank(address(this));
+      glitchy.mint{value: price}(recipient, 1, emptyProof);
+    }
+
+    vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.MaxSupplyExceeded.selector));
+    glitchy.mint{value: price * 8}(recipient, 8, emptyProof);
+  }
+
   function test_shouldRevertIfMaxNumberPerMintIsExceeded() public {
     // Arrange
     address recipient = address(0x123);
