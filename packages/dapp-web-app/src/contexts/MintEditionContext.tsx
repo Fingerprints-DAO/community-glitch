@@ -112,9 +112,6 @@ export const MintEditionProvider = ({
       setMintState(
         getCurrentState(config.startTime, config.endTime, minted, maxSupply),
       )
-      console.log(
-        getCurrentState(config.startTime, config.endTime, minted, maxSupply),
-      )
 
       // If past config.endTime, clear interval and exit
       if (now.isAfter(config.endTime)) {
