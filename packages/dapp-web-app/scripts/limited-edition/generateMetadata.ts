@@ -45,7 +45,7 @@ function generateMetadata(nftIndex: number) {
   const image = `${mintEditionPath}thumbnails/${nftIndex}.png`
 
   const content = {
-    name: imagesConfig.name,
+    name: `glitchy #${nftIndex}`,
     background_color: 'ffffff',
     image,
     animation_url: htmlUrl,
