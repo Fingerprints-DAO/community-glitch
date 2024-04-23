@@ -200,7 +200,7 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
    * @param proof The merkle proof to be checked
    */
   function claim(address recipient,uint8 _amount, bytes32[] calldata proof) external validConfig validTime {
-    if (!checkFreeClaimAllowlist(proof, _msgSender(), _amount)) revert InvalidProof();
+    if (!checkFreeClaimAllowlist(proof, recipient, _amount)) revert InvalidProof();
 
     usedProofs[keccak256(abi.encodePacked(proof))] = true;
     _mintTokens(recipient, _amount);
