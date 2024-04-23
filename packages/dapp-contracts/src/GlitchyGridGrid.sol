@@ -8,6 +8,7 @@ import {ERC721URIStorage} from '@openzeppelin/contracts/token/ERC721/extensions/
 import {MerkleProof} from '@openzeppelin/contracts/utils/cryptography/MerkleProof.sol';
 import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
 import {Strings} from '@openzeppelin/contracts/utils/Strings.sol';
+import {console2} from 'forge-std/src/console2.sol';
 
 /**
  * @title GlitchyGridGrid
@@ -174,8 +175,11 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
    */
   function mint(address recipient, uint8 _amount, bytes32[] calldata _merkleProof) external payable validConfig validTime {
     bool isDiscounted = checkDiscountMerkleProof(_merkleProof, _msgSender());
+    console2.log('isDiscounted', isDiscounted);
 
     uint256 price = calculatePrice(_amount, isDiscounted);
+    console2.log('price', price);
+    console2.log('msg.value', msg.value);
     if (msg.value < price) revert InsufficientFunds();
 
     _mintTokens(recipient, _amount);
@@ -261,7 +265,7 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
    * @return A boolean indicating whether the Merkle proof is valid or not.
    */
   function checkDiscountMerkleProof(bytes32[] calldata _merkleProof, address _address) public view returns (bool) {
-    bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(_address))));
+    bytes32 leaf = keccak256(abi.encodePacked(_address));
 
     return MerkleProof.verify(_merkleProof, discountAllowlistRoot, leaf);
   }

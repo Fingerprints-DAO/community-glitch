@@ -7,6 +7,7 @@ import {
   useBreakpointValue,
 } from '@chakra-ui/react'
 import ChakraNextImageLoader from 'components/ChakraNextImageLoader'
+import { useMintEditionContext } from 'contexts/MintEditionContext'
 import { tokens } from 'data/tokens'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -66,20 +67,20 @@ export const StaticArtGrid = ({
   divisorOpt,
   ...props
 }: FlexProps & { divisorOpt?: Partial<Record<string, number>> }) => {
-  const gridId = 3
+  const { minted } = useMintEditionContext()
   const [tokensGrid, setTokensGrid] = useState<GridConfig[]>([])
 
   useEffect(() => {
     async function updateGrid() {
-      const newGrid = await fetch(`/mint-edition/config/${gridId}.json`).then(
-        (res) => res.json(),
-      )
+      const newGrid = await fetch(
+        `/mint-edition/config/${Number(minted + 1n)}.json`,
+      ).then((res) => res.json())
 
       setTokensGrid(newGrid)
     }
 
     updateGrid()
-  }, [gridId])
+  }, [minted])
 
   return (
     <Flex
