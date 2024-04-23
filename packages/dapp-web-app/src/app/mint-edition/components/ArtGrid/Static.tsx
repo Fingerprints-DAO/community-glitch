@@ -72,8 +72,9 @@ export const StaticArtGrid = ({
 
   useEffect(() => {
     async function updateGrid() {
+      const id = Number(minted + 1n)
       const newGrid = await fetch(
-        `/mint-edition/config/${Number(minted + 1n)}.json`,
+        `/mint-edition/config/${id < 1 || id > 510 ? 1 : id}.json`,
       ).then((res) => res.json())
 
       setTokensGrid(newGrid)
