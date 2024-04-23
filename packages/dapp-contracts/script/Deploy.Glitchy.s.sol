@@ -4,10 +4,8 @@ pragma solidity 0.8.23;
 import {GlitchyGridGrid} from '../src/GlitchyGridGrid.sol';
 import {BaseScript} from './Base.s.sol';
 
-contract Deploy is BaseScript {
-  function run(
-    address deployer
-  ) public broadcast returns (GlitchyGridGrid glitchy) {
+contract DeployGlitchy is BaseScript {
+  function run(address deployer) public broadcast returns (GlitchyGridGrid glitchy) {
     vm.startBroadcast();
     string memory baseURIGlitchyGridGrid = 'http://localhost:3000/glitchys/';
     glitchy = _deployGlitchyGridGrid(deployer, baseURIGlitchyGridGrid);
@@ -15,7 +13,7 @@ contract Deploy is BaseScript {
   }
 }
 
-contract DeployLocal is BaseScript {
+contract DeployGlitchyLocal is BaseScript {
   function run() public returns (GlitchyGridGrid glitchy) {
     address deployer = broadcaster;
     string memory baseURIGlitchyGridGrid = 'http://localhost:3000/glitchys/';
@@ -29,7 +27,7 @@ contract DeployLocal is BaseScript {
   }
 }
 
-contract DeploySepolia is BaseScript {
+contract DeployGlitchySepolia is BaseScript {
   function run() public returns (GlitchyGridGrid glitchy) {
     address deployer = broadcaster;
     string memory baseURIGlitchyGridGrid = 'https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/glitchy/metadata/';
@@ -42,7 +40,7 @@ contract DeploySepolia is BaseScript {
     vm.stopBroadcast();
   }
 }
-contract DeployMainnet is BaseScript {
+contract DeployGlitchyMainnet is BaseScript {
   function run() public returns (GlitchyGridGrid glitchy) {
     address deployer = broadcaster;
     string memory baseURIGlitchyGridGrid = 'https://fix.me/'; //TODO

@@ -2,7 +2,7 @@
   "1": {
     "Glitch": "0xc49d27c4a520a71ff899de7aca9fb56794bb0f1e",
     "GlitchAuction": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
-    "GlitchyGridGrid": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+    "GlitchyGridGrid": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
     "startBlock": 5630818,
     "endBlock": 10000000,
     "chainId": 1
@@ -10,7 +10,7 @@
   "31337": {
     "Glitch": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
     "GlitchAuction": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-    "GlitchyGridGrid": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+    "GlitchyGridGrid": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
     "startBlock": 0,
     "endBlock": 10000000,
     "chainId": 31337
@@ -18,7 +18,7 @@
   "11155111": {
     "Glitch": "0x86e263CaDD1caCE347A752Fe84C065823BcA66a1",
     "GlitchAuction": "0x9d60ca402220e46ca7876dD7aF503e082082B31D",
-    "GlitchyGridGrid": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+    "GlitchyGridGrid": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
     "startBlock": 5748652,
     "endBlock": 10000000,
     "chainId": 11155111
