@@ -5,6 +5,7 @@ import React, {
   useContext,
   useEffect,
   useRef,
+  useCallback,
 } from 'react'
 import {
   defaultMintConfigDayJs,
@@ -40,9 +41,14 @@ export const useMintEditionContext = () => useContext(MintEditionContext)
 const getCurrentState = (
   startTime?: HandledMintConfigToDayJs['startTime'],
   endTime?: HandledMintConfigToDayJs['endTime'],
+  minted?: BigInt,
+  maxSupply?: number,
 ) => {
   if (!startTime || !endTime) {
     return SalesState.IDLE
+  }
+  if (Number(minted) === maxSupply) {
+    return SalesState.SOLD_OUT
   }
   const now = dayjs()
 
@@ -57,6 +63,7 @@ const getCurrentState = (
   return SalesState.NOT_STARTED
 }
 
+const maxSupply = 510
 export const MintEditionProvider = ({
   children,
 }: {
@@ -73,9 +80,9 @@ export const MintEditionProvider = ({
   const { data: minted = 0n, refetch: refetchMinted } =
     useReadGlitchyTotalSupply()
 
-  const refetchAll = () => {
+  const refetchAll = useCallback(() => {
     refetchMinted()
-  }
+  }, [refetchMinted])
 
   useEffect(() => {
     async function fetchData() {
@@ -102,7 +109,12 @@ export const MintEditionProvider = ({
         now.diff(config.startTime, 'seconds') <= ONE_MINUTE ||
         now.diff(config.endTime, 'seconds') <= ONE_MINUTE
 
-      setMintState(getCurrentState(config.startTime, config.endTime))
+      setMintState(
+        getCurrentState(config.startTime, config.endTime, minted, maxSupply),
+      )
+      console.log(
+        getCurrentState(config.startTime, config.endTime, minted, maxSupply),
+      )
 
       // If past config.endTime, clear interval and exit
       if (now.isAfter(config.endTime)) {
@@ -120,7 +132,7 @@ export const MintEditionProvider = ({
     checkAndUpdateState()
 
     return () => clearInterval(intervalRef.current!)
-  }, [config.endTime, config.startTime])
+  }, [config.endTime, config.startTime, minted])
 
   useEffect(() => {
     // refetch minted number each 1 minute
@@ -134,7 +146,7 @@ export const MintEditionProvider = ({
       value={{
         ...config,
         minted,
-        maxSupply: 510n,
+        maxSupply: BigInt(maxSupply),
         mintState,
         limitPerTx: 10,
         refetchAll,

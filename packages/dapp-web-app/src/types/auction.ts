@@ -5,6 +5,7 @@ export enum SalesState {
   NOT_STARTED,
   STARTED,
   ENDED,
+  SOLD_OUT,
 }
 
 export type AuctionConfig = {

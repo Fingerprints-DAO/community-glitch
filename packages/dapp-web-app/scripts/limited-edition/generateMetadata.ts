@@ -37,9 +37,6 @@ function calculateDegradation(versions: string[]) {
 }
 
 function generateMetadata(nftIndex: number) {
-  const imagesConfig = require(
-    `../../public/mint-edition/config/${nftIndex}.json`,
-  )
   const htmlUrl = `${mintEditionPath}html/${nftIndex}.html`
   const versions = tokensVersions[nftIndex - 1]
   const image = `${mintEditionPath}thumbnails/${nftIndex}.png`

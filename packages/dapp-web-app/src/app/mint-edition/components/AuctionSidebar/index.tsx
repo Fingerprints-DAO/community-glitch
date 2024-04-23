@@ -82,6 +82,9 @@ const getCountdownText = (state: SalesState) => {
   if (state === SalesState.STARTED) {
     return 'remaining time'
   }
+  if (state === SalesState.SOLD_OUT) {
+    return 'mint sold out'
+  }
   return 'mint ended'
 }
 
@@ -120,6 +123,11 @@ export const MintSidebar = (props: FlexProps) => {
     const available = Number(maxSupply - minted)
     return available > limitPerTx ? limitPerTx : available
   }, [limitPerTx, maxSupply, minted])
+
+  const mintEnded = useMemo(
+    () => mintState === SalesState.ENDED || mintState === SalesState.SOLD_OUT,
+    [mintState],
+  )
 
   const handleCounter = (value: number) => {
     if (value < 0) return
@@ -196,45 +204,59 @@ export const MintSidebar = (props: FlexProps) => {
           >
             <Box>
               <Text fontWeight={'bold'}>{getCountdownText(mintState)}</Text>
-              <Text hidden={mintState === SalesState.ENDED}>
+              <Text hidden={mintEnded}>
                 <Countdown timestampInMili={countdownInMili} />
               </Text>
             </Box>
-            <Box>
-              <Text fontWeight={'bold'}>
-                fixed price
-                <Text
-                  as="span"
-                  hidden={!hasDiscount}
-                  fontSize={'xs'}
-                  fontWeight={'normal'}
-                >
-                  {' '}
-                  (-15%)
-                </Text>
-              </Text>
-              <Text>
-                <Text
-                  as="span"
-                  textDecor={hasDiscount ? 'line-through' : ''}
-                  textColor={hasDiscount ? 'gray.400' : 'black'}
-                >
-                  {price}
-                </Text>
-                <Text as="span" hidden={!hasDiscount}>
-                  {' '}
-                  {priceWithDiscount}
-                </Text>
-                <EtherSymbol />
-              </Text>
-            </Box>
-            <Box>
-              <Text fontWeight={'bold'}>minted/supply</Text>
-              <Text>
-                {Number(minted)}/{Number(maxSupply)} tokens
-              </Text>
-            </Box>
+            {!mintEnded && (
+              <>
+                <Box>
+                  <Text fontWeight={'bold'}>
+                    fixed price
+                    <Text
+                      as="span"
+                      hidden={!hasDiscount}
+                      fontSize={'xs'}
+                      fontWeight={'normal'}
+                    >
+                      {' '}
+                      (-15%)
+                    </Text>
+                  </Text>
+                  <Text>
+                    <Text
+                      as="span"
+                      textDecor={hasDiscount ? 'line-through' : ''}
+                      textColor={hasDiscount ? 'gray.400' : 'black'}
+                    >
+                      {price}
+                    </Text>
+                    <Text as="span" hidden={!hasDiscount}>
+                      {' '}
+                      {priceWithDiscount}
+                    </Text>
+                    <EtherSymbol />
+                  </Text>
+                </Box>
+                <Box>
+                  <Text fontWeight={'bold'}>minted/supply</Text>
+                  <Text>
+                    {Number(minted)}/{Number(maxSupply)} tokens
+                  </Text>
+                </Box>
+              </>
+            )}
           </Flex>
+          <Box>
+            <ChakraLink
+              as={Link}
+              target="_blank"
+              href={getExternalOpenseaUrl(glitchyAddress)}
+              title="OpenSea"
+            >
+              buy on opensea
+            </ChakraLink>
+          </Box>
           {mintState === SalesState.STARTED && (
             <Flex mt={4} justifyContent={'space-between'} shrink={0} flex={1}>
               <Box minW={'30%'}>
