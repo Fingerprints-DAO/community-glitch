@@ -3,7 +3,6 @@ pragma solidity 0.8.23;
 
 import {Glitch} from '../src/Glitch.sol';
 import {GlitchAuction} from '../src/GlitchAuction.sol';
-import {GlitchyGridGrid} from '../src/GlitchyGridGrid.sol';
 
 import {BaseScript} from './Base.s.sol';
 
@@ -18,23 +17,20 @@ contract Deploy is BaseScript {
     uint256 startTime,
     uint256 endTime,
     uint256 minBidIncrementInWei,
-    uint256 startAmountInWei,
-    string memory baseURIGlitchyGridGrid
-  ) public broadcast returns (Glitch glitch, GlitchAuction auction, GlitchyGridGrid glitchy) {
+    uint256 startAmountInWei
+  ) public broadcast returns (Glitch glitch, GlitchAuction auction) {
     vm.startBroadcast();
     glitch = _deployGlitch(deployer, minter, baseURI);
     auction = _deployAuction(address(glitch), deployer, startTime, endTime, minBidIncrementInWei, startAmountInWei);
-    glitchy = _deployGlitchyGridGrid(deployer, baseURIGlitchyGridGrid);
     vm.stopBroadcast();
   }
 }
 
 contract DeployLocal is BaseScript {
-  function run() public returns (Glitch glitch, GlitchAuction auction, GlitchyGridGrid glitchy) {
+  function run() public returns (Glitch glitch, GlitchAuction auction) {
     address deployer = broadcaster;
     address minter = broadcaster;
     string memory baseURI = 'http://localhost:3000/arts/';
-    string memory baseURIGlitchyGridGrid = 'http://localhost:3000/glitchys/';
     uint256 startTime = block.timestamp + (3600 * 0.1);
     uint256 endTime = startTime + (3600 * 1);
     uint256 minBidIncrementInWei = 0.005 ether;
@@ -43,19 +39,16 @@ contract DeployLocal is BaseScript {
     vm.startBroadcast();
     glitch = _deployGlitch(deployer, minter, baseURI);
     auction = _deployAuction(address(glitch), deployer, startTime, endTime, minBidIncrementInWei, startAmountInWei);
-    glitchy = _deployGlitchyGridGrid(deployer, baseURIGlitchyGridGrid);
-    glitchy.setConfig(startTime, endTime);
     auction.setMerkleRoots(0xc65cfff3957d3e32ee797a76ee48f645c1d54219732b342756fb72caf73ba890);
     vm.stopBroadcast();
   }
 }
 
 contract DeploySepolia is BaseScript {
-  function run() public returns (Glitch glitch, GlitchAuction auction, GlitchyGridGrid glitchy) {
+  function run() public returns (Glitch glitch, GlitchAuction auction) {
     address deployer = broadcaster;
     address minter = broadcaster;
     string memory baseURI = 'https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/edition/metadata/';
-    string memory baseURIGlitchyGridGrid = 'https://community-glitch-dapp-web-app-git-develop-fingerprints.vercel.app/glitchy/metadata/';
     uint256 startTime = block.timestamp + (3600 * 0.5);
     uint256 endTime = startTime + (3600 * 5);
     uint256 minBidIncrementInWei = 0.005 ether;
@@ -64,8 +57,6 @@ contract DeploySepolia is BaseScript {
     vm.startBroadcast();
     glitch = _deployGlitch(deployer, minter, baseURI);
     auction = _deployAuction(address(glitch), deployer, startTime, endTime, minBidIncrementInWei, startAmountInWei);
-    glitchy = _deployGlitchyGridGrid(deployer, baseURIGlitchyGridGrid);
-    glitchy.setConfig(startTime, endTime);
     auction.setMerkleRoots(0xc65cfff3957d3e32ee797a76ee48f645c1d54219732b342756fb72caf73ba890);
     vm.stopBroadcast();
   }
