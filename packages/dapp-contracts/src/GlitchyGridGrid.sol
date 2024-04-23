@@ -8,7 +8,6 @@ import {ERC721URIStorage} from '@openzeppelin/contracts/token/ERC721/extensions/
 import {MerkleProof} from '@openzeppelin/contracts/utils/cryptography/MerkleProof.sol';
 import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
 import {Strings} from '@openzeppelin/contracts/utils/Strings.sol';
-import {console2} from 'forge-std/src/console2.sol';
 
 /**
  * @title GlitchyGridGrid
@@ -255,7 +254,7 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
    * @param _address The address to be checked.
    */
   function checkFreeClaimAllowlist(bytes32[] calldata _merkleProof, address _address, uint8 _amount) public view returns (bool) {
-    bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(_address, _amount))));
+    bytes32 leaf = keccak256(abi.encode(_address, _amount));
 
     if (usedProofs[keccak256(abi.encodePacked(_merkleProof))]) revert InvalidProof();
 

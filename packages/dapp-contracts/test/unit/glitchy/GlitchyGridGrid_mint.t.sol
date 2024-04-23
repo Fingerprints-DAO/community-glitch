@@ -167,8 +167,8 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
     // Create merkle root and set it
     Merkle m = new Merkle();
     bytes32[] memory data = new bytes32[](2);
-    data[0] = keccak256(bytes.concat(keccak256(abi.encode(alice, amountToMint))));
-    data[1] = keccak256(bytes.concat(keccak256(abi.encode(bob, amountToMint))));
+    data[0] = keccak256(abi.encode(alice, amountToMint));
+    data[1] = keccak256(abi.encode(bob, amountToMint));
 
     bytes32 root = m.getRoot(data);
 
@@ -194,8 +194,8 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
     // Create merkle root and set it
     Merkle m = new Merkle();
     bytes32[] memory data = new bytes32[](2);
-    data[0] = keccak256(bytes.concat(keccak256(abi.encode(alice, amountToMint))));
-    data[1] = keccak256(bytes.concat(keccak256(abi.encode(bob, amountToMint))));
+    data[0] = keccak256(abi.encode(alice, amountToMint));
+    data[1] = keccak256(abi.encode(bob, amountToMint));
     bytes32 root = m.getRoot(data);
 
     // Act
@@ -248,8 +248,8 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
     // Create merkle root and set it
     Merkle m = new Merkle();
     bytes32[] memory data = new bytes32[](2);
-    data[0] = keccak256(bytes.concat(keccak256(abi.encode(alice))));
-    data[1] = keccak256(bytes.concat(keccak256(abi.encode(bob))));
+    data[0] = keccak256(abi.encodePacked(alice));
+    data[1] = keccak256(abi.encodePacked(bob));
     bytes32 root = m.getRoot(data);
 
     // Act
