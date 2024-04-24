@@ -27,7 +27,7 @@ export const questions = [
         3. After the second sale or transfer the photo fades 50%.
         <br />
         4. After the third sale or transfer the photo will disappear leaving
-        only a placeholder.
+        just a residue.
         <br />
         <LineSpace />
         You can refresh your art to the mint original clicking the refresh

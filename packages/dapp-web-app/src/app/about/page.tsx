@@ -197,7 +197,7 @@ export default function About() {
         only the photo.
         <br /> 3. After the second sale or transfer the photo fades 50%.
         <br /> 4. After the third sale or transfer the photo will disappear
-        leaving only a placeholder.
+        leaving just a residue.
       </Section>
       <Section title="contact fingerprints dao, & artist">
         fingerprints [contact@fingerprintsdao.xyz]
