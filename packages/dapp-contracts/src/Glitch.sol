@@ -1,6 +1,26 @@
-// SPDX-License-Identifier: MIT
+/**
+ * @title glitch by misha de ridder
+ * @author https://arod.studio/
+ * @dev ERC721 token contract representing a collection of digital artworks
+ * @notice live website: https://glitch.mishaderidder.com/
+ *
+ * This contract is used to manage ERC721 glitch tokens, tokens created by misha de ridder
+ * arod.studio developed this contract on according to misha de ridder requirements
+ *
+ * Dynamic token mechanics
+ * All 50 1 of 1s in the series are designed to degrade with each secondary market trade or transfer to another wallet.
+ * The token's traits, title and token ID always remain except when you burn the token for a print.
+ * Anyone can pay a small amount to refresh the token, restoring it to its original state on the website glitch.mishaderidder.com.
+ *
+ * 1. The initial collector receives an original photo with liminal animation as GIF-file.
+ * 2. After the first sale or transfer, the animation disappears, leaving only the photo.
+ * 3. After the second sale or transfer the photo fades 50%.
+ * 4. After the third sale or transfer the photo will disappear leaving only a placeholder.
+ *
+ * SPDX-License-Identifier: MIT
+ * @custom:security-contact arod.mail@proton.me
+ */
 pragma solidity 0.8.23;
-
 import {Strings} from '@openzeppelin/contracts/utils/Strings.sol';
 import {ERC721, IERC721} from '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import {ERC721Enumerable} from '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol';
@@ -9,11 +29,6 @@ import {ReentrancyGuard} from '@openzeppelin/contracts/utils/ReentrancyGuard.sol
 import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 
-/**
- * @title Glitch
- * @dev ERC721 token contract representing a collection of digital artworks
- * @custom:security-contact arod.mail@proton.me
- */
 contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, ReentrancyGuard {
   using Address for address payable;
 
@@ -82,7 +97,7 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
 
   uint16 private constant MAX_SUPPLY = 50; /// @notice The maximum number of tokens that can be minted.
   string private baseURI; /// @notice The base URI of the contract.
-  uint256 public refreshTokenPrice = 0.025 ether; /// @notice The price of a refresh token.
+  uint256 public refreshTokenPrice = 0; /// @notice The price of a refresh token. Price is 0 for one week.
   address public minterContractAddress; /// @notice The address of the minter contract.
   address payable public fundsReceiverAddress; /// @notice The address of the funds receiver.
   mapping(uint256 tokenId => TokenVersion version) private _tokenVersionMap; /// @notice The version of each token.
@@ -120,17 +135,6 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
   }
 
   /**
-   * @dev Mints a new token and assigns it to the specified recipient
-   * @param recipient The address to receive the minted token
-   */
-  function mint(address recipient, uint256 _id) external _onlyMinter {
-    if (recipient == address(0)) revert ZeroAddress();
-    if (_id > MAX_SUPPLY || _id == 0) revert IdOutOfBounds();
-    emit Minted(recipient, _id);
-    _safeMint(recipient, _id);
-  }
-
-  /**
    * @dev Updates the version of a specific token
    * @param tokenId The ID of the token
    */
@@ -151,6 +155,32 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
 
     _tokenVersionMap[tokenId] = nextVersion;
     emit MetadataUpdate(tokenId);
+  }
+
+  /**
+   * @dev Mints a new token and assigns it to the specified recipient
+   * @param recipient The address to receive the minted token
+   */
+  function mint(address recipient, uint256 _id) external _onlyMinter {
+    if (recipient == address(0)) revert ZeroAddress();
+    if (_id > MAX_SUPPLY || _id == 0) revert IdOutOfBounds();
+    emit Minted(recipient, _id);
+    _safeMint(recipient, _id);
+  }
+
+  /**
+   * @dev Mints a new token and assigns it to the specified recipient
+   * @notice only owner.
+   * @param recipient The address to receive the minted token
+   */
+  function adminMint(address recipient, uint256[] memory _ids) external _onlyOwner {
+    if (recipient == address(0)) revert ZeroAddress();
+
+    for (uint256 i = 0; i < _ids.length; i++) {
+      if (_ids[i] > MAX_SUPPLY || _ids[i] == 0) revert IdOutOfBounds();
+      emit Minted(recipient, _ids[i]);
+      _safeMint(recipient, _ids[i]);
+    }
   }
 
   /**
@@ -177,6 +207,7 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
     if (_msgSender() != ownerOf(_tokenId)) revert OnlyTokenOwner();
     emit Burned(_msgSender(), _tokenId, _givenCode);
     _burn(_tokenId);
+    emit MetadataUpdate(_tokenId);
   }
 
   /**
@@ -213,7 +244,6 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
    * @dev Only the owner can call this function
    */
   function setRefreshTokenPrice(uint256 newRefreshTokenPriceInWei) external _onlyOwner {
-    if (newRefreshTokenPriceInWei == 0) revert InvalidPrice();
     refreshTokenPrice = newRefreshTokenPriceInWei;
   }
 
@@ -249,6 +279,25 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
       }
     }
   }
+
+  /**
+   * @dev Returns an array of tokens owned by an address
+   * @param _owner The address of the owner
+   * @return tokenIds An array of tokens owned by an address
+   */
+  function getTokensByOwner(address _owner) public view returns (uint256[] memory tokenIds) {
+    uint256 tokenCount = balanceOf(_owner);
+    if (tokenCount == 0) {
+      return tokenIds;
+    } else {
+      tokenIds = new uint256[](tokenCount);
+      for (uint256 i = 0; i < tokenCount; i++) {
+        tokenIds[i] = tokenOfOwnerByIndex(_owner, i);
+      }
+      return tokenIds;
+    }
+  }
+
   /**
    * @dev Returns the URI of a specific token
    * @param tokenId The ID of the token

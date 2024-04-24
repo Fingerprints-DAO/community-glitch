@@ -9,9 +9,6 @@ export async function GET() {
     minBidIncrementInWei: 0.005,
     startAmountInWei: 0.04,
   }
-  if (process.env.NEXT_PUBLIC_WEB3_NETWORK === 'mainnet') {
-    return Response.json({ ...auctionConfig })
-  }
 
   try {
     auctionConfig = handleAuctionConfig(
@@ -19,7 +16,6 @@ export async function GET() {
     )
   } catch (e) {
     console.error('Error getting auction config', e)
-    return new Response('Internal Server Error', { status: 500 })
   }
 
   return Response.json({ ...auctionConfig })

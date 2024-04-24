@@ -35,14 +35,15 @@ interface IGlitch {
   event TokenRefreshed(uint256 indexed tokenId, address refresherAddress);
   event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 
+  function adminMint(address recipient, uint256[] memory _ids) external;
   function approve(address to, uint256 tokenId) external;
   function balanceOf(address owner) external view returns (uint256);
-  function baseURI() external view returns (string memory);
   function burnToReedem(uint256 _tokenId, uint256 _givenCode) external;
   function fundsReceiverAddress() external view returns (address payable);
   function getAllTokensVersion() external view returns (string[] memory versions);
   function getApproved(uint256 tokenId) external view returns (address);
   function getTokenVersion(uint256 tokenId) external view returns (string memory versionStr);
+  function getTokensByOwner(address _owner) external view returns (uint256[] memory tokenIds);
   function isApprovedForAll(address owner, address operator) external view returns (bool);
   function mint(address recipient, uint256 _id) external;
   function minterContractAddress() external view returns (address);

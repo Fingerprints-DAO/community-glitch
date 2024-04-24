@@ -65,6 +65,12 @@ export default function PrintClaimPage() {
         title="physical print claim for glitch — misha de ridder"
         titleProps={{ pt: 0 }}
       >
+        Burning the token is the final and irreversible degradation fase and at
+        the same time the transformation to the physical. When all the tokens
+        are burned an empty website and Ethereum contract remains as a memory
+        and the art lives on as a print. You could argue the tokens are backed
+        by a physical asset. You can always exit.
+        <LineSpace />
         If you are a 1/1 token holder, you can take advantage of the special
         opportunity to acquire a large-scale fine art print by the artist,
         fulfilled by Assembly.

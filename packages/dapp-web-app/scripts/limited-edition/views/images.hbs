@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>glitch by misha de ridder</title>
+    <style>
+      :root {
+        --variable-collection-fp-links: rgba(110, 204, 221, 1);
+        --variable-collection-bg-color: rgba(254, 249, 255, 1);
+      }
+      html, body, div, span, applet, object, iframe,
+      h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+      a, abbr, acronym, address, big, cite, code,
+      del, dfn, em, img, ins, kbd, q, s, samp,
+      small, strike, strong, sub, sup, tt, var,
+      b, u, i, center,
+      dl, dt, dd, ol, ul, li,
+      fieldset, form, label, legend,
+      table, caption, tbody, tfoot, thead, tr, th, td,
+      article, aside, canvas, details, embed, 
+      figure, figcaption, footer, header, hgroup, 
+      menu, nav, output, ruby, section, summary,
+      time, mark, audio, video {
+          margin: 0;
+          padding: 0;
+          border: 0;
+          font-size: 100%;
+          font: inherit;
+          vertical-align: baseline;
+      }
+      a {
+        display: inline-flex;
+      }
+      .frame {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        align-items: flex-start;
+        gap: 0px 0px;
+        position: relative;
+      }
+
+
+      .frame img {
+        position: relative;
+        object-fit: cover;
+        display: inline;
+        max-width: 100%;
+        transition: all 0.05s cubic-bezier(0.46, 0.03, 0.52, 0.96);
+      }
+
+      .img { 
+        width: 172.8px;
+        height: 216px;
+      } 
+      .img1 { 
+        width: 216px;
+        height: 172.8px;
+      }
+      .img2 { 
+        width: 144px;
+        height: 216px;
+      }
+      .img3 { 
+        width: 144px;
+        height: 172.8px;
+      }
+
+      /* Ajustes para telas médias (md) */
+      @media (max-width: 768px) {
+        .img { 
+          width: 96px;
+          height: 120px;
+        } 
+        .img1 { 
+          width: 120px;
+          height: 96px;
+        }
+        .img2 { 
+          width: 80px;
+          height: 120px;
+        }
+        .img3 { 
+          width: 80px;
+          height: 96px;
+        }
+      }
+
+      /* Ajustes para telas pequenas (sm) */
+      @media (max-width: 576px) {
+        .img { 
+          width: 67.2px;
+          height: 84px;
+        } 
+        .img1 { 
+          width: 84px;
+          height: 67.2px;
+        }
+        .img2 { 
+          width: 56px;
+          height: 84px;
+        }
+        .img3 { 
+          width: 56px;
+          height: 67.2px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="frame">
+      {{#each images}}
+        <a href="{{../fullImagePath}}{{this.image}}_{{this.version}}.gif" target="_blank">
+          <img class="{{this.class}}" src="{{../imagePath}}{{this.image}}_{{this.version}}s.gif" alt="{{this.name}}">
+        </a>
+      {{/each}}
+    </div>
+  </body>
+</html>

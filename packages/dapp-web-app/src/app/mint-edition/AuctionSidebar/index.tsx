@@ -162,8 +162,8 @@ export const AuctionSidebar = (props: FlexProps) => {
                   glitch by misha de ridder, released by Fingerprints, is a
                   collection of 50 animated GIFs, stemming from photographs of
                   erased graffiti. The act of erasing can involve both
-                  destruction and generation, transformation and
-                  reimagination—allowing for new possibilities to emerge.
+                  destruction and generation, transformation and reimagination —
+                  allowing for new possibilities to emerge.
                 </Text>
                 <Text mt={4}>
                   As soon as the 1/1 auction closes, a limited mint of 510
@@ -172,9 +172,9 @@ export const AuctionSidebar = (props: FlexProps) => {
                   representing one of the many possible options of the full
                   collection mosaic, minted as HTML-page. The mint is limited to
                   510 editions. The art is slowly degraded as more editions are
-                  minted following the steps of the 1/1s — until the last 10
-                  editions are left completely blank. There&apos;s no way to
-                  restore, what you mint is what you get.
+                  minted following the steps of the 1/1s — until the last 20
+                  editions are fully degraded. There&apos;s no way to restore,
+                  what you mint is what you get.
                 </Text>
               </TextSection>
             </Box>
