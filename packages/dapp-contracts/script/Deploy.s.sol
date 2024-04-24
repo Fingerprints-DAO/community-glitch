@@ -21,7 +21,7 @@ contract Deploy is BaseScript {
   ) public broadcast returns (Glitch glitch, GlitchAuction auction) {
     vm.startBroadcast();
     glitch = _deployGlitch(deployer, minter, baseURI);
-    auction = _deployAuction(address(glitch), deployer, startTime, endTime, minBidIncrementInWei, startAmountInWei);
+    auction = _deployAuction(address(glitch), deployer, deployer, startTime, endTime, minBidIncrementInWei, startAmountInWei);
     vm.stopBroadcast();
   }
 }
@@ -39,7 +39,7 @@ contract DeployLocal is BaseScript {
 
     vm.startBroadcast();
     glitch = _deployGlitch(deployer, minter, baseURI);
-    auction = _deployAuction(address(glitch), deployer, startTime, endTime, minBidIncrementInWei, startAmountInWei);
+    auction = _deployAuction(address(glitch), deployer, deployer, startTime, endTime, minBidIncrementInWei, startAmountInWei);
     auction.setMerkleRoots(0xc65cfff3957d3e32ee797a76ee48f645c1d54219732b342756fb72caf73ba890);
     vm.stopBroadcast();
   }
@@ -57,7 +57,7 @@ contract DeploySepolia is BaseScript {
 
     vm.startBroadcast();
     glitch = _deployGlitch(deployer, minter, baseURI);
-    auction = _deployAuction(address(glitch), deployer, startTime, endTime, minBidIncrementInWei, startAmountInWei);
+    auction = _deployAuction(address(glitch), deployer, deployer, startTime, endTime, minBidIncrementInWei, startAmountInWei);
     auction.setMerkleRoots(0xc65cfff3957d3e32ee797a76ee48f645c1d54219732b342756fb72caf73ba890);
     vm.stopBroadcast();
   }
@@ -74,9 +74,16 @@ contract DeployMainnet is BaseScript {
 
     vm.startBroadcast();
     glitch = _deployGlitch(deployer, minter, baseURI);
-    auction = _deployAuction(address(glitch), deployer, startTime, endTime, minBidIncrementInWei, startAmountInWei);
-    // TODO: update merkle roots
-    auction.setMerkleRoots(0xc65cfff3957d3e32ee797a76ee48f645c1d54219732b342756fb72caf73ba890);
+    auction = _deployAuction(
+      address(glitch),
+      deployer,
+      0xE3b32779000D86b3a3251Afe2248B706D83d816b,
+      startTime,
+      endTime,
+      minBidIncrementInWei,
+      startAmountInWei
+    );
+    // auction.setMerkleRoots(0xc65cfff3957d3e32ee797a76ee48f645c1d54219732b342756fb72caf73ba890);
     vm.stopBroadcast();
   }
 }

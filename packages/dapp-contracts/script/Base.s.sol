@@ -48,17 +48,13 @@ abstract contract BaseScript is Script {
   function _deployAuction(
     address glitchAddress,
     address deployer,
+    address treasuryWallet,
     uint256 startTime,
     uint256 endTime,
     uint256 minBidIncrementInWei,
     uint256 startAmountInWei
   ) internal returns (GlitchAuction auction) {
-    // uint256 startTime = block.timestamp + 3600 * 0.5; // 1 hour from now
-    // uint256 endTime = startTime + 1800; // 1 hour after start time
-    // uint256 minBidIncrementInWei = 0.005 ether;
-    // uint256 startAmountInWei = 0.01 ether;
-
-    auction = new GlitchAuction(deployer, glitchAddress, deployer);
+    auction = new GlitchAuction(deployer, glitchAddress, treasuryWallet);
     auction.setConfig(startTime, endTime, minBidIncrementInWei, startAmountInWei);
     Glitch(glitchAddress).setMinterContractAddress(address(auction));
   }

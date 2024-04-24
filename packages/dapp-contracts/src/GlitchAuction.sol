@@ -1,5 +1,4 @@
 /**
- *
  * Developed by
  *                        _       _             _ _
  *                       | |     | |           | (_)
@@ -9,9 +8,27 @@
  *    \__,_|_|  \___/ \__,_(_)___/\__|\__,_|\__,_|_|\___/
  *
  *
- * @title Auction contract
+ * @title English ranked auction with rebate contract
  * @author https://arod.studio/
- * @dev This contract is used to auction the Glitch NFTs.
+ * @dev Overview
+ * The top 50 bids will secure a unique piece of art. We encourage our collectors to engage actively,
+ * as there is no limit to the number of bids you can place.
+ * Additionally, the more you bid, the higher your chances of winning multiple pieces.
+ *
+ * Bidding
+ * Please note that once you place a bid, it is final and cannot be altered.
+ * We advise all our collectors to bid carefully and consider their choices thoughtfully.
+ * This rule ensures fairness and integrity in the auction process.
+ *
+ * Rebate
+ * In our auction, fairness is key. If you are among the top 50 winners and your bid exceeds the lowest winning bid in this group,
+ * you will receive a rebate. This rebate equals the difference between your bid and the lowest winning bid,
+ * ensuring that all winners pay the same final amount for their art pieces.
+ *
+ * Non-winning bids
+ * At the conclusion of the auction, non-winning participants are eligible to claim a full refund of their bid amounts.
+ * This process is straightforward and ensures that if you don't win, you can retrieve your investment without any hassle.
+ *
  * @website https://glitch.mishaderidder.com/
  * SPDX-License-Identifier: MIT
  * @custom:security-contact arod.mail@proton.me
@@ -19,8 +36,6 @@
 
 pragma solidity 0.8.23;
 
-import {IERC721} from '@openzeppelin/contracts/token/ERC721/IERC721.sol';
-import {IERC721Enumerable} from '@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol';
 import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
 import {MerkleProof} from '@openzeppelin/contracts/utils/cryptography/MerkleProof.sol';
 import {ReentrancyGuard} from '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
@@ -28,10 +43,6 @@ import {Pausable} from '@openzeppelin/contracts/utils/Pausable.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 import {IGlitch} from './IGlitch.sol';
 
-/**
- * @title Auction Contract
- * @dev This contract is an auction for an ERC721 token (NFT).
- */
 contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
   using Address for address payable;
 
@@ -123,12 +134,12 @@ contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
   /**
    * @notice bidBalances maps each bidder's address to their total bid amount in the auction.
    */
-  mapping(address => uint256) public bidBalances;
+  mapping(address bidder => uint256 balance) public bidBalances;
 
   /**
    * @notice claimed maps each bidder's address to a boolean indicating whether they have claimed their NFT and/or refund.
    */
-  mapping(address => bool) public claimed;
+  mapping(address bidder => bool isClaimed) public claimed;
 
   /**
    * @dev _config stores the configuration of the auction, including start time, end time, and minimum bid increment.
@@ -149,8 +160,7 @@ contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
    * @dev Throws InvalidStartEndTime error if the current timestamp is not between the start and end time.
    */
   modifier validTime() {
-    Config memory config = _config;
-    if (block.timestamp >= config.endTime || block.timestamp <= config.startTime) revert InvalidStartEndTime(config.startTime, config.endTime);
+    if (block.timestamp >= _config.endTime || block.timestamp <= _config.startTime) revert InvalidStartEndTime(_config.startTime, _config.endTime);
     _;
   }
 
@@ -170,6 +180,95 @@ contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
   constructor(address _initialOwner, address _glitchAddress, address _treasuryWallet) Ownable(_initialOwner) {
     glitchAddress = IGlitch(_glitchAddress);
     treasuryWallet = payable(_treasuryWallet);
+  }
+
+  function _refundAndMint(address _to, bool _shouldMint) private returns (uint256 nftsMinted, uint256 amountSpent) {
+    if (block.timestamp <= _config.endTime) revert AuctionNotEnded();
+    if (claimed[_to]) revert AlreadyClaimed();
+
+    DiscountType discountType = DiscountType.None;
+    uint256 balance = bidBalances[_to];
+    claimed[_to] = true;
+
+    for (uint256 i; i < MAX_TOP_BIDS; ) {
+      if (topBids[i].bidder == _to) {
+        if (_shouldMint) glitchAddress.mint(_to, i + 1);
+        nftsMinted++;
+        amountSpent += topBids[i].amount;
+        if (topBids[i].discountType != DiscountType.None) {
+          discountType = topBids[i].discountType;
+        }
+      }
+      unchecked {
+        ++i;
+      }
+    }
+
+    uint256 refundAmount = balance + (amountSpent - (nftsMinted * getSettledPriceWithDiscount(discountType)));
+    if (refundAmount > 0) {
+      payable(_to).sendValue(refundAmount);
+    }
+    return (nftsMinted, amountSpent);
+  }
+
+  /**
+   * @dev Returns the tier discount type of an address.
+   * @param _merkleProof The merkle proof.
+   * @param _addressToCheck The address to check.
+   * @return The tier discount type.
+   */
+  function _getTierDiscount(bytes32[] calldata _merkleProof, address _addressToCheck) private view returns (DiscountType) {
+    if (checkMerkleProof(_merkleProof, _addressToCheck, firstTierMerkleRoot)) {
+      return DiscountType.FirstTier;
+    }
+
+    return DiscountType.None;
+  }
+
+  /**
+   * @dev Returns the last bid position.
+   * @return lastBidPosition The last bid position.
+   */
+  function _getLastBidPosition() private view returns (uint256 lastBidPosition) {
+    lastBidPosition = MAX_TOP_BIDS;
+
+    while (lastBidPosition > 0 && topBids[lastBidPosition - 1].amount == 0) {
+      --lastBidPosition;
+    }
+
+    --lastBidPosition;
+  }
+
+  /**
+   * @dev Internal function to process a bid.
+   * @param _bidder The address of the bidder.
+   * @param _amount The amount of the bid.
+   */
+  function processBid(address _bidder, uint256 _amount, DiscountType _discountType) private {
+    uint256 position;
+
+    // Find the position of the new bid in the top bids
+    while (position < MAX_TOP_BIDS && topBids[position].amount >= _amount) {
+      unchecked {
+        ++position;
+      }
+    }
+
+    if (position >= MAX_TOP_BIDS) revert BidDoesNotQualifyForTopBids();
+
+    // Remove the old top bid
+    Bid memory outbidded = topBids[MAX_TOP_BIDS - 1];
+    if (outbidded.bidder != address(0)) {
+      emit Outbidded(outbidded.bidder, outbidded.amount, position);
+      bidBalances[outbidded.bidder] = bidBalances[outbidded.bidder] + outbidded.amount;
+    }
+
+    // Insert the new bid
+    for (uint256 i = MAX_TOP_BIDS - 1; i > position; i--) {
+      topBids[i] = topBids[i - 1];
+    }
+    emit BidPlaced(_bidder, _amount);
+    topBids[position] = Bid(_bidder, _amount, _discountType);
   }
 
   /**
@@ -231,17 +330,6 @@ contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
   }
 
   /**
-   * @dev Checks if a merkle proof is valid.
-   * @param _merkleProof The merkle proof to be checked.
-   * @param _address The address to be checked.
-   * @param _root The merkle root.
-   */
-  function checkMerkleProof(bytes32[] calldata _merkleProof, address _address, bytes32 _root) public pure returns (bool) {
-    bytes32 leaf = keccak256(abi.encodePacked(_address));
-    return MerkleProof.verify(_merkleProof, _root, leaf);
-  }
-
-  /**
    * @dev Allows users to place bids on the auction.
    * @param _bidAmount The amount of the bid.
    */
@@ -250,38 +338,6 @@ contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
     if (msg.value != _bidAmount) revert InsufficientFundsForBid();
 
     processBid(_msgSender(), _bidAmount, _getTierDiscount(_merkleProof, _msgSender()));
-  }
-
-  /**
-   * @dev Internal function to process a bid.
-   * @param _bidder The address of the bidder.
-   * @param _amount The amount of the bid.
-   */
-  function processBid(address _bidder, uint256 _amount, DiscountType _discountType) private {
-    uint256 position;
-
-    // Find the position of the new bid in the top bids
-    while (position < MAX_TOP_BIDS && topBids[position].amount >= _amount) {
-      unchecked {
-        ++position;
-      }
-    }
-
-    if (position >= MAX_TOP_BIDS) revert BidDoesNotQualifyForTopBids();
-
-    // Remove the old top bid
-    Bid memory outbidded = topBids[MAX_TOP_BIDS - 1];
-    if (outbidded.bidder != address(0)) {
-      emit Outbidded(outbidded.bidder, outbidded.amount, position);
-      bidBalances[outbidded.bidder] = bidBalances[outbidded.bidder] + outbidded.amount;
-    }
-
-    // Insert the new bid
-    for (uint256 i = MAX_TOP_BIDS - 1; i > position; i--) {
-      topBids[i] = topBids[i - 1];
-    }
-    emit BidPlaced(_bidder, _amount);
-    topBids[position] = Bid(_bidder, _amount, _discountType);
   }
 
   /**
@@ -294,7 +350,8 @@ contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
   }
 
   /**
-   * @dev Allows admin to force refund of users after the auction ends.
+   * @dev Allows admin to force refund of users after the auction ends. It doesn't claim and mint the nfts.
+   * @notice use only in emergency case.
    * @dev Only admin can force refund.
    * @param _to The claimer address.
    */
@@ -346,61 +403,15 @@ contract GlitchAuction is Ownable, ReentrancyGuard, Pausable {
     treasuryWallet.sendValue(salesAmountWithDiscount + salesAmount);
   }
 
-  function _refundAndMint(address _to, bool _shouldMint) private returns (uint256 nftsMinted, uint256 amountSpent) {
-    if (block.timestamp <= _config.endTime) revert AuctionNotEnded();
-    if (claimed[_to]) revert AlreadyClaimed();
-
-    DiscountType discountType = DiscountType.None;
-    uint256 balance = bidBalances[_to];
-    claimed[_to] = true;
-
-    for (uint256 i; i < MAX_TOP_BIDS; ) {
-      if (topBids[i].bidder == _to) {
-        if (_shouldMint) glitchAddress.mint(_to, i + 1);
-        nftsMinted++;
-        amountSpent += topBids[i].amount;
-        if (topBids[i].discountType != DiscountType.None) {
-          discountType = topBids[i].discountType;
-        }
-      }
-      unchecked {
-        ++i;
-      }
-    }
-
-    uint256 refundAmount = balance + (amountSpent - (nftsMinted * getSettledPriceWithDiscount(discountType)));
-    if (refundAmount > 0) {
-      payable(_to).sendValue(refundAmount);
-    }
-    return (nftsMinted, amountSpent);
-  }
-
   /**
-   * @dev Returns the tier discount type of an address.
-   * @param _merkleProof The merkle proof.
-   * @param _addressToCheck The address to check.
-   * @return The tier discount type.
+   * @dev Checks if a merkle proof is valid.
+   * @param _merkleProof The merkle proof to be checked.
+   * @param _address The address to be checked.
+   * @param _root The merkle root.
    */
-  function _getTierDiscount(bytes32[] calldata _merkleProof, address _addressToCheck) private view returns (DiscountType) {
-    if (checkMerkleProof(_merkleProof, _addressToCheck, firstTierMerkleRoot)) {
-      return DiscountType.FirstTier;
-    }
-
-    return DiscountType.None;
-  }
-
-  /**
-   * @dev Returns the last bid position.
-   * @return lastBidPosition The last bid position.
-   */
-  function _getLastBidPosition() private view returns (uint256 lastBidPosition) {
-    lastBidPosition = MAX_TOP_BIDS;
-
-    while (lastBidPosition > 0 && topBids[lastBidPosition - 1].amount == 0) {
-      --lastBidPosition;
-    }
-
-    --lastBidPosition;
+  function checkMerkleProof(bytes32[] calldata _merkleProof, address _address, bytes32 _root) public pure returns (bool) {
+    bytes32 leaf = keccak256(abi.encodePacked(_address));
+    return MerkleProof.verify(_merkleProof, _root, leaf);
   }
 
   /**
