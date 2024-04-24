@@ -47,7 +47,6 @@ const getCurrentState = (
   }
   const now = dayjs()
 
-  console.log('endTime', endTime.toDate())
   if (now.isAfter(endTime)) {
     return SalesState.ENDED
   }
