@@ -82,7 +82,18 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
   function test_shouldRevertIfMaxSupplyIsExceeded() public {
     // Arrange
     address recipient = address(0x123);
-    uint256 amountToMint = 510;
+    uint16 amountToMint = glitchy.MAX_SUPPLY() - glitchy.FREE_CLAIM_AMOUNT();
+    Merkle m = new Merkle();
+    bytes32[] memory data = new bytes32[](2);
+    data[0] = keccak256(abi.encode(alice, glitchy.FREE_CLAIM_AMOUNT()));
+    data[1] = keccak256(abi.encode(bob, glitchy.FREE_CLAIM_AMOUNT()));
+
+    bytes32 root = m.getRoot(data);
+
+    // Act
+    vm.prank(address(this));
+    glitchy.setFreeClaimAllowlistRoot(root);
+    bytes32[] memory proof = m.getProof(data, 0); // will get proof for 0x2 value
 
     // Act and Assert
     for (uint i = 0; i < amountToMint; i++) {
@@ -90,22 +101,61 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
       glitchy.mint{value: price}(recipient, 1, emptyProof);
     }
 
-    vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.MaxSupplyExceeded.selector));
+    // Act and Assert
+    vm.prank(alice);
+    glitchy.claim(alice, glitchy.FREE_CLAIM_AMOUNT(), proof);
+
+    vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.RegularMintedExceeded.selector));
     glitchy.mint{value: price}(recipient, 1, emptyProof);
+  }
+
+  function test_shouldRevertIfFreeClaimedExceeded() public {
+    // Arrange
+    uint8 amountToMint = glitchy.FREE_CLAIM_AMOUNT();
+    Merkle m = new Merkle();
+    bytes32[] memory data = new bytes32[](2);
+    data[0] = keccak256(abi.encode(alice, amountToMint));
+    data[1] = keccak256(abi.encode(bob, amountToMint));
+
+    bytes32 root = m.getRoot(data);
+
+    // Act
+    vm.prank(address(this));
+    glitchy.setFreeClaimAllowlistRoot(root);
+    bytes32[] memory proof = m.getProof(data, 0); // will get proof for 0x2 value
+
+    // Act and Assert
+    vm.prank(alice);
+    glitchy.claim(alice, amountToMint, proof);
+
+    vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.FreeClaimedExceeded.selector));
+    glitchy.claim(alice, 1, proof);
+  }
+
+  function test_shouldRevertIfMaxSupplyExceeded() public {
+    uint16 amountToMint = glitchy.MAX_SUPPLY();
+    address recipient = address(0x123);
+
+    for (uint i = 0; i < amountToMint; i++) {
+      vm.prank(address(this));
+      glitchy.ownerMint(recipient, 1);
+    }
+
+    vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.MaxSupplyExceeded.selector));
+    glitchy.ownerMint(recipient, 1);
   }
 
   function test_shouldRevertIfMaxSupplyIsExceedRegresion() public {
     // Arrange
     address recipient = address(0x123);
-    uint256 amountToMint = 508;
+    uint16 amountToMint = glitchy.MAX_SUPPLY() - glitchy.FREE_CLAIM_AMOUNT() - 2;
 
-    // Act and Assert
     for (uint i = 0; i < amountToMint; i++) {
       vm.prank(address(this));
       glitchy.mint{value: price}(recipient, 1, emptyProof);
     }
 
-    vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.MaxSupplyExceeded.selector));
+    vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.RegularMintedExceeded.selector));
     glitchy.mint{value: price * 8}(recipient, 8, emptyProof);
   }
 
@@ -189,7 +239,7 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
 
   function test_cannotReuseProof() public {
     // Arrange
-    uint8 amountToMint = 5;
+    uint8 amountToMint = 1;
 
     // Create merkle root and set it
     Merkle m = new Merkle();

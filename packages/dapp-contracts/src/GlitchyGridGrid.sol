@@ -59,17 +59,30 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
    */
   error ConfigNotSet();
 
+  /**
+   * @dev Error emitted when the maximum number of tokens claimed for free is exceeded.
+   */
+  error FreeClaimedExceeded();
+
+  /**
+   * @dev Error emitted when the maximum number of tokens that can be minted is exceeded.
+   */
+  error RegularMintedExceeded();
+
   uint256 private _nextTokenId; /// @notice The next token ID to be minted.
   string private baseURI; /// @notice The base URI of the contract.
   mapping(bytes32 proof => bool used) private usedProofs; /// @notice The used proofs.
-  uint16 private constant MAX_SUPPLY = 510; /// @notice The maximum number of tokens that can be minted.
+  uint16 public constant MAX_SUPPLY = 510; /// @notice The maximum number of tokens that can be minted.
   uint8 private constant MAX_NUMBER_PER_MINT = 10; /// @notice The maximum number of tokens that can be minted at once.
+  uint8 public constant FREE_CLAIM_AMOUNT = 8; /// @notice The amount of tokens that can be claimed for free.
   uint16 public constant DISCOUNT_PERCENTAGE = 15; /// @notice 15% discount for allowlisted users.
   uint256 public tokenPrice = 0.025 ether; /// @notice The price of a refresh token.
   address payable public fundsReceiverAddress; /// @notice The address of the funds receiver.
   bytes32 private discountAllowlistRoot; /// @notice The root of the discount allowlist merkle tree.
   bytes32 private freeClaimAllowlistRoot; /// @notice The root of the free claim allowlist merkle tree.
   Config private _config; /// @notice The mint configuration.
+  uint16 private freeClaimed; /// @notice The number of tokens claimed for free.
+  uint16 private regularMinted; /// @notice The number of tokens minted.
 
   /// @dev Represents the mint configuration.
   struct Config {
@@ -173,12 +186,15 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
    * @param _amount The amount of tokens to mint
    */
   function mint(address recipient, uint8 _amount, bytes32[] calldata _merkleProof) external payable validConfig validTime {
+    if (regularMinted + _amount > (MAX_SUPPLY - FREE_CLAIM_AMOUNT)) revert RegularMintedExceeded();
+
     bool isDiscounted = checkDiscountMerkleProof(_merkleProof, _msgSender());
 
     uint256 price = calculatePrice(_amount, isDiscounted);
 
     if (msg.value < price) revert InsufficientFunds();
 
+    regularMinted += _amount;
     _mintTokens(recipient, _amount);
   }
 
@@ -187,7 +203,7 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
    * @param recipient The address to receive the minted token
    * @param _amount The amount of tokens to mint
    */
-  function ownerMint(address recipient, uint8 _amount) external _onlyOwner {
+  function ownerMint(address recipient, uint16 _amount) external _onlyOwner {
     _mintTokens(recipient, _amount);
   }
 
@@ -199,9 +215,11 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
    * @param proof The merkle proof to be checked
    */
   function claim(address recipient,uint8 _amount, bytes32[] calldata proof) external validConfig validTime {
+    if (freeClaimed + _amount > FREE_CLAIM_AMOUNT) revert FreeClaimedExceeded();
     if (!checkFreeClaimAllowlist(proof, recipient, _amount)) revert InvalidProof();
 
     usedProofs[keccak256(abi.encodePacked(proof))] = true;
+    freeClaimed += _amount;
     _mintTokens(recipient, _amount);
   }
 
@@ -210,7 +228,7 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
    * @param recipient The address to receive the minted tokens
    * @param _amount The amount of tokens to mint
    */
-  function _mintTokens(address recipient, uint8 _amount) internal {
+  function _mintTokens(address recipient, uint16 _amount) internal {
     if (recipient == address(0)) revert ZeroAddress();
     if (_amount > MAX_NUMBER_PER_MINT) revert MaxNumberOfMintedTokensExceeded();
 
