@@ -204,8 +204,8 @@ export default function Auction() {
                 As a commentary on secondary market dynamics, misha has also
                 introduced a twist: each time a token is traded, the artwork
                 changes. On the first trade, the animation vanishes. Subsequent
-                trades cause the image to fade, until eventually, the token
-                points to a blank placeholder.
+                trades cause the image to fade, until eventually, a faint
+                residue remains.
                 <br />
                 <br />
                 Collectors can pay to restore the image to the minted original,

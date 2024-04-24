@@ -121,7 +121,7 @@ export const questions = [
   },
   {
     question:
-      'Can I burn to exchange a 1/1 glitch work for a print even if it is blank?',
+      'Can I burn to exchange a 1/1 glitch work for a print even if it is fully degraded?',
     answer: <>Yes.</>,
   },
 ]
@@ -224,8 +224,8 @@ export const mintEditionQuestions = [
         <br />
         now all are faded 50%
         <LineSpace />
-        411 - 510 / 6 images become blank in steps of 10 - last 10 will be fully
-        blank
+        411 - 510 / 6 images become fully degraded in steps of 10 - last 20 will
+        be fully degraded
       </>
     ),
   },

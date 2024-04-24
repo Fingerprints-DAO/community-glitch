@@ -79,7 +79,7 @@ export default function About() {
         glitch by misha de ridder, released by Fingerprints, is a collection of
         50 animated GIFs, stemming from photographs of erased graffiti. The act
         of erasing can involve both destruction and generation, transformation
-        and reimagination—allowing for new possibilities to emerge.
+        and reimagination — allowing for new possibilities to emerge.
         <LineSpace />
         Playing with notions of loss and re-coding, misha has re-animated the
         graffiti, inserting liminal afterimages of what was once there: faces,
@@ -93,7 +93,7 @@ export default function About() {
         As a commentary on secondary market dynamics, misha has also introduced
         a twist: each time a token is traded, the artwork changes. On the first
         trade, the animation vanishes. Subsequent trades cause the image to
-        fade, until eventually, the token points to a blank placeholder.
+        fade, until eventually, a faint residue remains.
         <LineSpace />
         Collectors can pay to restore the image to the minted original, or
         choose to burn the token to redeem it for a limited edition, physical
@@ -156,9 +156,9 @@ export default function About() {
           As soon as the auction closes, a limited mint of 510 editions will
           become available, representing various mosaics of the full collection
           in randomized order. These images will slowly degrade as more editions
-          are minted, until the last 10 editions in the series are left
-          completely blank. The edition mint will close on May 5, 2024 11:59
-          p.m. ET / May 6, 5:59 a.m. CET.
+          are minted, until in the last 20 editions only a residue remains. The
+          edition mint will close on May 5, 2024 11:59 p.m. ET / May 6, 5:59
+          a.m. CET.
           <LineSpace />
           Members of partner communities and collectors of select works by misha
           de ridder will be granted a 15% discount at mint for both the 1/1
