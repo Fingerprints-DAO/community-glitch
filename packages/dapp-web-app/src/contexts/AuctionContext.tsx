@@ -47,6 +47,7 @@ const getCurrentState = (
   }
   const now = dayjs()
 
+  console.log('endTime', endTime.toDate())
   if (now.isAfter(endTime)) {
     return SalesState.ENDED
   }
@@ -66,6 +67,7 @@ export const AuctionProvider = ({
   const [config, setConfig] = useState<HandledAuctionConfigToDayJs>(
     defaultAuctionConfigDayJs,
   )
+  const [configIsLoading, setConfigIsloading] = useState(true)
   const [burnedTokensIds, setBurnedTokensIds] = useState<number[]>([])
   const [isLoadingBurnedCall, setIsLoadingBurnedCall] = useBoolean(true)
 
@@ -95,6 +97,7 @@ export const AuctionProvider = ({
 
   useEffect(() => {
     async function fetchData() {
+      setConfigIsloading(true)
       try {
         const config = (await fetch('/api/auction/config').then((res) =>
           res.json(),
@@ -105,6 +108,7 @@ export const AuctionProvider = ({
       } catch (e) {
         console.log('Error getting config', e)
       }
+      setConfigIsloading(false)
     }
     fetchData()
   }, [])
@@ -131,20 +135,18 @@ export const AuctionProvider = ({
         intervalRef.current = setInterval(checkAndUpdateState, 1000)
       }
     }
+    if (configIsLoading) return
 
     intervalRef.current = setInterval(checkAndUpdateState, 30000)
     checkAndUpdateState()
 
     return () => clearInterval(intervalRef.current!)
-  }, [config.endTime, config.startTime])
+  }, [config.endTime, config.startTime, configIsLoading])
 
   return (
     <AuctionContext.Provider
       value={{
         ...config,
-        // currentPrice: price,
-        // minted: currentTokenId - 1n,
-        // maxSupply,
         currentPrice: 0n,
         minted: 50n,
         maxSupply: 50n,

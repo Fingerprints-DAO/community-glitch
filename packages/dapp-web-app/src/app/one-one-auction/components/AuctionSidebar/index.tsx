@@ -45,13 +45,14 @@ import useTxToast from 'hooks/use-tx-toast'
 import { useDiscount } from 'hooks/use-discount'
 
 const getCountdownText = (state: SalesState) => {
-  if (state === SalesState.IDLE || state === SalesState.NOT_STARTED) {
-    return 'auction starts in: '
+  console.log('state', state, SalesState.ENDED)
+  if (state === SalesState.ENDED) {
+    return 'auction ended'
   }
   if (state === SalesState.STARTED) {
     return 'remaining time: '
   }
-  return 'auction ended'
+  return 'auction starts in: '
 }
 
 const auctionContract = getContractAddressesForChainOrThrow(getChainId())
@@ -174,6 +175,8 @@ export const AuctionSidebar = (props: FlexProps) => {
     showTxErrorToast,
     showTxExecutedToast,
   ])
+
+  console.log('auctionState', auctionState)
 
   return (
     <Flex
