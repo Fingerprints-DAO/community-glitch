@@ -67,13 +67,13 @@ const SubTextSection = ({
 )
 
 const getCountdownText = (state: SalesState) => {
-  if (state === SalesState.IDLE || state === SalesState.NOT_STARTED) {
-    return 'mint starts in: '
+  if (state === SalesState.ENDED) {
+    return 'mint ended'
   }
   if (state === SalesState.STARTED) {
     return 'remaining time: '
   }
-  return 'mint ended'
+  return 'mint starts in: '
 }
 
 const salesConfig = {
