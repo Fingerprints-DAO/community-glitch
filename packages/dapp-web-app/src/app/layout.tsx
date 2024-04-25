@@ -1,6 +1,7 @@
 import 'assets/styles/globals.css'
 
 import type { Metadata } from 'next'
+import { Analytics } from '@vercel/analytics/react'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
@@ -22,6 +23,7 @@ function RootLayout({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <body>
         <Providers>{children}</Providers>
+        <Analytics />
       </body>
     </html>
   )

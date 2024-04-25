@@ -1,15 +1,15 @@
-import { Box, Container, Flex, Icon, Text } from '@chakra-ui/react'
+import { useMemo } from 'react'
+import { Box, Flex, Icon, Text } from '@chakra-ui/react'
 import { FarcasterIcon, LensIcon } from 'components/Icons'
 import { TextToltip } from 'components/TextTooltip'
 import { BsDiscord, BsTwitterX } from 'react-icons/bs'
-import { BsTwitter } from 'react-icons/bs'
 import { SiOpensea } from 'react-icons/si'
 import { SiEthereum } from 'react-icons/si'
-// import { lineAddress } from 'services/web3/generated'
 import { getExternalEtherscanUrl, getExternalOpenseaUrl } from 'utils/getLink'
 import { glitchAddress } from 'web3/contract-functions'
 
 const Footer = () => {
+  const auctionIsEnded = useMemo(() => new Date().getTime() > 1714323600000, [])
   return (
     <Box as="footer" pt={14} pb={6} w={'auto'}>
       <Flex
@@ -148,25 +148,27 @@ const Footer = () => {
                   <Icon as={SiEthereum} w={6} h={6} display="block" />
                 </Box>
               </TextToltip>
-              <TextToltip
-                label="Check out the collection on Opensea"
-                placement="top"
-              >
-                <Box
-                  as="a"
-                  href={getExternalOpenseaUrl(glitchAddress)}
-                  title="OpenSea"
-                  target="_blank"
-                  p={2}
-                  color="gray.300"
-                  _hover={{ color: 'gray.800' }}
-                  transition="ease"
-                  transitionProperty="color"
-                  transitionDuration="0.2s"
+              {auctionIsEnded && (
+                <TextToltip
+                  label="Check out the collection on Opensea"
+                  placement="top"
                 >
-                  <Icon as={SiOpensea} w={6} h={6} display="block" />
-                </Box>
-              </TextToltip>
+                  <Box
+                    as="a"
+                    href={getExternalOpenseaUrl(glitchAddress)}
+                    title="OpenSea"
+                    target="_blank"
+                    p={2}
+                    color="gray.300"
+                    _hover={{ color: 'gray.800' }}
+                    transition="ease"
+                    transitionProperty="color"
+                    transitionDuration="0.2s"
+                  >
+                    <Icon as={SiOpensea} w={6} h={6} display="block" />
+                  </Box>
+                </TextToltip>
+              )}
             </>
           )}
         </Flex>
