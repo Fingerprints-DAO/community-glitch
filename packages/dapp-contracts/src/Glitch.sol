@@ -1,14 +1,26 @@
 /**
- * @title Glitch 1/1s NFT contract - glitch by misha de ridder
+ * @title glitch by misha de ridder
  * @author https://arod.studio/
- * This contract is used to manage ERC721 Glitch tokens by misha de ridder
- * arod.studio created this contract to have mechanics asked by misha
+ * @dev ERC721 token contract representing a collection of digital artworks
+ * @notice live website: https://glitch.mishaderidder.com/
+ *
+ * This contract is used to manage ERC721 glitch tokens, tokens created by misha de ridder
+ * arod.studio developed this contract on according to misha de ridder requirements
+ *
+ * Dynamic token mechanics
+ * All 50 1 of 1s in the series are designed to degrade with each secondary market trade or transfer to another wallet.
+ * The token's traits, title and token ID always remain except when you burn the token for a print.
+ * Anyone can pay a small amount to refresh the token, restoring it to its original state on the website glitch.mishaderidder.com.
+ *
+ * 1. The initial collector receives an original photo with liminal animation as GIF-file.
+ * 2. After the first sale or transfer, the animation disappears, leaving only the photo.
+ * 3. After the second sale or transfer the photo fades 50%.
+ * 4. After the third sale or transfer the photo will disappear leaving only a placeholder.
  *
  * SPDX-License-Identifier: MIT
  * @custom:security-contact arod.mail@proton.me
  */
 pragma solidity 0.8.23;
-
 import {Strings} from '@openzeppelin/contracts/utils/Strings.sol';
 import {ERC721, IERC721} from '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import {ERC721Enumerable} from '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol';
@@ -17,10 +29,6 @@ import {ReentrancyGuard} from '@openzeppelin/contracts/utils/ReentrancyGuard.sol
 import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
 
-/**
- * @title Glitch
- * @dev ERC721 token contract representing a collection of digital artworks
- */
 contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, ReentrancyGuard {
   using Address for address payable;
 
@@ -89,7 +97,7 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
 
   uint16 private constant MAX_SUPPLY = 50; /// @notice The maximum number of tokens that can be minted.
   string private baseURI; /// @notice The base URI of the contract.
-  uint256 public refreshTokenPrice = 0; /// @notice The price of a refresh token.
+  uint256 public refreshTokenPrice = 0; /// @notice The price of a refresh token. Price is 0 for one week.
   address public minterContractAddress; /// @notice The address of the minter contract.
   address payable public fundsReceiverAddress; /// @notice The address of the funds receiver.
   mapping(uint256 tokenId => TokenVersion version) private _tokenVersionMap; /// @notice The version of each token.
@@ -127,6 +135,29 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
   }
 
   /**
+   * @dev Updates the version of a specific token
+   * @param tokenId The ID of the token
+   */
+  function _updateTokenVersion(uint256 tokenId) private {
+    TokenVersion nextVersion = _tokenVersionMap[tokenId];
+
+    if (nextVersion == TokenVersion.D) {
+      return;
+    }
+
+    if (nextVersion == TokenVersion.A) {
+      nextVersion = TokenVersion.B;
+    } else if (nextVersion == TokenVersion.B) {
+      nextVersion = TokenVersion.C;
+    } else if (nextVersion == TokenVersion.C) {
+      nextVersion = TokenVersion.D;
+    }
+
+    _tokenVersionMap[tokenId] = nextVersion;
+    emit MetadataUpdate(tokenId);
+  }
+
+  /**
    * @dev Mints a new token and assigns it to the specified recipient
    * @param recipient The address to receive the minted token
    */
@@ -153,29 +184,6 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
   }
 
   /**
-   * @dev Updates the version of a specific token
-   * @param tokenId The ID of the token
-   */
-  function _updateTokenVersion(uint256 tokenId) private {
-    TokenVersion nextVersion = _tokenVersionMap[tokenId];
-
-    if (nextVersion == TokenVersion.D) {
-      return;
-    }
-
-    if (nextVersion == TokenVersion.A) {
-      nextVersion = TokenVersion.B;
-    } else if (nextVersion == TokenVersion.B) {
-      nextVersion = TokenVersion.C;
-    } else if (nextVersion == TokenVersion.C) {
-      nextVersion = TokenVersion.D;
-    }
-
-    _tokenVersionMap[tokenId] = nextVersion;
-    emit MetadataUpdate(tokenId);
-  }
-
-  /**
    * @dev Refreshes the version of a specific token
    * @param _tokenId The ID of the token
    */
@@ -199,6 +207,7 @@ contract Glitch is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reentran
     if (_msgSender() != ownerOf(_tokenId)) revert OnlyTokenOwner();
     emit Burned(_msgSender(), _tokenId, _givenCode);
     _burn(_tokenId);
+    emit MetadataUpdate(_tokenId);
   }
 
   /**

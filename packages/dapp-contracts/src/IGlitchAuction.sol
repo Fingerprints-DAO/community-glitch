@@ -39,7 +39,7 @@ interface IGlitchAuction {
 
   event BidPlaced(address indexed bidder, uint256 amount);
   event Claimed(address indexed to, uint256 nftAmount, uint256 refundAmount);
-  event Outbid(address indexed bidder, uint256 amount, uint256 lastBidPosition);
+  event Outbidded(address indexed bidder, uint256 amount, uint256 lastBidPosition);
   event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
   event Paused(address account);
   event Unpaused(address account);
@@ -52,11 +52,12 @@ interface IGlitchAuction {
   function claimAll(address _to) external;
   function claimed(address) external view returns (bool);
   function firstTierMerkleRoot() external view returns (bytes32);
+  function forceRefund(address _to) external;
   function getConfig() external view returns (Config memory);
   function getMinimumBid() external view returns (uint256);
   function getSettledPrice() external view returns (uint256);
   function getSettledPriceWithDiscount(DiscountType _discountType) external view returns (uint256);
-  function getTopBids() external view returns (Bid[10] memory);
+  function getTopBids() external view returns (Bid[50] memory);
   function glitchAddress() external view returns (address);
   function owner() external view returns (address);
   function pause() external;

@@ -27,7 +27,7 @@ export const questions = [
         3. After the second sale or transfer the photo fades 50%.
         <br />
         4. After the third sale or transfer the photo will disappear leaving
-        only a placeholder.
+        just a residue.
         <br />
         <LineSpace />
         You can refresh your art to the mint original clicking the refresh
@@ -121,7 +121,7 @@ export const questions = [
   },
   {
     question:
-      'Can I burn to exchange a 1/1 glitch work for a print even if it is blank?',
+      'Can I burn to exchange a 1/1 glitch work for a print even if it is fully degraded?',
     answer: <>Yes.</>,
   },
 ]
@@ -224,8 +224,8 @@ export const mintEditionQuestions = [
         <br />
         now all are faded 50%
         <LineSpace />
-        411 - 510 / 6 images become blank in steps of 10 - last 10 will be fully
-        blank
+        411 - 510 / 6 images become fully degraded in steps of 10 - last 20 will
+        be fully degraded
       </>
     ),
   },

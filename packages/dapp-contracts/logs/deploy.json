@@ -1,9 +1,8 @@
 {
   "1": {
-    "Glitch": "0xc49d27c4a520a71ff899de7aca9fb56794bb0f1e",
-    "GlitchAuction": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
-    "GlitchyGridGrid": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
-    "startBlock": 5630818,
+    "Glitch": "0xAa39B261b8d4FDaa8A1ED436cC14A723c0480eE9",
+    "GlitchAuction": "0x0d7848e6245C802Ca5d3F1c270dB360896D594cF",
+    "startBlock": 19726784,
     "endBlock": 10000000,
     "chainId": 1
   },

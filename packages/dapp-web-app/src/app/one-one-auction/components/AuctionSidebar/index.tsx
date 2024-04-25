@@ -45,13 +45,13 @@ import useTxToast from 'hooks/use-tx-toast'
 import { useDiscount } from 'hooks/use-discount'
 
 const getCountdownText = (state: SalesState) => {
-  if (state === SalesState.IDLE || state === SalesState.NOT_STARTED) {
-    return 'auction starts in: '
+  if (state === SalesState.ENDED) {
+    return 'auction ended'
   }
   if (state === SalesState.STARTED) {
     return 'remaining time: '
   }
-  return 'auction ended'
+  return 'auction starts in: '
 }
 
 const auctionContract = getContractAddressesForChainOrThrow(getChainId())
