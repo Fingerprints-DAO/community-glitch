@@ -2,6 +2,7 @@
   "1": {
     "Glitch": "0xAa39B261b8d4FDaa8A1ED436cC14A723c0480eE9",
     "GlitchAuction": "0x0d7848e6245C802Ca5d3F1c270dB360896D594cF",
+    "GlitchyGridGrid": "0x0d7848e6245C802Ca5d3F1c270dB360896D594cF",
     "startBlock": 19726784,
     "endBlock": 10000000,
     "chainId": 1

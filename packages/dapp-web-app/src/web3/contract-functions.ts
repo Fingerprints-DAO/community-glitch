@@ -52,9 +52,9 @@ export const auctionAbi = [
   },
   {
     type: 'function',
-    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    inputs: [{ name: 'bidder', internalType: 'address', type: 'address' }],
     name: 'bidBalances',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    outputs: [{ name: 'balance', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
   },
   {
@@ -77,9 +77,9 @@ export const auctionAbi = [
   },
   {
     type: 'function',
-    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    inputs: [{ name: 'bidder', internalType: 'address', type: 'address' }],
     name: 'claimed',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    outputs: [{ name: 'isClaimed', internalType: 'bool', type: 'bool' }],
     stateMutability: 'view',
   },
   {
@@ -1041,6 +1041,20 @@ export const glitchyAbi = [
   },
   {
     type: 'function',
+    inputs: [],
+    name: 'FREE_CLAIM_AMOUNT',
+    outputs: [{ name: '', internalType: 'uint8', type: 'uint8' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'MAX_SUPPLY',
+    outputs: [{ name: '', internalType: 'uint16', type: 'uint16' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [
       { name: 'to', internalType: 'address', type: 'address' },
       { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
@@ -1090,9 +1104,9 @@ export const glitchyAbi = [
   {
     type: 'function',
     inputs: [
-      { name: 'proof', internalType: 'bytes32[]', type: 'bytes32[]' },
       { name: 'recipient', internalType: 'address', type: 'address' },
       { name: '_amount', internalType: 'uint8', type: 'uint8' },
+      { name: 'proof', internalType: 'bytes32[]', type: 'bytes32[]' },
     ],
     name: 'claim',
     outputs: [],
@@ -1168,7 +1182,7 @@ export const glitchyAbi = [
     type: 'function',
     inputs: [
       { name: 'recipient', internalType: 'address', type: 'address' },
-      { name: '_amount', internalType: 'uint8', type: 'uint8' },
+      { name: '_amount', internalType: 'uint16', type: 'uint16' },
     ],
     name: 'ownerMint',
     outputs: [],
@@ -1527,6 +1541,7 @@ export const glitchyAbi = [
     name: 'ERC721OutOfBoundsIndex',
   },
   { type: 'error', inputs: [], name: 'FailedInnerCall' },
+  { type: 'error', inputs: [], name: 'FreeClaimedExceeded' },
   { type: 'error', inputs: [], name: 'InsufficientFunds' },
   { type: 'error', inputs: [], name: 'InvalidProof' },
   {
@@ -1551,11 +1566,12 @@ export const glitchyAbi = [
     inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
     name: 'OwnableUnauthorizedAccount',
   },
+  { type: 'error', inputs: [], name: 'RegularMintedExceeded' },
   { type: 'error', inputs: [], name: 'ZeroAddress' },
 ] as const
 
 export const glitchyAddress =
-  '0x5FC8d32690cc91D4c39d9d3abcBD16989F875707' as const
+  '0x0d7848e6245C802Ca5d3F1c270dB360896D594cF' as const
 
 export const glitchyConfig = {
   address: glitchyAddress,
@@ -2631,6 +2647,25 @@ export const useReadGlitchyDiscountPercentage =
     address: glitchyAddress,
     functionName: 'DISCOUNT_PERCENTAGE',
   })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"FREE_CLAIM_AMOUNT"`
+ */
+export const useReadGlitchyFreeClaimAmount =
+  /*#__PURE__*/ createUseReadContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'FREE_CLAIM_AMOUNT',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"MAX_SUPPLY"`
+ */
+export const useReadGlitchyMaxSupply = /*#__PURE__*/ createUseReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'MAX_SUPPLY',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"balanceOf"`
@@ -4227,6 +4262,24 @@ export const readGlitchyDiscountPercentage = /*#__PURE__*/ createReadContract({
   abi: glitchyAbi,
   address: glitchyAddress,
   functionName: 'DISCOUNT_PERCENTAGE',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"FREE_CLAIM_AMOUNT"`
+ */
+export const readGlitchyFreeClaimAmount = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'FREE_CLAIM_AMOUNT',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"MAX_SUPPLY"`
+ */
+export const readGlitchyMaxSupply = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'MAX_SUPPLY',
 })
 
 /**
