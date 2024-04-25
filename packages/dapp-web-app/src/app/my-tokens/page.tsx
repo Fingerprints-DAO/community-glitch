@@ -49,7 +49,6 @@ export default function MyTokens() {
     args: [account?.address!],
   })
 
-  console.log(tokens)
   return (
     <FullPageTemplate>
       <AuctionProvider>

@@ -45,7 +45,6 @@ import useTxToast from 'hooks/use-tx-toast'
 import { useDiscount } from 'hooks/use-discount'
 
 const getCountdownText = (state: SalesState) => {
-  console.log('state', state, SalesState.ENDED)
   if (state === SalesState.ENDED) {
     return 'auction ended'
   }
@@ -175,8 +174,6 @@ export const AuctionSidebar = (props: FlexProps) => {
     showTxErrorToast,
     showTxExecutedToast,
   ])
-
-  console.log('auctionState', auctionState)
 
   return (
     <Flex
