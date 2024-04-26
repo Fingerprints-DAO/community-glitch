@@ -61,7 +61,7 @@ abstract contract BaseScript is Script {
   }
 
   function _deployGlitchyGridGrid(address deployer, string memory baseURI) internal returns (GlitchyGridGrid glitchy) {
-    glitchy = new GlitchyGridGrid(deployer, baseURI);
+    glitchy = new GlitchyGridGrid(deployer, baseURI, deployer);
     return glitchy;
   }
 }

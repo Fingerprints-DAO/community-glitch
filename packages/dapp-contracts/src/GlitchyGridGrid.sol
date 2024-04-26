@@ -97,9 +97,9 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
    * @param initialOwner The initial owner of the contract
    * @param _baseUri The base URI of the contract
    */
-  constructor(address initialOwner, string memory _baseUri) ERC721('glitchy grid grid', 'GGG') Ownable(initialOwner) {
+  constructor(address initialOwner, string memory _baseUri, address _treasuryWallet) ERC721('glitchy grid grid', 'GGG') Ownable(initialOwner) {
     baseURI = _baseUri;
-    fundsReceiverAddress = payable(initialOwner);
+    fundsReceiverAddress = payable(_treasuryWallet);
   }
 
   /**
@@ -127,6 +127,72 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
     Config memory config = _config;
     if (block.timestamp >= config.endTime || block.timestamp <= config.startTime) revert InvalidStartEndTime(config.startTime, config.endTime);
     _;
+  }
+
+  /**
+   * @dev Mints a new token and assigns it to the specified recipient
+   * @param recipient The address to receive the minted token
+   * @param _amount The amount of tokens to mint
+   */
+  function mint(address recipient, uint8 _amount, bytes32[] calldata _merkleProof) external payable validConfig validTime {
+    if (regularMinted + _amount > (MAX_SUPPLY - FREE_CLAIM_AMOUNT)) revert RegularMintedExceeded();
+
+    bool isDiscounted = checkDiscountMerkleProof(_merkleProof, _msgSender());
+
+    uint256 price = calculatePrice(_amount, isDiscounted);
+
+    if (msg.value < price) revert InsufficientFunds();
+
+    regularMinted += _amount;
+    _mintTokens(recipient, _amount);
+  }
+
+  /**
+   * @dev Allows to claim tokens for free using a merkle proof
+   * @param recipient The address to receive the minted tokens
+   * @param _amount The amount of tokens to mint
+   * @param proof The merkle proof to be checked
+   */
+  function claim(address recipient, uint8 _amount, bytes32[] calldata proof) external validConfig validTime {
+    if (freeClaimed + _amount > FREE_CLAIM_AMOUNT) revert FreeClaimedExceeded();
+    if (!checkFreeClaimAllowlist(proof, recipient, _amount)) revert InvalidProof();
+
+    usedProofs[keccak256(abi.encodePacked(proof))] = true;
+    freeClaimed += _amount;
+    _mintTokens(recipient, _amount);
+  }
+
+  /**
+   * @dev Internal function to mint tokens
+   * @param recipient The address to receive the minted tokens
+   * @param _amount The amount of tokens to mint
+   */
+  function _mintTokens(address recipient, uint16 _amount) internal {
+    if (recipient == address(0)) revert ZeroAddress();
+    if (_amount > MAX_NUMBER_PER_MINT) revert MaxNumberOfMintedTokensExceeded();
+
+    if (_nextTokenId + _amount > MAX_SUPPLY) revert MaxSupplyExceeded();
+
+    for (uint8 i = 0; i < _amount; i++) {
+      _safeMint(recipient, ++_nextTokenId);
+    }
+  }
+
+  /**
+   * @dev Owner mints for free a new token and assigns it to the specified recipient
+   * @param recipient The address to receive the minted token
+   * @param _amount The amount of tokens to mint
+   */
+  function ownerMint(address recipient, uint16 _amount) external _onlyOwner {
+    _mintTokens(recipient, _amount);
+  }
+
+  /**
+   * @dev Withdraws the contract balance to the funds receiver address
+   * @dev Only the owner can call this function
+   */
+  function withdraw() external _onlyOwner {
+    fundsReceiverAddress.sendValue(address(this).balance);
   }
 
   /**
@@ -162,81 +228,8 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
    * @dev Allows the owner to set the price of a token
    * @param _tokenPrice The new price of a token
    */
-  function setTokenPrice(uint256 _tokenPrice) external onlyOwner {
+  function setTokenPrice(uint256 _tokenPrice) external _onlyOwner {
     tokenPrice = _tokenPrice;
-  }
-
-  /**
-   * @dev Calculates the price of minting a specified amount of tokens
-   * @param _amount The amount of tokens to mint
-   * @param _isDiscounted Whether the user is on the discount allowlist
-   * @return The price of minting the specified amount of tokens
-   */
-  function calculatePrice(uint8 _amount, bool _isDiscounted) public view returns (uint256) {
-    uint256 price = tokenPrice * _amount;
-    if (_isDiscounted) {
-      price = (price * (100 - DISCOUNT_PERCENTAGE)) / 100;
-    }
-    return price;
-  }
-
-  /**
-   * @dev Mints a new token and assigns it to the specified recipient
-   * @param recipient The address to receive the minted token
-   * @param _amount The amount of tokens to mint
-   */
-  function mint(address recipient, uint8 _amount, bytes32[] calldata _merkleProof) external payable validConfig validTime {
-    if (regularMinted + _amount > (MAX_SUPPLY - FREE_CLAIM_AMOUNT)) revert RegularMintedExceeded();
-
-    bool isDiscounted = checkDiscountMerkleProof(_merkleProof, _msgSender());
-
-    uint256 price = calculatePrice(_amount, isDiscounted);
-
-    if (msg.value < price) revert InsufficientFunds();
-
-    regularMinted += _amount;
-    _mintTokens(recipient, _amount);
-  }
-
-  /**
-   * @dev Owner mints for free a new token and assigns it to the specified recipient
-   * @param recipient The address to receive the minted token
-   * @param _amount The amount of tokens to mint
-   */
-  function ownerMint(address recipient, uint16 _amount) external _onlyOwner {
-    _mintTokens(recipient, _amount);
-  }
-
-
-  /**
-   * @dev Allows to claim tokens for free using a merkle proof
-   * @param recipient The address to receive the minted tokens
-   * @param _amount The amount of tokens to mint
-   * @param proof The merkle proof to be checked
-   */
-  function claim(address recipient,uint8 _amount, bytes32[] calldata proof) external validConfig validTime {
-    if (freeClaimed + _amount > FREE_CLAIM_AMOUNT) revert FreeClaimedExceeded();
-    if (!checkFreeClaimAllowlist(proof, recipient, _amount)) revert InvalidProof();
-
-    usedProofs[keccak256(abi.encodePacked(proof))] = true;
-    freeClaimed += _amount;
-    _mintTokens(recipient, _amount);
-  }
-
-  /**
-   * @dev Internal function to mint tokens
-   * @param recipient The address to receive the minted tokens
-   * @param _amount The amount of tokens to mint
-   */
-  function _mintTokens(address recipient, uint16 _amount) internal {
-    if (recipient == address(0)) revert ZeroAddress();
-    if (_amount > MAX_NUMBER_PER_MINT) revert MaxNumberOfMintedTokensExceeded();
-
-    if (_nextTokenId + _amount > MAX_SUPPLY) revert MaxSupplyExceeded();
-
-    for (uint8 i = 0; i < _amount; i++) {
-      _safeMint(recipient, ++_nextTokenId);
-    }
   }
 
   /**
@@ -259,11 +252,17 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
   }
 
   /**
-   * @dev Withdraws the contract balance to the funds receiver address
-   * @dev Only the owner can call this function
+   * @dev Calculates the price of minting a specified amount of tokens
+   * @param _amount The amount of tokens to mint
+   * @param _isDiscounted Whether the user is on the discount allowlist
+   * @return The price of minting the specified amount of tokens
    */
-  function withdraw() external _onlyOwner {
-    fundsReceiverAddress.sendValue(address(this).balance);
+  function calculatePrice(uint8 _amount, bool _isDiscounted) public view returns (uint256) {
+    uint256 price = tokenPrice * _amount;
+    if (_isDiscounted) {
+      price = (price * (100 - DISCOUNT_PERCENTAGE)) / 100;
+    }
+    return price;
   }
 
   /**

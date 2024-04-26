@@ -19,7 +19,7 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
   function setUp() public virtual {
     uint256 _startTime = block.timestamp - 1000;
     uint256 _endTime = block.timestamp + 1000;
-    glitchy = new GlitchyGridGrid(address(this), 'https://google.com/');
+    glitchy = new GlitchyGridGrid(address(this), 'https://google.com/', address(this));
     glitchy.setConfig(_startTime, _endTime);
   }
 
