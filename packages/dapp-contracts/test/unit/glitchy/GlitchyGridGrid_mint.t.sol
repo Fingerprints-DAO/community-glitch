@@ -79,7 +79,7 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
     glitchy.mint{value: 0}(recipient, 1, emptyProof);
   }
 
-  function test_shouldRevertIfMaxSupplyIsExceeded() public {
+  function test_shouldRevertIfMaxSupplyIsExceededMint() public {
     // Arrange
     address recipient = address(0x123);
     uint16 amountToMint = glitchy.MAX_SUPPLY() - glitchy.FREE_CLAIM_AMOUNT();
@@ -104,40 +104,73 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
     glitchy.mint{value: PRICE}(recipient, 1, emptyProof);
   }
 
-  function test_shouldRevertIfFreeClaimedExceeded() public {
+  function test_shouldRevertIfFreeClaimedExceededClaim() public {
     // Arrange
-    uint8 amountToMint = glitchy.FREE_CLAIM_AMOUNT();
+    uint8 amountToMint = 10;
     Merkle m = new Merkle();
-    bytes32[] memory data = new bytes32[](2);
-    data[0] = keccak256(bytes.concat(keccak256(abi.encode(alice, amountToMint))));
-    data[1] = keccak256(bytes.concat(keccak256(abi.encode(bob, amountToMint))));
+    bytes32[] memory data = new bytes32[](5);
+    data[0] = keccak256(bytes.concat(keccak256(abi.encode(vm.addr(1), amountToMint))));
+    data[1] = keccak256(bytes.concat(keccak256(abi.encode(vm.addr(2), amountToMint))));
+    data[2] = keccak256(bytes.concat(keccak256(abi.encode(vm.addr(3), amountToMint))));
+    data[3] = keccak256(bytes.concat(keccak256(abi.encode(vm.addr(4), amountToMint))));
+    data[4] = keccak256(bytes.concat(keccak256(abi.encode(vm.addr(5), amountToMint))));
 
     bytes32 root = m.getRoot(data);
 
     // Act
     vm.prank(address(this));
     glitchy.setFreeClaimAllowlistRoot(root);
-    bytes32[] memory proof = m.getProof(data, 0); // will get proof for 0x2 value
 
-    // Act and Assert
-    vm.prank(alice);
-    glitchy.claim(alice, amountToMint, proof);
+    for (uint i = 0; i <= 3; i++) {
+      bytes32[] memory proof = m.getProof(data, i);
+      vm.prank(vm.addr(i+1));
+      glitchy.claim(vm.addr(i+1), 10, proof);
+    }
 
+    bytes32[] memory proof = m.getProof(data, 4);
+    vm.prank(vm.addr(5));
     vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.FreeClaimedExceeded.selector));
-    glitchy.claim(alice, 1, proof);
+    glitchy.claim(vm.addr(5), 10, proof);
   }
 
-  function test_shouldRevertIfMaxSupplyExceeded() public {
-    uint16 amountToMint = glitchy.MAX_SUPPLY();
+  function test_shouldRevertIfMaxSupplyExceededOwnerMint() public {
+    // Arrange
+    uint8 amountToMint = 10;
+    Merkle m = new Merkle();
+    bytes32[] memory data = new bytes32[](5);
+    data[0] = keccak256(bytes.concat(keccak256(abi.encode(vm.addr(1), amountToMint))));
+    data[1] = keccak256(bytes.concat(keccak256(abi.encode(vm.addr(2), amountToMint))));
+    data[2] = keccak256(bytes.concat(keccak256(abi.encode(vm.addr(3), amountToMint))));
+    data[3] = keccak256(bytes.concat(keccak256(abi.encode(vm.addr(4), amountToMint))));
+    data[4] = keccak256(bytes.concat(keccak256(abi.encode(vm.addr(5), 1))));
+
+    bytes32 root = m.getRoot(data);
+
+    // Act
+    vm.prank(address(this));
+    glitchy.setFreeClaimAllowlistRoot(root);
+
+    for (uint i = 0; i <= 3; i++) {
+      bytes32[] memory proof = m.getProof(data, i);
+      vm.prank(vm.addr(i+1));
+      glitchy.claim(vm.addr(i+1), 10, proof);
+    }
+
+    bytes32[] memory proof = m.getProof(data, 4);
+    vm.prank(vm.addr(5));
+    glitchy.claim(vm.addr(5), 1, proof);
+
+    uint16 amountToMintOwner = glitchy.MAX_SUPPLY() - glitchy.FREE_CLAIM_AMOUNT();
     address recipient = address(0x123);
 
-    for (uint i = 0; i < amountToMint; i++) {
+    for (uint i = 0; i < amountToMintOwner; i++) {
       vm.prank(address(this));
       glitchy.ownerMint(recipient, 1);
     }
 
-    vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.MaxSupplyExceeded.selector));
-    glitchy.ownerMint(recipient, 1);
+    vm.prank(address(this));
+    vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.RegularMintedExceeded.selector));
+    glitchy.ownerMint(address(0x123), 10);
   }
 
   function test_shouldRevertIfMaxSupplyIsExceedRegresion() public {
@@ -160,7 +193,7 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
     uint8 amountToMint = 11;
 
     // Act and Assert
-    vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.MaxNumberOfMintedTokensExceeded.selector));
+    vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.MaxNumberPerMintExceeded.selector));
     glitchy.mint{value: PRICE * amountToMint}(recipient, amountToMint, emptyProof);
   }
 
@@ -222,7 +255,6 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
     glitchy.setFreeClaimAllowlistRoot(root);
     bytes32[] memory proof = m.getProof(data, 0); // will get proof for 0x2 value
 
-    vm.deal(alice, 100 ether);
     vm.prank(alice);
     glitchy.claim(alice, amountToMint, proof);
 

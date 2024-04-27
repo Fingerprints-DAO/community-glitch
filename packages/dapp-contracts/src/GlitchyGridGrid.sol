@@ -31,49 +31,37 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
    */
   error ZeroAddress();
   /**
-   * @dev Error emmited when the maximum supply of tokens is exceeded.
+   * @dev Error emitted when minting more than the maximum number of tokens per mint.
    */
-  error MaxSupplyExceeded();
-  /**
-   * @dev Error emitted when the maximum number of minted tokens is exceeded.
-   */
-  error MaxNumberOfMintedTokensExceeded();
-
+  error MaxNumberPerMintExceeded();
   /**
    * @dev Error emitted when not enough funds are provided to mint the tokens.
    */
   error InsufficientFunds();
-
   /**
    * @dev Error emitted when the provided proof is invalid.
    */
   error InvalidProof();
-
   /**
    * @dev Error emitted when the start time is greater than the end time.
    */
   error InvalidStartEndTime(uint256 startTime, uint256 endTime);
-
   /**
    * @dev Error emitted when the config has not been set.
    */
   error ConfigNotSet();
-
   /**
    * @dev Error emitted when the maximum number of tokens claimed for free is exceeded.
    */
   error FreeClaimedExceeded();
-
   /**
    * @dev Error emitted when the maximum number of tokens that can be minted is exceeded.
    */
   error RegularMintedExceeded();
-
   /**
    * @dev Error emitted when the claim is made before the start time.
    */
   error ClaimNotOpen();
-
   /**
    * @dev Event emitted when a token is minted.
    */
@@ -187,9 +175,7 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
    */
   function _mintTokens(address _recipient, uint16 _amount) internal {
     if (_recipient == address(0)) revert ZeroAddress();
-    if (_amount > MAX_NUMBER_PER_MINT) revert MaxNumberOfMintedTokensExceeded();
-
-    if (_nextTokenId + _amount > MAX_SUPPLY) revert MaxSupplyExceeded();
+    if (_amount > MAX_NUMBER_PER_MINT) revert MaxNumberPerMintExceeded();
 
     for (uint8 i = 0; i < _amount; i++) {
       _safeMint(_recipient, ++_nextTokenId);
