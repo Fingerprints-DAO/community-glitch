@@ -8,7 +8,7 @@ contract DeployGlitchyLocal is BaseScript {
   function run() public returns (GlitchyGridGrid glitchy) {
     address deployer = broadcaster;
     string memory baseURIGlitchyGridGrid = 'https://glitch.mishaderidder.com/mint-edition/metadata/';
-    uint256 startTime = block.timestamp + (60);
+    uint256 startTime = block.timestamp + (0);
     uint256 endTime = startTime + (3600 * 1);
 
     vm.startBroadcast();

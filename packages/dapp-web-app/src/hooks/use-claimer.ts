@@ -12,10 +12,13 @@ export function useClaimer() {
   const [merkleProof, setMerkleProof] = useState<Address[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const { address } = useAccount()
-  const { data: isAvailableToClaim, refetch: refetchClaimCheck } =
-    useReadGlitchyCheckFreeClaimAllowlist({
-      args: [merkleProof, address!, qty!],
-    })
+  const {
+    data: isAvailableToClaim,
+    refetch: refetchClaimCheck,
+    isError,
+  } = useReadGlitchyCheckFreeClaimAllowlist({
+    args: [merkleProof, address!, qty!],
+  })
 
   useEffect(() => {
     const checkClaimList = async (address: string) => {
@@ -46,22 +49,16 @@ export function useClaimer() {
   }, [address])
 
   useEffect(() => {
-    if (qty === null || merkleProof.length < 1) return
+    if (qty === null || merkleProof.length < 1 || isError) return
     refetchClaimCheck()
-  }, [isAvailableToClaim, merkleProof.length, qty, refetchClaimCheck])
-  console.log('isAvailableToClaim', {
-    isAvailableToClaim,
-    merkleProof,
-    address,
-    qty,
-  })
+  }, [isAvailableToClaim, isError, merkleProof.length, qty, refetchClaimCheck])
 
   return {
     qty,
     canClaim: qty !== null && qty > 0,
     isLoading,
     merkleProof,
-    isAvailableToClaim,
+    isAvailableToClaim: isAvailableToClaim && !isError,
     refetchClaimCheck,
   }
 }
