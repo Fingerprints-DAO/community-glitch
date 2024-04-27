@@ -70,9 +70,9 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
   error RegularMintedExceeded();
 
   /**
-   * @dev Error emitted when the claim is made before the end time of mint.
+   * @dev Error emitted when the claim is made before the start time.
    */
-  error OnlyClaimAfterEndTime();
+  error ClaimNotOpen();
 
   /**
    * @dev Event emitted when a token is minted.
@@ -170,7 +170,7 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
    * @param proof The merkle proof to be checked
    */
   function claim(address _recipient, uint8 _amount, bytes32[] calldata proof) external validConfig {
-    if (_config.endTime > block.timestamp) revert OnlyClaimAfterEndTime();
+    if (block.timestamp <= _config.startTime) revert ClaimNotOpen();
     if (freeClaimed + _amount > FREE_CLAIM_AMOUNT) revert FreeClaimedExceeded();
     if (!checkFreeClaimAllowlist(proof, _recipient, _amount)) revert InvalidProof();
 

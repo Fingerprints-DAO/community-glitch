@@ -121,7 +121,6 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
     bytes32[] memory proof = m.getProof(data, 0); // will get proof for 0x2 value
 
     // Act and Assert
-    vm.warp(endTime + 1);
     vm.prank(alice);
     glitchy.claim(alice, amountToMint, proof);
 
@@ -210,7 +209,7 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
   function test_claimAllowlisted() public {
     // Arrange
     uint8 amountToMint = 5;
-    vm.warp(endTime + 1);
+
 
     // Create merkle root and set it
     Merkle m = new Merkle();
@@ -238,7 +237,7 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
   function test_shouldRevertIfClaimNotOpen() public {
     // Arrange
     uint8 amountToMint = 5;
-    vm.warp(endTime - 1);
+    vm.warp(startTime - 1);
 
     // Create merkle root and set it
     Merkle m = new Merkle();
@@ -254,14 +253,14 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
     bytes32[] memory proof = m.getProof(data, 0); // will get proof for 0x2 value
 
     // Act and Assert
-    vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.OnlyClaimAfterEndTime.selector));
+    vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.ClaimNotOpen.selector));
     glitchy.claim(alice, amountToMint, proof);
   }
 
   function test_cannotReuseProof() public {
     // Arrange
     uint8 amountToMint = 1;
-    vm.warp(endTime + 1);
+
 
     // Create merkle root and set it
     Merkle m = new Merkle();
@@ -291,7 +290,7 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
   function test_cannotClaimWithInvalidProof() public {
     // Arrange
     uint8 amountToMint = 5;
-    vm.warp(endTime + 1);
+
 
     // Create merkle root and set it
     Merkle m = new Merkle();
