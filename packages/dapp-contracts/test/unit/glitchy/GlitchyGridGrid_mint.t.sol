@@ -85,8 +85,8 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
     uint16 amountToMint = glitchy.MAX_SUPPLY() - glitchy.FREE_CLAIM_AMOUNT();
     Merkle m = new Merkle();
     bytes32[] memory data = new bytes32[](2);
-    data[0] = keccak256(abi.encode(alice, glitchy.FREE_CLAIM_AMOUNT()));
-    data[1] = keccak256(abi.encode(bob, glitchy.FREE_CLAIM_AMOUNT()));
+    data[0] = keccak256(bytes.concat(keccak256(abi.encode(alice, glitchy.FREE_CLAIM_AMOUNT()))));
+    data[1] = keccak256(bytes.concat(keccak256(abi.encode(bob, glitchy.FREE_CLAIM_AMOUNT()))));
 
     bytes32 root = m.getRoot(data);
 
@@ -114,8 +114,8 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
     uint8 amountToMint = glitchy.FREE_CLAIM_AMOUNT();
     Merkle m = new Merkle();
     bytes32[] memory data = new bytes32[](2);
-    data[0] = keccak256(abi.encode(alice, amountToMint));
-    data[1] = keccak256(abi.encode(bob, amountToMint));
+    data[0] = keccak256(bytes.concat(keccak256(abi.encode(alice, amountToMint))));
+    data[1] = keccak256(bytes.concat(keccak256(abi.encode(bob, amountToMint))));
 
     bytes32 root = m.getRoot(data);
 
@@ -217,8 +217,8 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
     // Create merkle root and set it
     Merkle m = new Merkle();
     bytes32[] memory data = new bytes32[](2);
-    data[0] = keccak256(abi.encode(alice, amountToMint));
-    data[1] = keccak256(abi.encode(bob, amountToMint));
+    data[0] = keccak256(bytes.concat(keccak256(abi.encode(alice, amountToMint))));
+    data[1] = keccak256(bytes.concat(keccak256(abi.encode(bob, amountToMint))));
 
     bytes32 root = m.getRoot(data);
 
@@ -244,8 +244,8 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
     // Create merkle root and set it
     Merkle m = new Merkle();
     bytes32[] memory data = new bytes32[](2);
-    data[0] = keccak256(abi.encode(alice, amountToMint));
-    data[1] = keccak256(abi.encode(bob, amountToMint));
+    data[0] = keccak256(bytes.concat(keccak256(abi.encode(alice, amountToMint))));
+    data[1] = keccak256(bytes.concat(keccak256(abi.encode(bob, amountToMint))));
     bytes32 root = m.getRoot(data);
 
     // Act
