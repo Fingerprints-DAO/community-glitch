@@ -11,18 +11,52 @@ import {
   Tbody,
   Text,
 } from '@chakra-ui/react'
-import { orderBidsByAmount } from 'app/one-one-auction/data-handler'
+import {
+  cleanEmptyBids,
+  orderBidsByAmount,
+} from 'app/one-one-auction/data-handler'
 import { CustomTable } from 'components/CustomTable'
 import { TableRow } from 'components/CustomTable/TableRow'
 import useMediaQuery from 'hooks/use-media-query'
+import { useMemo } from 'react'
 import { BidLogsType } from 'types/auction'
 import { formatToEtherStringBN } from 'utils/price'
 import { isUserAddress, shortenAddress } from 'utils/string'
-import { useAccount } from 'wagmi'
+import { useAccount, useEnsName } from 'wagmi'
 
 type LastBidsProps = {
   bids: BidLogsType
   onClose: () => void
+}
+
+const TableRowWithENS = ({
+  index,
+  userAddress,
+  bid,
+}: {
+  index: number
+  userAddress?: string
+  bid: ReturnType<typeof cleanEmptyBids>[number]
+}) => {
+  const { data = bid.bidder } = useEnsName({
+    address: bid.bidder,
+  })
+  const handledAddress = useMemo(() => {
+    if (data) {
+      return shortenAddress(data, 10, 5)
+    }
+    return shortenAddress(bid.bidder, 8, 13)
+  }, [bid.bidder, data])
+
+  return (
+    <TableRow
+      index={index + 1}
+      amount={formatToEtherStringBN(bid.amount)}
+      address={isUserAddress(userAddress, bid.bidder) ? 'you' : handledAddress}
+      fullAddress={data ?? bid.bidder}
+      isHighlighted={isUserAddress(userAddress, bid.bidder)}
+    />
+  )
 }
 
 const BidsModal = ({ bids, onClose }: LastBidsProps) => {
@@ -66,19 +100,25 @@ const BidsModal = ({ bids, onClose }: LastBidsProps) => {
         <CustomTable>
           {bids.length > 0 &&
             orderBidsByAmount(bids).map((bid, index) => (
-              <TableRow
+              <TableRowWithENS
                 key={index}
-                index={index + 1}
-                amount={formatToEtherStringBN(bid.args.amount)}
-                address={
-                  isUserAddress(userAddress, bid.args.bidder)
-                    ? 'you'
-                    : shortenAddress(bid.args.bidder, 8, 13)
-                }
-                fullAddress={bid.args.bidder}
-                isHighlighted={isUserAddress(userAddress, bid.args.bidder)}
-                hash={bid.transactionHash}
+                index={index}
+                bid={bid.args as any}
+                userAddress={userAddress}
               />
+              // <TableRow
+              //   key={index}
+              //   index={index + 1}
+              //   amount={formatToEtherStringBN(bid.args.amount)}
+              //   address={
+              //     isUserAddress(userAddress, bid.args.bidder)
+              //       ? 'you'
+              //       : shortenAddress(bid.args.bidder, 8, 13)
+              //   }
+              //   fullAddress={bid.args.bidder}
+              //   isHighlighted={isUserAddress(userAddress, bid.args.bidder)}
+              //   hash={bid.transactionHash}
+              // />
             ))}
         </CustomTable>
       </ModalContent>
