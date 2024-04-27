@@ -1,4 +1,4 @@
-const TRUNCATED_NAME_CHAR_LIMIT = 11
+const TRUNCATED_NAME_CHAR_LIMIT = 20
 
 export const pluralize = (
   quantity: number,
