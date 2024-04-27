@@ -13,14 +13,14 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
   GlitchyGridGrid internal glitchy;
   address internal alice = vm.addr(3);
   address internal bob = vm.addr(4);
-  uint256 private constant price = 0.025 ether;
+  uint256 private constant PRICE = 0.025 ether;
   bytes32[] private emptyProof = new bytes32[](2);
+  uint256 public startTime = block.timestamp - 1000;
+  uint256 public endTime = block.timestamp + 1000;
 
   function setUp() public virtual {
-    uint256 _startTime = block.timestamp - 1000;
-    uint256 _endTime = block.timestamp + 1000;
     glitchy = new GlitchyGridGrid(address(this), 'https://google.com/', address(this));
-    glitchy.setConfig(_startTime, _endTime);
+    glitchy.setConfig(startTime, endTime);
   }
 
   function test_shouldNotMintIfInvalidTimeNotStarted() public {
@@ -31,7 +31,7 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
 
     // Act and Assert
     vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.InvalidStartEndTime.selector, _startTime, _endTime));
-    glitchy.mint{value: price}(address(0x123), 1, emptyProof);
+    glitchy.mint{value: PRICE}(address(0x123), 1, emptyProof);
   }
 
   function test_shouldNotMintIfInvalidTimeEnded() public {
@@ -42,7 +42,7 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
 
     // Act and Assert
     vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.InvalidStartEndTime.selector, _startTime, _endTime));
-    glitchy.mint{value: price}(address(0x123), 1, emptyProof);
+    glitchy.mint{value: PRICE}(address(0x123), 1, emptyProof);
   }
 
   function test_shouldRevertIfRecipientAddressIsInvalid() public {
@@ -51,7 +51,7 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
 
     // Act and Assert
     vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.ZeroAddress.selector));
-    glitchy.mint{value: price}(recipient, 1, emptyProof);
+    glitchy.mint{value: PRICE}(recipient, 1, emptyProof);
   }
 
   function test_shouldMintSpecifiedAmountOfTokensByAdmin() public {
@@ -61,7 +61,7 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
 
     // Act
     vm.prank(address(this));
-    glitchy.mint{value: price * amountToMint}(recipient, amountToMint, emptyProof);
+    glitchy.mint{value: PRICE * amountToMint}(recipient, amountToMint, emptyProof);
 
     // Assert
     for (uint i = 1; i < amountToMint + 1; i++) {
@@ -98,15 +98,11 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
     // Act and Assert
     for (uint i = 0; i < amountToMint; i++) {
       vm.prank(address(this));
-      glitchy.mint{value: price}(recipient, 1, emptyProof);
+      glitchy.mint{value: PRICE}(recipient, 1, emptyProof);
     }
 
-    // Act and Assert
-    vm.prank(alice);
-    glitchy.claim(alice, glitchy.FREE_CLAIM_AMOUNT(), proof);
-
     vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.RegularMintedExceeded.selector));
-    glitchy.mint{value: price}(recipient, 1, emptyProof);
+    glitchy.mint{value: PRICE}(recipient, 1, emptyProof);
   }
 
   function test_shouldRevertIfFreeClaimedExceeded() public {
@@ -125,6 +121,7 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
     bytes32[] memory proof = m.getProof(data, 0); // will get proof for 0x2 value
 
     // Act and Assert
+    vm.warp(endTime + 1);
     vm.prank(alice);
     glitchy.claim(alice, amountToMint, proof);
 
@@ -152,11 +149,11 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
 
     for (uint i = 0; i < amountToMint; i++) {
       vm.prank(address(this));
-      glitchy.mint{value: price}(recipient, 1, emptyProof);
+      glitchy.mint{value: PRICE}(recipient, 1, emptyProof);
     }
 
     vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.RegularMintedExceeded.selector));
-    glitchy.mint{value: price * 8}(recipient, 8, emptyProof);
+    glitchy.mint{value: PRICE * 8}(recipient, 8, emptyProof);
   }
 
   function test_shouldRevertIfMaxNumberPerMintIsExceeded() public {
@@ -166,7 +163,7 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
 
     // Act and Assert
     vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.MaxNumberOfMintedTokensExceeded.selector));
-    glitchy.mint{value: price * amountToMint}(recipient, amountToMint, emptyProof);
+    glitchy.mint{value: PRICE * amountToMint}(recipient, amountToMint, emptyProof);
   }
 
   function test_mintAndWithdraw() public {
@@ -177,7 +174,7 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
 
     vm.prank(address(this));
     glitchy.setFundsReceiverAddress(newFundsReceiverAddress);
-    glitchy.mint{value: price * amountToMint}(recipient, amountToMint, emptyProof);
+    glitchy.mint{value: PRICE * amountToMint}(recipient, amountToMint, emptyProof);
 
     // Assert
     uint256 balanceBefore = address(newFundsReceiverAddress).balance;
@@ -213,6 +210,7 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
   function test_claimAllowlisted() public {
     // Arrange
     uint8 amountToMint = 5;
+    vm.warp(endTime + 1);
 
     // Create merkle root and set it
     Merkle m = new Merkle();
@@ -237,9 +235,33 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
     }
   }
 
+  function test_shouldRevertIfClaimNotOpen() public {
+    // Arrange
+    uint8 amountToMint = 5;
+    vm.warp(endTime - 1);
+
+    // Create merkle root and set it
+    Merkle m = new Merkle();
+    bytes32[] memory data = new bytes32[](2);
+    data[0] = keccak256(bytes.concat(keccak256(abi.encode(alice, amountToMint))));
+    data[1] = keccak256(bytes.concat(keccak256(abi.encode(bob, amountToMint))));
+
+    bytes32 root = m.getRoot(data);
+
+    // Act
+    vm.prank(address(this));
+    glitchy.setFreeClaimAllowlistRoot(root);
+    bytes32[] memory proof = m.getProof(data, 0); // will get proof for 0x2 value
+
+    // Act and Assert
+    vm.expectRevert(abi.encodeWithSelector(GlitchyGridGrid.OnlyClaimAfterEndTime.selector));
+    glitchy.claim(alice, amountToMint, proof);
+  }
+
   function test_cannotReuseProof() public {
     // Arrange
     uint8 amountToMint = 1;
+    vm.warp(endTime + 1);
 
     // Create merkle root and set it
     Merkle m = new Merkle();
@@ -269,6 +291,7 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
   function test_cannotClaimWithInvalidProof() public {
     // Arrange
     uint8 amountToMint = 5;
+    vm.warp(endTime + 1);
 
     // Create merkle root and set it
     Merkle m = new Merkle();
@@ -307,7 +330,7 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
     glitchy.setDiscountAllowlistRoot(root);
     bytes32[] memory proof = m.getProof(data, 0);
 
-    uint256 value = ((price * amountToMint) * (100 - glitchy.DISCOUNT_PERCENTAGE())) / 100;
+    uint256 value = ((PRICE * amountToMint) * (100 - glitchy.DISCOUNT_PERCENTAGE())) / 100;
     vm.deal(alice, 100 ether);
     vm.prank(alice);
     glitchy.mint{value: value}(alice, amountToMint, proof);
