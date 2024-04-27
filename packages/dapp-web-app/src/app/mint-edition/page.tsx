@@ -1,9 +1,7 @@
 'use client'
 
-import { Box, Flex, Text, TextProps } from '@chakra-ui/react'
+import { Box, Flex } from '@chakra-ui/react'
 import FullPageTemplate from 'components/Templates/FullPage'
-import { tokens } from 'data/tokens'
-import { ReactNode, useEffect, useState } from 'react'
 import { MintSidebar } from './components/AuctionSidebar'
 import dynamic from 'next/dynamic'
 import { MintEditionProvider } from 'contexts/MintEditionContext'

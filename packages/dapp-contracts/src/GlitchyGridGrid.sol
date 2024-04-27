@@ -202,6 +202,10 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
    * @param _amount The amount of tokens to mint
    */
   function ownerMint(address _recipient, uint16 _amount) external _onlyOwner {
+    if (regularMinted + _amount > (MAX_SUPPLY - FREE_CLAIM_AMOUNT)) revert RegularMintedExceeded();
+
+    regularMinted += _amount;
+    emit TokenMinted(_recipient, _amount);
     _mintTokens(_recipient, _amount);
   }
 
