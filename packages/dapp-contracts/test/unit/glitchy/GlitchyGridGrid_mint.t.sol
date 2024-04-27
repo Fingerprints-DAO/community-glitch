@@ -93,7 +93,6 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
     // Act
     vm.prank(address(this));
     glitchy.setFreeClaimAllowlistRoot(root);
-    bytes32[] memory proof = m.getProof(data, 0); // will get proof for 0x2 value
 
     // Act and Assert
     for (uint i = 0; i < amountToMint; i++) {
@@ -210,7 +209,6 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
     // Arrange
     uint8 amountToMint = 5;
 
-
     // Create merkle root and set it
     Merkle m = new Merkle();
     bytes32[] memory data = new bytes32[](2);
@@ -261,7 +259,6 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
     // Arrange
     uint8 amountToMint = 1;
 
-
     // Create merkle root and set it
     Merkle m = new Merkle();
     bytes32[] memory data = new bytes32[](2);
@@ -290,7 +287,6 @@ contract GlitchyGridGridMintTest is PRBTest, StdCheats, TestHelpers {
   function test_cannotClaimWithInvalidProof() public {
     // Arrange
     uint8 amountToMint = 5;
-
 
     // Create merkle root and set it
     Merkle m = new Merkle();

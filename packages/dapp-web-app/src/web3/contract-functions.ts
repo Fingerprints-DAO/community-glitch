@@ -1116,6 +1116,13 @@ export const glitchyAbi = [
   {
     type: 'function',
     inputs: [],
+    name: 'freeClaimed',
+    outputs: [{ name: '', internalType: 'uint16', type: 'uint16' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
     name: 'fundsReceiverAddress',
     outputs: [{ name: '', internalType: 'address payable', type: 'address' }],
     stateMutability: 'view',
@@ -1194,6 +1201,13 @@ export const glitchyAbi = [
     inputs: [{ name: 'tokenId', internalType: 'uint256', type: 'uint256' }],
     name: 'ownerOf',
     outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'regularMinted',
+    outputs: [{ name: '', internalType: 'uint16', type: 'uint16' }],
     stateMutability: 'view',
   },
   {
@@ -1522,6 +1536,7 @@ export const glitchyAbi = [
     inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
     name: 'AddressInsufficientBalance',
   },
+  { type: 'error', inputs: [], name: 'ClaimNotOpen' },
   { type: 'error', inputs: [], name: 'ConfigNotSet' },
   { type: 'error', inputs: [], name: 'ERC721EnumerableForbiddenBatchMint' },
   {
@@ -2743,6 +2758,15 @@ export const useReadGlitchyCheckFreeClaimAllowlist =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"freeClaimed"`
+ */
+export const useReadGlitchyFreeClaimed = /*#__PURE__*/ createUseReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'freeClaimed',
+})
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"fundsReceiverAddress"`
  */
 export const useReadGlitchyFundsReceiverAddress =
@@ -2805,6 +2829,15 @@ export const useReadGlitchyOwnerOf = /*#__PURE__*/ createUseReadContract({
   abi: glitchyAbi,
   address: glitchyAddress,
   functionName: 'ownerOf',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"regularMinted"`
+ */
+export const useReadGlitchyRegularMinted = /*#__PURE__*/ createUseReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'regularMinted',
 })
 
 /**
@@ -4380,6 +4413,15 @@ export const readGlitchyCheckFreeClaimAllowlist =
   })
 
 /**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"freeClaimed"`
+ */
+export const readGlitchyFreeClaimed = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'freeClaimed',
+})
+
+/**
  * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"fundsReceiverAddress"`
  */
 export const readGlitchyFundsReceiverAddress = /*#__PURE__*/ createReadContract(
@@ -4442,6 +4484,15 @@ export const readGlitchyOwnerOf = /*#__PURE__*/ createReadContract({
   abi: glitchyAbi,
   address: glitchyAddress,
   functionName: 'ownerOf',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"regularMinted"`
+ */
+export const readGlitchyRegularMinted = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'regularMinted',
 })
 
 /**

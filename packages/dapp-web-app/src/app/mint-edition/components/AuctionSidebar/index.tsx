@@ -48,34 +48,6 @@ const TextSection = ({
   </>
 )
 
-const SubTitle = ({
-  children,
-  ...props
-}: {
-  children: ReactNode
-  props?: TextProps
-}) => (
-  <Text as={'h3'} fontSize={'lg'} fontWeight={'bold'} mt={4} {...props}>
-    {children}
-  </Text>
-)
-const SubTextSection = ({
-  title,
-  children,
-  ...props
-}: {
-  title: string
-  children: ReactNode
-  props?: TextProps
-}) => (
-  <>
-    <SubTitle {...props}>{title}</SubTitle>
-    <Text as={'div'} fontSize={'md'}>
-      {children}
-    </Text>
-  </>
-)
-
 const getCountdownText = (state: SalesState) => {
   if (state === SalesState.IDLE || state === SalesState.NOT_STARTED) {
     return 'mint starts in'
@@ -101,6 +73,7 @@ export const MintSidebar = (props: FlexProps) => {
     minted,
     limitPerTx,
     refetchAll,
+    availableToMint,
   } = useMintEditionContext()
   const { countdownInMili } = useCountdownTime({
     salesState: mintState,
@@ -120,10 +93,9 @@ export const MintSidebar = (props: FlexProps) => {
     hash: mint?.data,
   })
 
-  const availableToMint = useMemo(() => {
-    const available = Number(maxSupply - minted)
-    return available > limitPerTx ? limitPerTx : available
-  }, [limitPerTx, maxSupply, minted])
+  const limitPerTxHandled = useMemo(() => {
+    return availableToMint > limitPerTx ? limitPerTx : availableToMint
+  }, [availableToMint, limitPerTx])
 
   const mintEnded = useMemo(
     () => mintState === SalesState.ENDED || mintState === SalesState.SOLD_OUT,
@@ -132,8 +104,8 @@ export const MintSidebar = (props: FlexProps) => {
 
   const handleCounter = (value: number) => {
     if (value < 0) return
-    if (value > availableToMint) {
-      setCounter(availableToMint)
+    if (value > limitPerTxHandled) {
+      setCounter(limitPerTxHandled)
       return
     }
     setCounter(value)
@@ -242,7 +214,7 @@ export const MintSidebar = (props: FlexProps) => {
                 <Box>
                   <Text fontWeight={'bold'}>available/supply</Text>
                   <Text>
-                    {Number(minted)}/{Number(maxSupply)} tokens
+                    {Number(availableToMint)}/{Number(maxSupply)} tokens
                   </Text>
                 </Box>
               </>

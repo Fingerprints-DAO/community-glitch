@@ -15,13 +15,18 @@ import {
 } from 'app/mint-edition/data-handler'
 import { MintData } from 'types/mint'
 import { SalesState } from 'types/auction'
-import { useReadGlitchyTotalSupply } from 'web3/contract-functions'
+import {
+  useReadGlitchyFreeClaimAmount,
+  useReadGlitchyRegularMinted,
+  useReadGlitchyTotalSupply,
+} from 'web3/contract-functions'
 
 export const MintEditionContext = createContext<
   HandledMintConfigToDayJs &
     MintData & {
       mintState: SalesState
       limitPerTx: number
+      availableToMint: number
       refetchAll: () => void
     }
 >({
@@ -33,6 +38,7 @@ export const MintEditionContext = createContext<
   maxSupply: 510n,
   mintState: SalesState.NOT_STARTED,
   limitPerTx: 10,
+  availableToMint: 0,
   refetchAll: () => {},
 })
 
@@ -79,10 +85,16 @@ export const MintEditionProvider = ({
   const intervalRefRefetch = useRef<NodeJS.Timeout>()
   const { data: minted = 0n, refetch: refetchMinted } =
     useReadGlitchyTotalSupply()
+  const { data: regularMinted = 0, refetch: refetchRegularMinted } =
+    useReadGlitchyRegularMinted()
+  const { data: reservedAmount = 0, refetch: refetchReserved } =
+    useReadGlitchyFreeClaimAmount()
 
   const refetchAll = useCallback(() => {
     refetchMinted()
-  }, [refetchMinted])
+    refetchRegularMinted()
+    refetchReserved()
+  }, [refetchMinted, refetchRegularMinted, refetchReserved])
 
   useEffect(() => {
     async function fetchData() {
@@ -144,6 +156,7 @@ export const MintEditionProvider = ({
         ...config,
         minted,
         maxSupply: BigInt(maxSupply),
+        availableToMint: maxSupply - reservedAmount - Number(regularMinted),
         mintState,
         limitPerTx: 10,
         refetchAll,
