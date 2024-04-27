@@ -448,7 +448,7 @@ export const auctionAbi = [
 ] as const
 
 export const auctionAddress =
-  '0x0d7848e6245C802Ca5d3F1c270dB360896D594cF' as const
+  '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512' as const
 
 export const auctionConfig = {
   address: auctionAddress,
@@ -1015,7 +1015,7 @@ export const glitchAbi = [
 ] as const
 
 export const glitchAddress =
-  '0xAa39B261b8d4FDaa8A1ED436cC14A723c0480eE9' as const
+  '0x5FbDB2315678afecb367f032d93F642f64180aa3' as const
 
 export const glitchConfig = { address: glitchAddress, abi: glitchAbi } as const
 
@@ -1027,8 +1027,9 @@ export const glitchyAbi = [
   {
     type: 'constructor',
     inputs: [
-      { name: 'initialOwner', internalType: 'address', type: 'address' },
+      { name: '_initialOwner', internalType: 'address', type: 'address' },
       { name: '_baseUri', internalType: 'string', type: 'string' },
+      { name: '_treasuryWallet', internalType: 'address', type: 'address' },
     ],
     stateMutability: 'nonpayable',
   },
@@ -1104,7 +1105,7 @@ export const glitchyAbi = [
   {
     type: 'function',
     inputs: [
-      { name: 'recipient', internalType: 'address', type: 'address' },
+      { name: '_recipient', internalType: 'address', type: 'address' },
       { name: '_amount', internalType: 'uint8', type: 'uint8' },
       { name: 'proof', internalType: 'bytes32[]', type: 'bytes32[]' },
     ],
@@ -1156,7 +1157,7 @@ export const glitchyAbi = [
   {
     type: 'function',
     inputs: [
-      { name: 'recipient', internalType: 'address', type: 'address' },
+      { name: '_recipient', internalType: 'address', type: 'address' },
       { name: '_amount', internalType: 'uint8', type: 'uint8' },
       { name: '_merkleProof', internalType: 'bytes32[]', type: 'bytes32[]' },
     ],
@@ -1181,7 +1182,7 @@ export const glitchyAbi = [
   {
     type: 'function',
     inputs: [
-      { name: 'recipient', internalType: 'address', type: 'address' },
+      { name: '_recipient', internalType: 'address', type: 'address' },
       { name: '_amount', internalType: 'uint16', type: 'uint16' },
     ],
     name: 'ownerMint',
@@ -1237,7 +1238,7 @@ export const glitchyAbi = [
   },
   {
     type: 'function',
-    inputs: [{ name: 'newBaseURI', internalType: 'string', type: 'string' }],
+    inputs: [{ name: '_newBaseURI', internalType: 'string', type: 'string' }],
     name: 'setBaseURI',
     outputs: [],
     stateMutability: 'nonpayable',
@@ -1292,7 +1293,7 @@ export const glitchyAbi = [
   },
   {
     type: 'function',
-    inputs: [{ name: 'interfaceId', internalType: 'bytes4', type: 'bytes4' }],
+    inputs: [{ name: '_interfaceId', internalType: 'bytes4', type: 'bytes4' }],
     name: 'supportsInterface',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'view',
@@ -1467,6 +1468,44 @@ export const glitchyAbi = [
     type: 'event',
     anonymous: false,
     inputs: [
+      {
+        name: 'recipient',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint16',
+        type: 'uint16',
+        indexed: false,
+      },
+    ],
+    name: 'TokenClaimed',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'recipient',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint16',
+        type: 'uint16',
+        indexed: false,
+      },
+    ],
+    name: 'TokenMinted',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
       { name: 'from', internalType: 'address', type: 'address', indexed: true },
       { name: 'to', internalType: 'address', type: 'address', indexed: true },
       {
@@ -1571,7 +1610,7 @@ export const glitchyAbi = [
 ] as const
 
 export const glitchyAddress =
-  '0x0d7848e6245C802Ca5d3F1c270dB360896D594cF' as const
+  '0x5FbDB2315678afecb367f032d93F642f64180aa3' as const
 
 export const glitchyConfig = {
   address: glitchyAddress,
@@ -3216,6 +3255,26 @@ export const useWatchGlitchyOwnershipTransferredEvent =
   })
 
 /**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link glitchyAbi}__ and `eventName` set to `"TokenClaimed"`
+ */
+export const useWatchGlitchyTokenClaimedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    eventName: 'TokenClaimed',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link glitchyAbi}__ and `eventName` set to `"TokenMinted"`
+ */
+export const useWatchGlitchyTokenMintedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    eventName: 'TokenMinted',
+  })
+
+/**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link glitchyAbi}__ and `eventName` set to `"Transfer"`
  */
 export const useWatchGlitchyTransferEvent =
@@ -4814,6 +4873,26 @@ export const watchGlitchyOwnershipTransferredEvent =
     abi: glitchyAbi,
     address: glitchyAddress,
     eventName: 'OwnershipTransferred',
+  })
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link glitchyAbi}__ and `eventName` set to `"TokenClaimed"`
+ */
+export const watchGlitchyTokenClaimedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    eventName: 'TokenClaimed',
+  })
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link glitchyAbi}__ and `eventName` set to `"TokenMinted"`
+ */
+export const watchGlitchyTokenMintedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    eventName: 'TokenMinted',
   })
 
 /**

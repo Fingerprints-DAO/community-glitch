@@ -7,14 +7,15 @@ import {BaseScript} from './Base.s.sol';
 contract DeployGlitchyLocal is BaseScript {
   function run() public returns (GlitchyGridGrid glitchy) {
     address deployer = broadcaster;
-    string memory baseURIGlitchyGridGrid = 'http://localhost:3000/mint-edition/metadata/';
+    string memory baseURIGlitchyGridGrid = 'https://glitch.mishaderidder.com/mint-edition/metadata/';
     uint256 startTime = block.timestamp + (60);
     uint256 endTime = startTime + (3600 * 1);
 
     vm.startBroadcast();
     glitchy = _deployGlitchyGridGrid(deployer, baseURIGlitchyGridGrid);
     glitchy.setConfig(startTime, endTime);
-    glitchy.setDiscountAllowlistRoot(0xc65cfff3957d3e32ee797a76ee48f645c1d54219732b342756fb72caf73ba890);
+    glitchy.setDiscountAllowlistRoot(0x4327a733a1f371691a5f256a666697c4c6c66f58ad97072995821e0fc35ced65);
+    glitchy.setFreeClaimAllowlistRoot(0x2e9682bdda23b84ccad52e90f7f60a2747d877961cefaf058657f0c58a7ccf74);
     vm.stopBroadcast();
   }
 }
@@ -22,14 +23,14 @@ contract DeployGlitchyLocal is BaseScript {
 contract DeployGlitchySepolia is BaseScript {
   function run() public returns (GlitchyGridGrid glitchy) {
     address deployer = broadcaster;
-    string memory baseURIGlitchyGridGrid = 'https://community-glitch-dapp-web-app-git-mint-edition-fingerprints.vercel.app/mint-edition/metadata/';
+    string memory baseURIGlitchyGridGrid = 'https://glitch.mishaderidder.com/mint-edition/metadata/';
     uint256 startTime = block.timestamp + (3600 * 1);
     uint256 endTime = startTime + (3600 * 10);
 
     vm.startBroadcast();
     glitchy = _deployGlitchyGridGrid(deployer, baseURIGlitchyGridGrid);
     glitchy.setConfig(startTime, endTime);
-    glitchy.setDiscountAllowlistRoot(0xc65cfff3957d3e32ee797a76ee48f645c1d54219732b342756fb72caf73ba890);
+    glitchy.setDiscountAllowlistRoot(0x4327a733a1f371691a5f256a666697c4c6c66f58ad97072995821e0fc35ced65);
     vm.stopBroadcast();
   }
 }
@@ -43,7 +44,7 @@ contract DeployGlitchyMainnet is BaseScript {
     vm.startBroadcast();
     glitchy = _deployGlitchyGridGrid(deployer, baseURIGlitchyGridGrid);
     glitchy.setConfig(startTime, endTime);
-    glitchy.setDiscountAllowlistRoot(0xc65cfff3957d3e32ee797a76ee48f645c1d54219732b342756fb72caf73ba890);
+    glitchy.setDiscountAllowlistRoot(0x4327a733a1f371691a5f256a666697c4c6c66f58ad97072995821e0fc35ced65);
 
     vm.stopBroadcast();
   }

@@ -69,6 +69,16 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
    */
   error RegularMintedExceeded();
 
+  /**
+   * @dev Event emitted when a token is minted.
+   */
+  event TokenMinted(address recipient, uint16 amount);
+
+  /**
+   * @dev Event emitted when a token is claimed.
+   */
+  event TokenClaimed(address recipient, uint16 amount);
+
   uint256 private _nextTokenId; /// @notice The next token ID to be minted.
   string private baseURI; /// @notice The base URI of the contract.
   mapping(bytes32 proof => bool used) private usedProofs; /// @notice The used proofs.
@@ -94,10 +104,10 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
 
   /**
    * @dev Constructor function
-   * @param initialOwner The initial owner of the contract
+   * @param _initialOwner The initial owner of the contract
    * @param _baseUri The base URI of the contract
    */
-  constructor(address initialOwner, string memory _baseUri, address _treasuryWallet) ERC721('glitchy grid grid', 'GGG') Ownable(initialOwner) {
+  constructor(address _initialOwner, string memory _baseUri, address _treasuryWallet) ERC721('glitchy grid grid', 'GGG') Ownable(_initialOwner) {
     baseURI = _baseUri;
     fundsReceiverAddress = payable(_treasuryWallet);
   }
@@ -131,10 +141,10 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
 
   /**
    * @dev Mints a new token and assigns it to the specified recipient
-   * @param recipient The address to receive the minted token
+   * @param _recipient The address to receive the minted token
    * @param _amount The amount of tokens to mint
    */
-  function mint(address recipient, uint8 _amount, bytes32[] calldata _merkleProof) external payable validConfig validTime {
+  function mint(address _recipient, uint8 _amount, bytes32[] calldata _merkleProof) external payable validConfig validTime {
     if (regularMinted + _amount > (MAX_SUPPLY - FREE_CLAIM_AMOUNT)) revert RegularMintedExceeded();
 
     bool isDiscounted = checkDiscountMerkleProof(_merkleProof, _msgSender());
@@ -144,47 +154,49 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
     if (msg.value < price) revert InsufficientFunds();
 
     regularMinted += _amount;
-    _mintTokens(recipient, _amount);
+    emit TokenMinted(_recipient, _amount);
+    _mintTokens(_recipient, _amount);
   }
 
   /**
    * @dev Allows to claim tokens for free using a merkle proof
-   * @param recipient The address to receive the minted tokens
+   * @param _recipient The address to receive the minted tokens
    * @param _amount The amount of tokens to mint
    * @param proof The merkle proof to be checked
    */
-  function claim(address recipient, uint8 _amount, bytes32[] calldata proof) external validConfig validTime {
+  function claim(address _recipient, uint8 _amount, bytes32[] calldata proof) external validConfig validTime {
     if (freeClaimed + _amount > FREE_CLAIM_AMOUNT) revert FreeClaimedExceeded();
-    if (!checkFreeClaimAllowlist(proof, recipient, _amount)) revert InvalidProof();
+    if (!checkFreeClaimAllowlist(proof, _recipient, _amount)) revert InvalidProof();
 
     usedProofs[keccak256(abi.encodePacked(proof))] = true;
     freeClaimed += _amount;
-    _mintTokens(recipient, _amount);
+    emit TokenClaimed(_recipient, _amount);
+    _mintTokens(_recipient, _amount);
   }
 
   /**
    * @dev Internal function to mint tokens
-   * @param recipient The address to receive the minted tokens
+   * @param _recipient The address to receive the minted tokens
    * @param _amount The amount of tokens to mint
    */
-  function _mintTokens(address recipient, uint16 _amount) internal {
-    if (recipient == address(0)) revert ZeroAddress();
+  function _mintTokens(address _recipient, uint16 _amount) internal {
+    if (_recipient == address(0)) revert ZeroAddress();
     if (_amount > MAX_NUMBER_PER_MINT) revert MaxNumberOfMintedTokensExceeded();
 
     if (_nextTokenId + _amount > MAX_SUPPLY) revert MaxSupplyExceeded();
 
     for (uint8 i = 0; i < _amount; i++) {
-      _safeMint(recipient, ++_nextTokenId);
+      _safeMint(_recipient, ++_nextTokenId);
     }
   }
 
   /**
    * @dev Owner mints for free a new token and assigns it to the specified recipient
-   * @param recipient The address to receive the minted token
+   * @param _recipient The address to receive the minted token
    * @param _amount The amount of tokens to mint
    */
-  function ownerMint(address recipient, uint16 _amount) external _onlyOwner {
-    _mintTokens(recipient, _amount);
+  function ownerMint(address _recipient, uint16 _amount) external _onlyOwner {
+    _mintTokens(_recipient, _amount);
   }
 
   /**
@@ -234,11 +246,11 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
 
   /**
    * @dev Sets the base URI for token URIs
-   * @param newBaseURI The new base URI
+   * @param _newBaseURI The new base URI
    * @dev Only the owner can call this function
    */
-  function setBaseURI(string memory newBaseURI) external _onlyOwner {
-    baseURI = newBaseURI;
+  function setBaseURI(string memory _newBaseURI) external _onlyOwner {
+    baseURI = _newBaseURI;
   }
 
   /**
@@ -271,7 +283,7 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
    * @param _address The address to be checked.
    */
   function checkFreeClaimAllowlist(bytes32[] calldata _merkleProof, address _address, uint8 _amount) public view returns (bool) {
-    bytes32 leaf = keccak256(abi.encode(_address, _amount));
+    bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(_address, _amount))));
 
     if (usedProofs[keccak256(abi.encodePacked(_merkleProof))]) revert InvalidProof();
 
@@ -300,28 +312,28 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
     return string(abi.encodePacked(baseURI, Strings.toString(tokenId)));
   }
 
-  function _update(address to, uint256 tokenId, address auth) internal override(ERC721, ERC721Enumerable) returns (address) {
-    return super._update(to, tokenId, auth);
-  }
-
-  function _increaseBalance(address account, uint128 value) internal override(ERC721, ERC721Enumerable) {
-    super._increaseBalance(account, value);
-  }
-
-  /**
-   * @dev Checks if a specific interface is supported by the contract
-   * @param interfaceId The interface ID to check
-   * @return True if the interface is supported, false otherwise
-   */
-  function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721URIStorage, ERC721Enumerable) returns (bool) {
-    return super.supportsInterface(interfaceId);
-  }
-
   /**
    * @dev Returns the current configuration of the auction.
    * @return The auction configuration.
    */
   function getConfig() external view returns (Config memory) {
     return _config;
+  }
+
+  function _update(address _to, uint256 _tokenId, address _auth) internal override(ERC721, ERC721Enumerable) returns (address) {
+    return super._update(_to, _tokenId, _auth);
+  }
+
+  function _increaseBalance(address _account, uint128 _value) internal override(ERC721, ERC721Enumerable) {
+    super._increaseBalance(_account, _value);
+  }
+
+  /**
+   * @dev Checks if a specific interface is supported by the contract
+   * @param _interfaceId The interface ID to check
+   * @return True if the interface is supported, false otherwise
+   */
+  function supportsInterface(bytes4 _interfaceId) public view override(ERC721, ERC721URIStorage, ERC721Enumerable) returns (bool) {
+    return super.supportsInterface(_interfaceId);
   }
 }

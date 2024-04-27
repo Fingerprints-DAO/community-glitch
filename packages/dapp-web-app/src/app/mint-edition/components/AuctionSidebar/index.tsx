@@ -29,6 +29,7 @@ import { GoDash, GoPlus } from 'react-icons/go'
 import { useAccount, useWaitForTransactionReceipt } from 'wagmi'
 import { parseEther } from 'viem'
 import useTxToast from 'hooks/use-tx-toast'
+import ClaimSection from './Claim'
 
 const TextSection = ({
   title,
@@ -239,7 +240,7 @@ export const MintSidebar = (props: FlexProps) => {
                   </Text>
                 </Box>
                 <Box>
-                  <Text fontWeight={'bold'}>minted/supply</Text>
+                  <Text fontWeight={'bold'}>available/supply</Text>
                   <Text>
                     {Number(minted)}/{Number(maxSupply)} tokens
                   </Text>
@@ -247,92 +248,97 @@ export const MintSidebar = (props: FlexProps) => {
               </>
             )}
           </Flex>
-          <Box>
-            <ChakraLink
-              as={Link}
-              target="_blank"
-              href={getExternalOpenseaUrl(glitchyAddress)}
-              title="OpenSea"
-            >
-              buy on opensea
-            </ChakraLink>
-          </Box>
+          {mintState === SalesState.ENDED && (
+            <Box>
+              <ChakraLink
+                as={Link}
+                target="_blank"
+                href={getExternalOpenseaUrl(glitchyAddress)}
+                title="OpenSea"
+              >
+                buy on opensea
+              </ChakraLink>
+            </Box>
+          )}
           {mintState === SalesState.STARTED && (
-            <Flex mt={4} justifyContent={'space-between'} shrink={0} flex={1}>
-              <Box minW={'30%'}>
-                <Text fontSize={'xs'} fontWeight={'bold'} mb={2}>
-                  Quantity
-                </Text>
-                <Flex>
-                  <Button
-                    variant={'outline'}
-                    mr={2}
-                    onClick={() => handleCounter(counter - 1)}
-                    borderWidth={'2px'}
-                    fontWeight={'bold'}
-                    fontSize={'md'}
-                  >
-                    <GoDash size={18} />
-                  </Button>
-                  <Input
-                    htmlSize={4}
-                    w={'54px'}
-                    p={1}
-                    textAlign={'center'}
-                    mr={2}
-                    colorScheme="blackAlpha"
-                    focusBorderColor={'gray.900'}
-                    _hover={{ borderColor: 'gray.900' }}
-                    color={'gray.700'}
-                    fontWeight={'bold'}
-                    fontSize={'md'}
-                    borderColor={'gray.900'}
-                    borderRadius={'none'}
-                    borderWidth={'2px'}
-                    value={counter}
-                    onChange={(e) => handleCounter(Number(e.target.value))}
-                  />
-                  <Button
-                    variant={'outline'}
-                    mr={2}
-                    onClick={() => handleCounter(counter + 1)}
-                    borderWidth={'2px'}
-                    fontWeight={'bold'}
-                    fontSize={'md'}
-                  >
-                    <GoPlus size={18} />
-                  </Button>
-                </Flex>
-              </Box>
-              <Box ml={4} flex={2}>
-                <Box mb={2}>
-                  <TotalPriceDisplay
-                    selectedItemsCount={counter}
-                    price={price}
-                    priceWithDiscount={priceWithDiscount}
-                    hasDiscount={hasDiscount}
-                  />
-                </Box>
-                <ForceConnectButton buttonText="Connect to mint">
-                  <>
+            <>
+              <ClaimSection />
+              <Flex mt={4} justifyContent={'space-between'} shrink={0} flex={1}>
+                <Box minW={'30%'}>
+                  <Text fontSize={'xs'} fontWeight={'bold'} mb={2}>
+                    Quantity
+                  </Text>
+                  <Flex>
                     <Button
-                      variant={'solid'}
-                      w={'full'}
-                      isDisabled={
-                        counter < 1 || mint.isPending || mintTx.isLoading
-                      }
-                      onClick={handleMint}
+                      variant={'outline'}
+                      mr={2}
+                      onClick={() => handleCounter(counter - 1)}
+                      borderWidth={'2px'}
+                      fontWeight={'bold'}
+                      fontSize={'md'}
                     >
-                      {mint.isPending
-                        ? 'waiting for approval...'
-                        : mintTx.isLoading
-                          ? 'processing...'
-                          : 'mint'}
+                      <GoDash size={18} />
                     </Button>
-                  </>
-                </ForceConnectButton>
-              </Box>
-            </Flex>
+                    <Input
+                      htmlSize={4}
+                      w={'54px'}
+                      p={1}
+                      textAlign={'center'}
+                      mr={2}
+                      colorScheme="blackAlpha"
+                      focusBorderColor={'gray.900'}
+                      _hover={{ borderColor: 'gray.900' }}
+                      color={'gray.700'}
+                      fontWeight={'bold'}
+                      fontSize={'md'}
+                      borderColor={'gray.900'}
+                      borderRadius={'none'}
+                      borderWidth={'2px'}
+                      value={counter}
+                      onChange={(e) => handleCounter(Number(e.target.value))}
+                    />
+                    <Button
+                      variant={'outline'}
+                      mr={2}
+                      onClick={() => handleCounter(counter + 1)}
+                      borderWidth={'2px'}
+                      fontWeight={'bold'}
+                      fontSize={'md'}
+                    >
+                      <GoPlus size={18} />
+                    </Button>
+                  </Flex>
+                </Box>
+                <Box ml={4} flex={2}>
+                  <Box mb={2}>
+                    <TotalPriceDisplay
+                      selectedItemsCount={counter}
+                      price={price}
+                      priceWithDiscount={priceWithDiscount}
+                      hasDiscount={hasDiscount}
+                    />
+                  </Box>
+                  <ForceConnectButton buttonText="Connect to mint">
+                    <>
+                      <Button
+                        variant={'solid'}
+                        w={'full'}
+                        isDisabled={
+                          counter < 1 || mint.isPending || mintTx.isLoading
+                        }
+                        onClick={handleMint}
+                      >
+                        {mint.isPending
+                          ? 'waiting for approval...'
+                          : mintTx.isLoading
+                            ? 'processing...'
+                            : 'mint'}
+                      </Button>
+                    </>
+                  </ForceConnectButton>
+                </Box>
+              </Flex>
+            </>
           )}
           <Flex flexDir={'column'} gap={10}>
             <Box as={'section'}>
