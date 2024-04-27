@@ -15,7 +15,7 @@ export async function POST(req: Request) {
 
   try {
     const response = await fetcher(
-      `http://localhost:3001/api/glitch/claimList?address=${address}`,
+      `https://api.fingerprintsdao.xyz/api/glitch/claimList?address=${address}`,
     )
     if (response.canClaim) {
       canClaim = true
