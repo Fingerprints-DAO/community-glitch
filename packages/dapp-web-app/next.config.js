@@ -11,6 +11,10 @@ const nextConfig = {
         {
           source: '/edition/metadata/:dir/:file',
           destination: '/edition/metadata/:dir/:file.json',
+        },
+        {
+          source: '/mint-edition/metadata/:file',
+          destination: '/mint-edition/metadata/:file.json',
         }
       ]
   }
