@@ -235,7 +235,14 @@ export const MintSidebar = (props: FlexProps) => {
           {mintState !== SalesState.IDLE &&
             mintState !== SalesState.NOT_STARTED && <ClaimSection />}
           {mintState === SalesState.STARTED && (
-            <Flex mt={4} justifyContent={'space-between'} shrink={0} flex={1}>
+            <Flex
+              mt={4}
+              justifyContent={'space-between'}
+              shrink={0}
+              flex={1}
+              flexWrap={{ base: 'wrap', sm: 'nowrap' }}
+              gap={4}
+            >
               <Box minW={'30%'}>
                 <Text fontSize={'xs'} fontWeight={'bold'} mb={2}>
                   Quantity
@@ -281,7 +288,7 @@ export const MintSidebar = (props: FlexProps) => {
                   </Button>
                 </Flex>
               </Box>
-              <Box ml={4} flex={2}>
+              <Box w={'full'}>
                 <Box mb={2}>
                   <TotalPriceDisplay
                     selectedItemsCount={counter}
@@ -291,22 +298,20 @@ export const MintSidebar = (props: FlexProps) => {
                   />
                 </Box>
                 <ForceConnectButton buttonText="Connect to mint">
-                  <>
-                    <Button
-                      variant={'solid'}
-                      w={'full'}
-                      isDisabled={
-                        counter < 1 || mint.isPending || mintTx.isLoading
-                      }
-                      onClick={handleMint}
-                    >
-                      {mint.isPending
-                        ? 'waiting for approval...'
-                        : mintTx.isLoading
-                          ? 'processing...'
-                          : 'mint'}
-                    </Button>
-                  </>
+                  <Button
+                    variant={'solid'}
+                    w={'full'}
+                    isDisabled={
+                      counter < 1 || mint.isPending || mintTx.isLoading
+                    }
+                    onClick={handleMint}
+                  >
+                    {mint.isPending
+                      ? 'waiting for approval...'
+                      : mintTx.isLoading
+                        ? 'processing...'
+                        : 'mint'}
+                  </Button>
                 </ForceConnectButton>
               </Box>
             </Flex>

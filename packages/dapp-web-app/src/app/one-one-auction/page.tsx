@@ -183,6 +183,16 @@ export default function Auction() {
                     <ChakraLink
                       as={Link}
                       target="_blank"
+                      href={getExternalOpenseaUrl(glitchAddress)}
+                      title="OpenSea"
+                    >
+                      view collection on opensea
+                    </ChakraLink>
+                  </ListItem>
+                  <ListItem mt={2}>
+                    <ChakraLink
+                      as={Link}
+                      target="_blank"
                       href={getExternalEtherscanUrl(glitchAddress)}
                       title="etherscan"
                     >
@@ -197,16 +207,6 @@ export default function Auction() {
                       title="etherscan"
                     >
                       view auction smart contract
-                    </ChakraLink>
-                  </ListItem>
-                  <ListItem mb={2}>
-                    <ChakraLink
-                      as={Link}
-                      target="_blank"
-                      href={getExternalOpenseaUrl(glitchAddress)}
-                      title="OpenSea"
-                    >
-                      view collection on opensea
                     </ChakraLink>
                   </ListItem>
                 </List>
