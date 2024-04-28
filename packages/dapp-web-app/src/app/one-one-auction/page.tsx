@@ -107,9 +107,8 @@ export default function Auction() {
                   <Text>{token.name}</Text>
                   <ChakraLink
                     as={Link}
-                    href={'/'}
-                    // target="_blank"
-                    // href={getExternalOpenseaUrl(auctionAddress)}
+                    target="_blank"
+                    href={getExternalOpenseaUrl(glitchAddress)}
                   >
                     view collection
                   </ChakraLink>
@@ -200,8 +199,7 @@ export default function Auction() {
                       view auction smart contract
                     </ChakraLink>
                   </ListItem>
-
-                  {/* <ListItem mb={2}>
+                  <ListItem mb={2}>
                     <ChakraLink
                       as={Link}
                       target="_blank"
@@ -210,7 +208,7 @@ export default function Auction() {
                     >
                       view collection on opensea
                     </ChakraLink>
-                  </ListItem> */}
+                  </ListItem>
                 </List>
               </TextSection>
             </Box>
