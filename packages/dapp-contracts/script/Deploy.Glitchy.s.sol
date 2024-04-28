@@ -46,7 +46,7 @@ contract DeployGlitchyMainnet is BaseScript {
     vm.startBroadcast();
     glitchy = _deployGlitchyGridGrid(deployer, baseURIGlitchyGridGrid, treasury);
     glitchy.setConfig(startTime, endTime);
-    glitchy.setDiscountAllowlistRoot(0x4327a733a1f371691a5f256a666697c4c6c66f58ad97072995821e0fc35ced65);
+    // glitchy.setDiscountAllowlistRoot(0x4327a733a1f371691a5f256a666697c4c6c66f58ad97072995821e0fc35ced65);
     glitchy.setFreeClaimAllowlistRoot(0x2e9682bdda23b84ccad52e90f7f60a2747d877961cefaf058657f0c58a7ccf74);
 
     vm.stopBroadcast();

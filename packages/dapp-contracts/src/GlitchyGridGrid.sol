@@ -1,4 +1,22 @@
-// SPDX-License-Identifier: MIT
+/**
+ * @title glitchy grid grid by misha de ridder
+ * @author https://arod.studio/
+ * @dev ERC721 token contract representing a collection of 510 artworks
+ * @notice live website: https://glitch.mishaderidder.com/
+ *
+ * This contract is used to manage ERC721 glitch tokens, tokens created by misha de ridder
+ * arod.studio developed this contract on according to misha de ridder requirements
+ *
+ * The edition piece is a randomized composite image of all 50 animations,
+ * each representing one of the many possible options of the full collection mosaic, minted as HTML-page.
+ * The mint is limited to 510 editions.
+ * The art is slowly degraded as more editions are minted following the steps of the 1/1s
+ * until the last 20 editions are fully degraded.
+ * There's no way to restore, what you mint is what you get.
+ *
+ * SPDX-License-Identifier: MIT
+ * @custom:security-contact arod.mail@proton.me
+ */
 pragma solidity 0.8.23;
 
 import {Address} from '@openzeppelin/contracts/utils/Address.sol';
@@ -9,11 +27,6 @@ import {MerkleProof} from '@openzeppelin/contracts/utils/cryptography/MerkleProo
 import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
 import {Strings} from '@openzeppelin/contracts/utils/Strings.sol';
 
-/**
- * @title GlitchyGridGrid
- * @dev ERC721 token contract representing a collection of digital artworks
- * @custom:security-contact arod.mail@proton.me
- */
 contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
   using Address for address payable;
 
@@ -99,6 +112,7 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
    * @dev Constructor function
    * @param _initialOwner The initial owner of the contract
    * @param _baseUri The base URI of the contract
+   * @param _treasuryWallet The address to send the funds
    */
   constructor(address _initialOwner, string memory _baseUri, address _treasuryWallet) ERC721('glitchy grid grid', 'GGG') Ownable(_initialOwner) {
     baseURI = _baseUri;
@@ -136,6 +150,7 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
    * @dev Mints a new token and assigns it to the specified recipient
    * @param _recipient The address to receive the minted token
    * @param _amount The amount of tokens to mint
+   * @param _merkleProof The merkle proof to be checked
    */
   function mint(address _recipient, uint8 _amount, bytes32[] calldata _merkleProof) external payable validConfig validTime {
     if (regularMinted + _amount > (MAX_SUPPLY - FREE_CLAIM_AMOUNT)) revert RegularMintedExceeded();
@@ -277,6 +292,8 @@ contract GlitchyGridGrid is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable 
    * @dev Checks if a merkle proof is valid.
    * @param _merkleProof The merkle proof to be checked.
    * @param _address The address to be checked.
+   * @param _amount The amount of tokens to be checked.
+   * @return A boolean indicating whether the merkle proof is valid or not.
    */
   function checkFreeClaimAllowlist(bytes32[] calldata _merkleProof, address _address, uint8 _amount) public view returns (bool) {
     bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(_address, _amount))));
