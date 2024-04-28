@@ -31,9 +31,8 @@ contract DeployLocal is BaseScript {
     address deployer = broadcaster;
     address minter = broadcaster;
     string memory baseURI = 'http://localhost:3000/arts/';
-    uint256 startTime = block.timestamp + (3600 * 0);
-    uint256 endTime = startTime + (60 * 5);
-    // uint256 endTime = startTime + (3600 * 1);
+    uint256 startTime = block.timestamp + (3600 * 0.1);
+    uint256 endTime = startTime + (3600 * 1);
     uint256 minBidIncrementInWei = 0.005 ether;
     uint256 startAmountInWei = 0.04 ether;
 

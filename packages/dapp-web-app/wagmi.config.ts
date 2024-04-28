@@ -20,6 +20,12 @@ export default defineConfig({
       address: contracts.getContractAddressesForChainOrThrow(getChainId())
         .GlitchAuction as Address,
     },
+    {
+      name: 'glitchy',
+      abi: contracts.GlitchyGridGridABI as any,
+      address: contracts.getContractAddressesForChainOrThrow(getChainId())
+        .GlitchyGridGrid as Address,
+    },
   ],
   plugins: [react(), actions()],
 })

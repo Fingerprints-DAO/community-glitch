@@ -33,7 +33,11 @@ export function useDiscount() {
       setIsLoading(false)
     }
 
-    if (address) checkDiscount(address)
+    if (address) {
+      checkDiscount(address)
+    } else {
+      setIsLoading(false)
+    }
   }, [address])
 
   return {

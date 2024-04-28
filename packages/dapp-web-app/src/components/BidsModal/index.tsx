@@ -73,7 +73,7 @@ const BidsModal = ({ bids, onClose }: LastBidsProps) => {
       <ModalOverlay height="100vh" />
       <ModalContent
         bg="white"
-        position={{ base: 'fixed', sm: 'unset' }}
+        // position={{ base: 'fixed', sm: 'unset' }}
         bottom={{ base: '0px', sm: 'unset' }}
         mb={{ base: '0', sm: 'auto' }}
         rounded={'none'}
