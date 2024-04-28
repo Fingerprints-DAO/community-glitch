@@ -36,25 +36,28 @@ const TableRowWithENS = ({
 }: {
   index: number
   userAddress?: string
-  bid: ReturnType<typeof cleanEmptyBids>[number]
+  bid: BidLogsType[number]
 }) => {
-  const { data = bid.bidder } = useEnsName({
-    address: bid.bidder,
+  const { data = bid.args.bidder } = useEnsName({
+    address: bid.args.bidder as any,
   })
   const handledAddress = useMemo(() => {
     if (data) {
       return shortenAddress(data, 10, 5)
     }
-    return shortenAddress(bid.bidder, 8, 13)
-  }, [bid.bidder, data])
+    return shortenAddress(bid.args.bidder, 8, 13)
+  }, [bid.args.bidder, data])
 
   return (
     <TableRow
       index={index + 1}
-      amount={formatToEtherStringBN(bid.amount)}
-      address={isUserAddress(userAddress, bid.bidder) ? 'you' : handledAddress}
-      fullAddress={data ?? bid.bidder}
-      isHighlighted={isUserAddress(userAddress, bid.bidder)}
+      amount={formatToEtherStringBN(bid.args.amount)}
+      address={
+        isUserAddress(userAddress, bid.args.bidder) ? 'you' : handledAddress
+      }
+      fullAddress={data ?? bid.args.bidder}
+      hash={bid.transactionHash}
+      isHighlighted={isUserAddress(userAddress, bid.args.bidder)}
     />
   )
 }
@@ -103,7 +106,7 @@ const BidsModal = ({ bids, onClose }: LastBidsProps) => {
               <TableRowWithENS
                 key={index}
                 index={index}
-                bid={bid.args as any}
+                bid={bid}
                 userAddress={userAddress}
               />
               // <TableRow
