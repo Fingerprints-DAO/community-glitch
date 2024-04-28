@@ -4,6 +4,7 @@ pragma solidity 0.8.23;
 import {Script} from 'forge-std/src/Script.sol';
 import {Glitch} from '../src/Glitch.sol';
 import {GlitchAuction} from '../src/GlitchAuction.sol';
+import {GlitchyGridGrid} from '../src/GlitchyGridGrid.sol';
 
 abstract contract BaseScript is Script {
   /// @dev Included to enable compilation of the script without a $MNEMONIC environment variable.
@@ -57,5 +58,10 @@ abstract contract BaseScript is Script {
     auction = new GlitchAuction(deployer, glitchAddress, treasuryWallet);
     auction.setConfig(startTime, endTime, minBidIncrementInWei, startAmountInWei);
     Glitch(glitchAddress).setMinterContractAddress(address(auction));
+  }
+
+  function _deployGlitchyGridGrid(address deployer, string memory baseURI, address treasuryWallet) internal returns (GlitchyGridGrid glitchy) {
+    glitchy = new GlitchyGridGrid(deployer, baseURI, treasuryWallet);
+    return glitchy;
   }
 }

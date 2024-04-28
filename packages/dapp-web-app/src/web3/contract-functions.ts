@@ -52,9 +52,9 @@ export const auctionAbi = [
   },
   {
     type: 'function',
-    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    inputs: [{ name: 'bidder', internalType: 'address', type: 'address' }],
     name: 'bidBalances',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    outputs: [{ name: 'balance', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
   },
   {
@@ -77,9 +77,9 @@ export const auctionAbi = [
   },
   {
     type: 'function',
-    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    inputs: [{ name: 'bidder', internalType: 'address', type: 'address' }],
     name: 'claimed',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    outputs: [{ name: 'isClaimed', internalType: 'bool', type: 'bool' }],
     stateMutability: 'view',
   },
   {
@@ -1018,6 +1018,618 @@ export const glitchAddress =
   '0x86e263CaDD1caCE347A752Fe84C065823BcA66a1' as const
 
 export const glitchConfig = { address: glitchAddress, abi: glitchAbi } as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// glitchy
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const glitchyAbi = [
+  {
+    type: 'constructor',
+    inputs: [
+      { name: '_initialOwner', internalType: 'address', type: 'address' },
+      { name: '_baseUri', internalType: 'string', type: 'string' },
+      { name: '_treasuryWallet', internalType: 'address', type: 'address' },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'DISCOUNT_PERCENTAGE',
+    outputs: [{ name: '', internalType: 'uint16', type: 'uint16' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'FREE_CLAIM_AMOUNT',
+    outputs: [{ name: '', internalType: 'uint8', type: 'uint8' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'MAX_SUPPLY',
+    outputs: [{ name: '', internalType: 'uint16', type: 'uint16' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'to', internalType: 'address', type: 'address' },
+      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'approve',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'owner', internalType: 'address', type: 'address' }],
+    name: 'balanceOf',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_amount', internalType: 'uint8', type: 'uint8' },
+      { name: '_isDiscounted', internalType: 'bool', type: 'bool' },
+    ],
+    name: 'calculatePrice',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_merkleProof', internalType: 'bytes32[]', type: 'bytes32[]' },
+      { name: '_address', internalType: 'address', type: 'address' },
+    ],
+    name: 'checkDiscountMerkleProof',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_merkleProof', internalType: 'bytes32[]', type: 'bytes32[]' },
+      { name: '_address', internalType: 'address', type: 'address' },
+      { name: '_amount', internalType: 'uint8', type: 'uint8' },
+    ],
+    name: 'checkFreeClaimAllowlist',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_recipient', internalType: 'address', type: 'address' },
+      { name: '_amount', internalType: 'uint8', type: 'uint8' },
+      { name: 'proof', internalType: 'bytes32[]', type: 'bytes32[]' },
+    ],
+    name: 'claim',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'freeClaimed',
+    outputs: [{ name: '', internalType: 'uint16', type: 'uint16' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'fundsReceiverAddress',
+    outputs: [{ name: '', internalType: 'address payable', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'tokenId', internalType: 'uint256', type: 'uint256' }],
+    name: 'getApproved',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getConfig',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct GlitchyGridGrid.Config',
+        type: 'tuple',
+        components: [
+          { name: 'startTime', internalType: 'uint256', type: 'uint256' },
+          { name: 'endTime', internalType: 'uint256', type: 'uint256' },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'owner', internalType: 'address', type: 'address' },
+      { name: 'operator', internalType: 'address', type: 'address' },
+    ],
+    name: 'isApprovedForAll',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_recipient', internalType: 'address', type: 'address' },
+      { name: '_amount', internalType: 'uint8', type: 'uint8' },
+      { name: '_merkleProof', internalType: 'bytes32[]', type: 'bytes32[]' },
+    ],
+    name: 'mint',
+    outputs: [],
+    stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'name',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'owner',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_recipient', internalType: 'address', type: 'address' },
+      { name: '_amount', internalType: 'uint16', type: 'uint16' },
+    ],
+    name: 'ownerMint',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'tokenId', internalType: 'uint256', type: 'uint256' }],
+    name: 'ownerOf',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'regularMinted',
+    outputs: [{ name: '', internalType: 'uint16', type: 'uint16' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'from', internalType: 'address', type: 'address' },
+      { name: 'to', internalType: 'address', type: 'address' },
+      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'safeTransferFrom',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'from', internalType: 'address', type: 'address' },
+      { name: 'to', internalType: 'address', type: 'address' },
+      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
+      { name: 'data', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'safeTransferFrom',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'operator', internalType: 'address', type: 'address' },
+      { name: 'approved', internalType: 'bool', type: 'bool' },
+    ],
+    name: 'setApprovalForAll',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_newBaseURI', internalType: 'string', type: 'string' }],
+    name: 'setBaseURI',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_startTime', internalType: 'uint256', type: 'uint256' },
+      { name: '_endTime', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'setConfig',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_allowlistRoot', internalType: 'bytes32', type: 'bytes32' },
+    ],
+    name: 'setDiscountAllowlistRoot',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_allowlistRoot', internalType: 'bytes32', type: 'bytes32' },
+    ],
+    name: 'setFreeClaimAllowlistRoot',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'newFundsReceiverAddress',
+        internalType: 'address',
+        type: 'address',
+      },
+    ],
+    name: 'setFundsReceiverAddress',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_tokenPrice', internalType: 'uint256', type: 'uint256' }],
+    name: 'setTokenPrice',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_interfaceId', internalType: 'bytes4', type: 'bytes4' }],
+    name: 'supportsInterface',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'symbol',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'index', internalType: 'uint256', type: 'uint256' }],
+    name: 'tokenByIndex',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'owner', internalType: 'address', type: 'address' },
+      { name: 'index', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'tokenOfOwnerByIndex',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'tokenPrice',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'tokenId', internalType: 'uint256', type: 'uint256' }],
+    name: 'tokenURI',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'totalSupply',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'from', internalType: 'address', type: 'address' },
+      { name: 'to', internalType: 'address', type: 'address' },
+      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'transferFrom',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'newOwner', internalType: 'address', type: 'address' }],
+    name: 'transferOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'withdraw',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'owner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'approved',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'tokenId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+    ],
+    name: 'Approval',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'owner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'operator',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'approved', internalType: 'bool', type: 'bool', indexed: false },
+    ],
+    name: 'ApprovalForAll',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: '_fromTokenId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: '_toTokenId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'BatchMetadataUpdate',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: '_tokenId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'MetadataUpdate',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'previousOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'newOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'OwnershipTransferred',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'recipient',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint16',
+        type: 'uint16',
+        indexed: false,
+      },
+    ],
+    name: 'TokenClaimed',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'recipient',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint16',
+        type: 'uint16',
+        indexed: false,
+      },
+    ],
+    name: 'TokenMinted',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'from', internalType: 'address', type: 'address', indexed: true },
+      { name: 'to', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'tokenId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+    ],
+    name: 'Transfer',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'AddressInsufficientBalance',
+  },
+  { type: 'error', inputs: [], name: 'ClaimNotOpen' },
+  { type: 'error', inputs: [], name: 'ConfigNotSet' },
+  { type: 'error', inputs: [], name: 'ERC721EnumerableForbiddenBatchMint' },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'sender', internalType: 'address', type: 'address' },
+      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
+      { name: 'owner', internalType: 'address', type: 'address' },
+    ],
+    name: 'ERC721IncorrectOwner',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'operator', internalType: 'address', type: 'address' },
+      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'ERC721InsufficientApproval',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'approver', internalType: 'address', type: 'address' }],
+    name: 'ERC721InvalidApprover',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'operator', internalType: 'address', type: 'address' }],
+    name: 'ERC721InvalidOperator',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'owner', internalType: 'address', type: 'address' }],
+    name: 'ERC721InvalidOwner',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'receiver', internalType: 'address', type: 'address' }],
+    name: 'ERC721InvalidReceiver',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'sender', internalType: 'address', type: 'address' }],
+    name: 'ERC721InvalidSender',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'tokenId', internalType: 'uint256', type: 'uint256' }],
+    name: 'ERC721NonexistentToken',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'owner', internalType: 'address', type: 'address' },
+      { name: 'index', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'ERC721OutOfBoundsIndex',
+  },
+  { type: 'error', inputs: [], name: 'FailedInnerCall' },
+  { type: 'error', inputs: [], name: 'FreeClaimedExceeded' },
+  { type: 'error', inputs: [], name: 'InsufficientFunds' },
+  { type: 'error', inputs: [], name: 'InvalidProof' },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'startTime', internalType: 'uint256', type: 'uint256' },
+      { name: 'endTime', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'InvalidStartEndTime',
+  },
+  { type: 'error', inputs: [], name: 'MaxNumberPerMintExceeded' },
+  { type: 'error', inputs: [], name: 'OnlyMinter' },
+  { type: 'error', inputs: [], name: 'OnlyOwner' },
+  {
+    type: 'error',
+    inputs: [{ name: 'owner', internalType: 'address', type: 'address' }],
+    name: 'OwnableInvalidOwner',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'OwnableUnauthorizedAccount',
+  },
+  { type: 'error', inputs: [], name: 'RegularMintedExceeded' },
+  { type: 'error', inputs: [], name: 'ZeroAddress' },
+] as const
+
+export const glitchyAddress =
+  '0x5744628e1A018c6D400dF3398C1B4977E4e90E0e' as const
+
+export const glitchyConfig = {
+  address: glitchyAddress,
+  abi: glitchyAbi,
+} as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
@@ -2071,6 +2683,639 @@ export const useWatchGlitchTransferEvent =
     eventName: 'Transfer',
   })
 
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__
+ */
+export const useReadGlitchy = /*#__PURE__*/ createUseReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"DISCOUNT_PERCENTAGE"`
+ */
+export const useReadGlitchyDiscountPercentage =
+  /*#__PURE__*/ createUseReadContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'DISCOUNT_PERCENTAGE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"FREE_CLAIM_AMOUNT"`
+ */
+export const useReadGlitchyFreeClaimAmount =
+  /*#__PURE__*/ createUseReadContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'FREE_CLAIM_AMOUNT',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"MAX_SUPPLY"`
+ */
+export const useReadGlitchyMaxSupply = /*#__PURE__*/ createUseReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'MAX_SUPPLY',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"balanceOf"`
+ */
+export const useReadGlitchyBalanceOf = /*#__PURE__*/ createUseReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'balanceOf',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"calculatePrice"`
+ */
+export const useReadGlitchyCalculatePrice = /*#__PURE__*/ createUseReadContract(
+  { abi: glitchyAbi, address: glitchyAddress, functionName: 'calculatePrice' },
+)
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"checkDiscountMerkleProof"`
+ */
+export const useReadGlitchyCheckDiscountMerkleProof =
+  /*#__PURE__*/ createUseReadContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'checkDiscountMerkleProof',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"checkFreeClaimAllowlist"`
+ */
+export const useReadGlitchyCheckFreeClaimAllowlist =
+  /*#__PURE__*/ createUseReadContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'checkFreeClaimAllowlist',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"freeClaimed"`
+ */
+export const useReadGlitchyFreeClaimed = /*#__PURE__*/ createUseReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'freeClaimed',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"fundsReceiverAddress"`
+ */
+export const useReadGlitchyFundsReceiverAddress =
+  /*#__PURE__*/ createUseReadContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'fundsReceiverAddress',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"getApproved"`
+ */
+export const useReadGlitchyGetApproved = /*#__PURE__*/ createUseReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'getApproved',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"getConfig"`
+ */
+export const useReadGlitchyGetConfig = /*#__PURE__*/ createUseReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'getConfig',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"isApprovedForAll"`
+ */
+export const useReadGlitchyIsApprovedForAll =
+  /*#__PURE__*/ createUseReadContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'isApprovedForAll',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"name"`
+ */
+export const useReadGlitchyName = /*#__PURE__*/ createUseReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'name',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"owner"`
+ */
+export const useReadGlitchyOwner = /*#__PURE__*/ createUseReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'owner',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"ownerOf"`
+ */
+export const useReadGlitchyOwnerOf = /*#__PURE__*/ createUseReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'ownerOf',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"regularMinted"`
+ */
+export const useReadGlitchyRegularMinted = /*#__PURE__*/ createUseReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'regularMinted',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"supportsInterface"`
+ */
+export const useReadGlitchySupportsInterface =
+  /*#__PURE__*/ createUseReadContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'supportsInterface',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"symbol"`
+ */
+export const useReadGlitchySymbol = /*#__PURE__*/ createUseReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'symbol',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"tokenByIndex"`
+ */
+export const useReadGlitchyTokenByIndex = /*#__PURE__*/ createUseReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'tokenByIndex',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"tokenOfOwnerByIndex"`
+ */
+export const useReadGlitchyTokenOfOwnerByIndex =
+  /*#__PURE__*/ createUseReadContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'tokenOfOwnerByIndex',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"tokenPrice"`
+ */
+export const useReadGlitchyTokenPrice = /*#__PURE__*/ createUseReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'tokenPrice',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"tokenURI"`
+ */
+export const useReadGlitchyTokenUri = /*#__PURE__*/ createUseReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'tokenURI',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"totalSupply"`
+ */
+export const useReadGlitchyTotalSupply = /*#__PURE__*/ createUseReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'totalSupply',
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchyAbi}__
+ */
+export const useWriteGlitchy = /*#__PURE__*/ createUseWriteContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"approve"`
+ */
+export const useWriteGlitchyApprove = /*#__PURE__*/ createUseWriteContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'approve',
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"claim"`
+ */
+export const useWriteGlitchyClaim = /*#__PURE__*/ createUseWriteContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'claim',
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"mint"`
+ */
+export const useWriteGlitchyMint = /*#__PURE__*/ createUseWriteContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'mint',
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"ownerMint"`
+ */
+export const useWriteGlitchyOwnerMint = /*#__PURE__*/ createUseWriteContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'ownerMint',
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const useWriteGlitchyRenounceOwnership =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'renounceOwnership',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"safeTransferFrom"`
+ */
+export const useWriteGlitchySafeTransferFrom =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'safeTransferFrom',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setApprovalForAll"`
+ */
+export const useWriteGlitchySetApprovalForAll =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'setApprovalForAll',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setBaseURI"`
+ */
+export const useWriteGlitchySetBaseUri = /*#__PURE__*/ createUseWriteContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'setBaseURI',
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setConfig"`
+ */
+export const useWriteGlitchySetConfig = /*#__PURE__*/ createUseWriteContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'setConfig',
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setDiscountAllowlistRoot"`
+ */
+export const useWriteGlitchySetDiscountAllowlistRoot =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'setDiscountAllowlistRoot',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setFreeClaimAllowlistRoot"`
+ */
+export const useWriteGlitchySetFreeClaimAllowlistRoot =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'setFreeClaimAllowlistRoot',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setFundsReceiverAddress"`
+ */
+export const useWriteGlitchySetFundsReceiverAddress =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'setFundsReceiverAddress',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setTokenPrice"`
+ */
+export const useWriteGlitchySetTokenPrice =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'setTokenPrice',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"transferFrom"`
+ */
+export const useWriteGlitchyTransferFrom = /*#__PURE__*/ createUseWriteContract(
+  { abi: glitchyAbi, address: glitchyAddress, functionName: 'transferFrom' },
+)
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const useWriteGlitchyTransferOwnership =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'transferOwnership',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"withdraw"`
+ */
+export const useWriteGlitchyWithdraw = /*#__PURE__*/ createUseWriteContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'withdraw',
+})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchyAbi}__
+ */
+export const useSimulateGlitchy = /*#__PURE__*/ createUseSimulateContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"approve"`
+ */
+export const useSimulateGlitchyApprove =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'approve',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"claim"`
+ */
+export const useSimulateGlitchyClaim = /*#__PURE__*/ createUseSimulateContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'claim',
+})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"mint"`
+ */
+export const useSimulateGlitchyMint = /*#__PURE__*/ createUseSimulateContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'mint',
+})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"ownerMint"`
+ */
+export const useSimulateGlitchyOwnerMint =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'ownerMint',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const useSimulateGlitchyRenounceOwnership =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'renounceOwnership',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"safeTransferFrom"`
+ */
+export const useSimulateGlitchySafeTransferFrom =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'safeTransferFrom',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setApprovalForAll"`
+ */
+export const useSimulateGlitchySetApprovalForAll =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'setApprovalForAll',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setBaseURI"`
+ */
+export const useSimulateGlitchySetBaseUri =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'setBaseURI',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setConfig"`
+ */
+export const useSimulateGlitchySetConfig =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'setConfig',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setDiscountAllowlistRoot"`
+ */
+export const useSimulateGlitchySetDiscountAllowlistRoot =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'setDiscountAllowlistRoot',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setFreeClaimAllowlistRoot"`
+ */
+export const useSimulateGlitchySetFreeClaimAllowlistRoot =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'setFreeClaimAllowlistRoot',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setFundsReceiverAddress"`
+ */
+export const useSimulateGlitchySetFundsReceiverAddress =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'setFundsReceiverAddress',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setTokenPrice"`
+ */
+export const useSimulateGlitchySetTokenPrice =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'setTokenPrice',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"transferFrom"`
+ */
+export const useSimulateGlitchyTransferFrom =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'transferFrom',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const useSimulateGlitchyTransferOwnership =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'transferOwnership',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"withdraw"`
+ */
+export const useSimulateGlitchyWithdraw =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'withdraw',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link glitchyAbi}__
+ */
+export const useWatchGlitchyEvent = /*#__PURE__*/ createUseWatchContractEvent({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+})
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link glitchyAbi}__ and `eventName` set to `"Approval"`
+ */
+export const useWatchGlitchyApprovalEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    eventName: 'Approval',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link glitchyAbi}__ and `eventName` set to `"ApprovalForAll"`
+ */
+export const useWatchGlitchyApprovalForAllEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    eventName: 'ApprovalForAll',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link glitchyAbi}__ and `eventName` set to `"BatchMetadataUpdate"`
+ */
+export const useWatchGlitchyBatchMetadataUpdateEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    eventName: 'BatchMetadataUpdate',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link glitchyAbi}__ and `eventName` set to `"MetadataUpdate"`
+ */
+export const useWatchGlitchyMetadataUpdateEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    eventName: 'MetadataUpdate',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link glitchyAbi}__ and `eventName` set to `"OwnershipTransferred"`
+ */
+export const useWatchGlitchyOwnershipTransferredEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    eventName: 'OwnershipTransferred',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link glitchyAbi}__ and `eventName` set to `"TokenClaimed"`
+ */
+export const useWatchGlitchyTokenClaimedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    eventName: 'TokenClaimed',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link glitchyAbi}__ and `eventName` set to `"TokenMinted"`
+ */
+export const useWatchGlitchyTokenMintedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    eventName: 'TokenMinted',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link glitchyAbi}__ and `eventName` set to `"Transfer"`
+ */
+export const useWatchGlitchyTransferEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    eventName: 'Transfer',
+  })
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Action
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3092,3 +4337,617 @@ export const watchGlitchTransferEvent = /*#__PURE__*/ createWatchContractEvent({
   address: glitchAddress,
   eventName: 'Transfer',
 })
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__
+ */
+export const readGlitchy = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"DISCOUNT_PERCENTAGE"`
+ */
+export const readGlitchyDiscountPercentage = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'DISCOUNT_PERCENTAGE',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"FREE_CLAIM_AMOUNT"`
+ */
+export const readGlitchyFreeClaimAmount = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'FREE_CLAIM_AMOUNT',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"MAX_SUPPLY"`
+ */
+export const readGlitchyMaxSupply = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'MAX_SUPPLY',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"balanceOf"`
+ */
+export const readGlitchyBalanceOf = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'balanceOf',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"calculatePrice"`
+ */
+export const readGlitchyCalculatePrice = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'calculatePrice',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"checkDiscountMerkleProof"`
+ */
+export const readGlitchyCheckDiscountMerkleProof =
+  /*#__PURE__*/ createReadContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'checkDiscountMerkleProof',
+  })
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"checkFreeClaimAllowlist"`
+ */
+export const readGlitchyCheckFreeClaimAllowlist =
+  /*#__PURE__*/ createReadContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'checkFreeClaimAllowlist',
+  })
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"freeClaimed"`
+ */
+export const readGlitchyFreeClaimed = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'freeClaimed',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"fundsReceiverAddress"`
+ */
+export const readGlitchyFundsReceiverAddress = /*#__PURE__*/ createReadContract(
+  {
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'fundsReceiverAddress',
+  },
+)
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"getApproved"`
+ */
+export const readGlitchyGetApproved = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'getApproved',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"getConfig"`
+ */
+export const readGlitchyGetConfig = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'getConfig',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"isApprovedForAll"`
+ */
+export const readGlitchyIsApprovedForAll = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'isApprovedForAll',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"name"`
+ */
+export const readGlitchyName = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'name',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"owner"`
+ */
+export const readGlitchyOwner = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'owner',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"ownerOf"`
+ */
+export const readGlitchyOwnerOf = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'ownerOf',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"regularMinted"`
+ */
+export const readGlitchyRegularMinted = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'regularMinted',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"supportsInterface"`
+ */
+export const readGlitchySupportsInterface = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'supportsInterface',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"symbol"`
+ */
+export const readGlitchySymbol = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'symbol',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"tokenByIndex"`
+ */
+export const readGlitchyTokenByIndex = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'tokenByIndex',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"tokenOfOwnerByIndex"`
+ */
+export const readGlitchyTokenOfOwnerByIndex = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'tokenOfOwnerByIndex',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"tokenPrice"`
+ */
+export const readGlitchyTokenPrice = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'tokenPrice',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"tokenURI"`
+ */
+export const readGlitchyTokenUri = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'tokenURI',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"totalSupply"`
+ */
+export const readGlitchyTotalSupply = /*#__PURE__*/ createReadContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'totalSupply',
+})
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchyAbi}__
+ */
+export const writeGlitchy = /*#__PURE__*/ createWriteContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+})
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"approve"`
+ */
+export const writeGlitchyApprove = /*#__PURE__*/ createWriteContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'approve',
+})
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"claim"`
+ */
+export const writeGlitchyClaim = /*#__PURE__*/ createWriteContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'claim',
+})
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"mint"`
+ */
+export const writeGlitchyMint = /*#__PURE__*/ createWriteContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'mint',
+})
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"ownerMint"`
+ */
+export const writeGlitchyOwnerMint = /*#__PURE__*/ createWriteContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'ownerMint',
+})
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const writeGlitchyRenounceOwnership = /*#__PURE__*/ createWriteContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'renounceOwnership',
+})
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"safeTransferFrom"`
+ */
+export const writeGlitchySafeTransferFrom = /*#__PURE__*/ createWriteContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'safeTransferFrom',
+})
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setApprovalForAll"`
+ */
+export const writeGlitchySetApprovalForAll = /*#__PURE__*/ createWriteContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'setApprovalForAll',
+})
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setBaseURI"`
+ */
+export const writeGlitchySetBaseUri = /*#__PURE__*/ createWriteContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'setBaseURI',
+})
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setConfig"`
+ */
+export const writeGlitchySetConfig = /*#__PURE__*/ createWriteContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'setConfig',
+})
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setDiscountAllowlistRoot"`
+ */
+export const writeGlitchySetDiscountAllowlistRoot =
+  /*#__PURE__*/ createWriteContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'setDiscountAllowlistRoot',
+  })
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setFreeClaimAllowlistRoot"`
+ */
+export const writeGlitchySetFreeClaimAllowlistRoot =
+  /*#__PURE__*/ createWriteContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'setFreeClaimAllowlistRoot',
+  })
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setFundsReceiverAddress"`
+ */
+export const writeGlitchySetFundsReceiverAddress =
+  /*#__PURE__*/ createWriteContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'setFundsReceiverAddress',
+  })
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setTokenPrice"`
+ */
+export const writeGlitchySetTokenPrice = /*#__PURE__*/ createWriteContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'setTokenPrice',
+})
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"transferFrom"`
+ */
+export const writeGlitchyTransferFrom = /*#__PURE__*/ createWriteContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'transferFrom',
+})
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const writeGlitchyTransferOwnership = /*#__PURE__*/ createWriteContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'transferOwnership',
+})
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"withdraw"`
+ */
+export const writeGlitchyWithdraw = /*#__PURE__*/ createWriteContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'withdraw',
+})
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchyAbi}__
+ */
+export const simulateGlitchy = /*#__PURE__*/ createSimulateContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+})
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"approve"`
+ */
+export const simulateGlitchyApprove = /*#__PURE__*/ createSimulateContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'approve',
+})
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"claim"`
+ */
+export const simulateGlitchyClaim = /*#__PURE__*/ createSimulateContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'claim',
+})
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"mint"`
+ */
+export const simulateGlitchyMint = /*#__PURE__*/ createSimulateContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'mint',
+})
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"ownerMint"`
+ */
+export const simulateGlitchyOwnerMint = /*#__PURE__*/ createSimulateContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'ownerMint',
+})
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const simulateGlitchyRenounceOwnership =
+  /*#__PURE__*/ createSimulateContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'renounceOwnership',
+  })
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"safeTransferFrom"`
+ */
+export const simulateGlitchySafeTransferFrom =
+  /*#__PURE__*/ createSimulateContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'safeTransferFrom',
+  })
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setApprovalForAll"`
+ */
+export const simulateGlitchySetApprovalForAll =
+  /*#__PURE__*/ createSimulateContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'setApprovalForAll',
+  })
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setBaseURI"`
+ */
+export const simulateGlitchySetBaseUri = /*#__PURE__*/ createSimulateContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'setBaseURI',
+})
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setConfig"`
+ */
+export const simulateGlitchySetConfig = /*#__PURE__*/ createSimulateContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'setConfig',
+})
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setDiscountAllowlistRoot"`
+ */
+export const simulateGlitchySetDiscountAllowlistRoot =
+  /*#__PURE__*/ createSimulateContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'setDiscountAllowlistRoot',
+  })
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setFreeClaimAllowlistRoot"`
+ */
+export const simulateGlitchySetFreeClaimAllowlistRoot =
+  /*#__PURE__*/ createSimulateContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'setFreeClaimAllowlistRoot',
+  })
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setFundsReceiverAddress"`
+ */
+export const simulateGlitchySetFundsReceiverAddress =
+  /*#__PURE__*/ createSimulateContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'setFundsReceiverAddress',
+  })
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"setTokenPrice"`
+ */
+export const simulateGlitchySetTokenPrice =
+  /*#__PURE__*/ createSimulateContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'setTokenPrice',
+  })
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"transferFrom"`
+ */
+export const simulateGlitchyTransferFrom = /*#__PURE__*/ createSimulateContract(
+  { abi: glitchyAbi, address: glitchyAddress, functionName: 'transferFrom' },
+)
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const simulateGlitchyTransferOwnership =
+  /*#__PURE__*/ createSimulateContract({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    functionName: 'transferOwnership',
+  })
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link glitchyAbi}__ and `functionName` set to `"withdraw"`
+ */
+export const simulateGlitchyWithdraw = /*#__PURE__*/ createSimulateContract({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+  functionName: 'withdraw',
+})
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link glitchyAbi}__
+ */
+export const watchGlitchyEvent = /*#__PURE__*/ createWatchContractEvent({
+  abi: glitchyAbi,
+  address: glitchyAddress,
+})
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link glitchyAbi}__ and `eventName` set to `"Approval"`
+ */
+export const watchGlitchyApprovalEvent = /*#__PURE__*/ createWatchContractEvent(
+  { abi: glitchyAbi, address: glitchyAddress, eventName: 'Approval' },
+)
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link glitchyAbi}__ and `eventName` set to `"ApprovalForAll"`
+ */
+export const watchGlitchyApprovalForAllEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    eventName: 'ApprovalForAll',
+  })
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link glitchyAbi}__ and `eventName` set to `"BatchMetadataUpdate"`
+ */
+export const watchGlitchyBatchMetadataUpdateEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    eventName: 'BatchMetadataUpdate',
+  })
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link glitchyAbi}__ and `eventName` set to `"MetadataUpdate"`
+ */
+export const watchGlitchyMetadataUpdateEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    eventName: 'MetadataUpdate',
+  })
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link glitchyAbi}__ and `eventName` set to `"OwnershipTransferred"`
+ */
+export const watchGlitchyOwnershipTransferredEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    eventName: 'OwnershipTransferred',
+  })
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link glitchyAbi}__ and `eventName` set to `"TokenClaimed"`
+ */
+export const watchGlitchyTokenClaimedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    eventName: 'TokenClaimed',
+  })
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link glitchyAbi}__ and `eventName` set to `"TokenMinted"`
+ */
+export const watchGlitchyTokenMintedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: glitchyAbi,
+    address: glitchyAddress,
+    eventName: 'TokenMinted',
+  })
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link glitchyAbi}__ and `eventName` set to `"Transfer"`
+ */
+export const watchGlitchyTransferEvent = /*#__PURE__*/ createWatchContractEvent(
+  { abi: glitchyAbi, address: glitchyAddress, eventName: 'Transfer' },
+)

@@ -14,11 +14,13 @@ import Link from 'next/link'
 import ChakraNextImageLoader from 'components/ChakraNextImageLoader'
 import FullPageTemplate from 'components/Templates/FullPage'
 import { tokens } from 'data/tokens'
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useEffect, useMemo, useState } from 'react'
 import { AuctionProvider } from 'contexts/AuctionContext'
 import { AuctionSidebar } from './components/AuctionSidebar'
 import { getSmallTokenPath } from 'utils/tokens'
 import { EtherSymbol } from 'components/EtherSymbol'
+import { getExternalEtherscanUrl, getExternalOpenseaUrl } from 'utils/getLink'
+import { auctionAddress, glitchAddress } from 'web3/contract-functions'
 
 const TextSection = ({
   title,
@@ -67,6 +69,7 @@ const SubTextSection = ({
 
 export default function Auction() {
   const [token, setToken] = useState<null | (typeof tokens)[0]>(null)
+  const auctionIsEnded = useMemo(() => new Date().getTime() > 1714323600000, [])
 
   useEffect(() => {
     setToken(tokens[Math.floor(Math.random() * 50)])
@@ -177,6 +180,37 @@ export default function Auction() {
                     </Text>{' '}
                     <Text as={'span'}>Ethereum</Text>
                   </ListItem>
+                  <ListItem mt={2}>
+                    <ChakraLink
+                      as={Link}
+                      target="_blank"
+                      href={getExternalEtherscanUrl(glitchAddress)}
+                      title="etherscan"
+                    >
+                      view collection smart contract
+                    </ChakraLink>
+                  </ListItem>
+                  <ListItem mt={2}>
+                    <ChakraLink
+                      as={Link}
+                      target="_blank"
+                      href={getExternalEtherscanUrl(auctionAddress)}
+                      title="etherscan"
+                    >
+                      view auction smart contract
+                    </ChakraLink>
+                  </ListItem>
+
+                  {/* <ListItem mb={2}>
+                    <ChakraLink
+                      as={Link}
+                      target="_blank"
+                      href={getExternalOpenseaUrl(glitchAddress)}
+                      title="OpenSea"
+                    >
+                      view collection on opensea
+                    </ChakraLink>
+                  </ListItem> */}
                 </List>
               </TextSection>
             </Box>

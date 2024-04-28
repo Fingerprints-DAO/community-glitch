@@ -7,19 +7,32 @@ import {
   useBreakpointValue,
 } from '@chakra-ui/react'
 import ChakraNextImageLoader from 'components/ChakraNextImageLoader'
+import { useMintEditionContext } from 'contexts/MintEditionContext'
 import { tokens } from 'data/tokens'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import { getSmallTokenPath } from 'utils/tokens'
 
-const randomTokens = [...tokens].sort(() => Math.random() - 0.5)
+const tokensByFilename = tokens.reduce(
+  (acc: Record<string, (typeof tokens)[0]>, token) => {
+    acc[token.filename] = token
+    return acc
+  },
+  {},
+)
+
+export interface GridConfig {
+  name: string
+  image: string
+  class: string
+  version: string
+}
 
 const StaticTokenPreview = ({
   token,
-  version,
   divisorOpt = { base: 40, sm: 18, md: 15, lg: 12 },
 }: {
-  token: (typeof tokens)[0]
-  version: string
+  token: (typeof tokensByFilename)[0] & GridConfig
   divisorOpt?: Partial<Record<string, number>>
 }) => {
   const divisor = useBreakpointValue(divisorOpt, {
@@ -38,7 +51,7 @@ const StaticTokenPreview = ({
       w={'100%'}
     >
       <ChakraNextImageLoader
-        src={getSmallTokenPath(token.filename, version)}
+        src={getSmallTokenPath(token.filename, token.version)}
         alt={`${token.name}`}
         imageWidth={token.width}
         imageHeight={token.height}
@@ -54,6 +67,22 @@ export const StaticArtGrid = ({
   divisorOpt,
   ...props
 }: FlexProps & { divisorOpt?: Partial<Record<string, number>> }) => {
+  const { minted } = useMintEditionContext()
+  const [tokensGrid, setTokensGrid] = useState<GridConfig[]>([])
+
+  useEffect(() => {
+    async function updateGrid() {
+      const id = Number(minted + 1n)
+      const newGrid = await fetch(
+        `/mint-edition/config/${id < 1 || id > 510 ? 1 : id}.json`,
+      ).then((res) => res.json())
+
+      setTokensGrid(newGrid)
+    }
+
+    updateGrid()
+  }, [minted])
+
   return (
     <Flex
       as={'section'}
@@ -63,14 +92,17 @@ export const StaticArtGrid = ({
       alignContent={'flex-start'}
       {...props}
     >
-      {randomTokens.map((token) => (
-        <StaticTokenPreview
-          key={token.id}
-          token={token}
-          version={'A'}
-          divisorOpt={divisorOpt}
-        />
-      ))}
+      {tokensGrid.length > 0 &&
+        tokensGrid.map((token) => (
+          <StaticTokenPreview
+            key={token.image}
+            token={{
+              ...tokensByFilename[token.image],
+              ...token,
+            }}
+            divisorOpt={divisorOpt}
+          />
+        ))}
     </Flex>
   )
 }
