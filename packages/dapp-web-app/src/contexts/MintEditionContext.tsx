@@ -6,6 +6,7 @@ import React, {
   useEffect,
   useRef,
   useCallback,
+  useMemo,
 } from 'react'
 import {
   defaultMintConfigDayJs,
@@ -47,17 +48,16 @@ export const useMintEditionContext = () => useContext(MintEditionContext)
 const getCurrentState = (
   startTime?: HandledMintConfigToDayJs['startTime'],
   endTime?: HandledMintConfigToDayJs['endTime'],
-  minted?: BigInt,
-  maxSupply?: number,
+  availableToMint?: number,
 ) => {
   if (!startTime || !endTime) {
     return SalesState.IDLE
   }
-  if (Number(minted) === maxSupply) {
-    return SalesState.SOLD_OUT
-  }
   const now = dayjs()
 
+  if (availableToMint === 0) {
+    return SalesState.SOLD_OUT
+  }
   if (now.isAfter(endTime)) {
     return SalesState.ENDED
   }
@@ -89,6 +89,10 @@ export const MintEditionProvider = ({
     useReadGlitchyRegularMinted()
   const { data: reservedAmount = 0, refetch: refetchReserved } =
     useReadGlitchyFreeClaimAmount()
+  const availableToMint = useMemo(
+    () => maxSupply - reservedAmount - Number(regularMinted),
+    [regularMinted, reservedAmount],
+  )
 
   const refetchAll = useCallback(() => {
     refetchMinted()
@@ -122,7 +126,7 @@ export const MintEditionProvider = ({
         now.diff(config.endTime, 'seconds') <= ONE_MINUTE
 
       setMintState(
-        getCurrentState(config.startTime, config.endTime, minted, maxSupply),
+        getCurrentState(config.startTime, config.endTime, availableToMint),
       )
 
       // If past config.endTime, clear interval and exit
@@ -156,7 +160,7 @@ export const MintEditionProvider = ({
         ...config,
         minted,
         maxSupply: BigInt(maxSupply),
-        availableToMint: maxSupply - reservedAmount - Number(regularMinted),
+        availableToMint,
         mintState,
         limitPerTx: 10,
         refetchAll,

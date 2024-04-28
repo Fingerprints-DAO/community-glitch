@@ -60,8 +60,8 @@ abstract contract BaseScript is Script {
     Glitch(glitchAddress).setMinterContractAddress(address(auction));
   }
 
-  function _deployGlitchyGridGrid(address deployer, string memory baseURI) internal returns (GlitchyGridGrid glitchy) {
-    glitchy = new GlitchyGridGrid(deployer, baseURI, deployer);
+  function _deployGlitchyGridGrid(address deployer, string memory baseURI, address treasuryWallet) internal returns (GlitchyGridGrid glitchy) {
+    glitchy = new GlitchyGridGrid(deployer, baseURI, treasuryWallet);
     return glitchy;
   }
 }
