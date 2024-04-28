@@ -219,7 +219,8 @@ export const MintSidebar = (props: FlexProps) => {
               </>
             )}
           </Flex>
-          {mintState === SalesState.ENDED && (
+          {(mintState === SalesState.ENDED ||
+            mintState === SalesState.SOLD_OUT) && (
             <Box>
               <ChakraLink
                 as={Link}
@@ -367,16 +368,18 @@ export const MintSidebar = (props: FlexProps) => {
                       view smart contract
                     </ChakraLink>
                   </ListItem>
-                  <ListItem mb={2}>
-                    <ChakraLink
-                      as={Link}
-                      target="_blank"
-                      href={getExternalOpenseaUrl(glitchyAddress)}
-                      title="OpenSea"
-                    >
-                      view collection on opensea
-                    </ChakraLink>
-                  </ListItem>
+                  {mintState === SalesState.STARTED && (
+                    <ListItem mb={2}>
+                      <ChakraLink
+                        as={Link}
+                        target="_blank"
+                        href={getExternalOpenseaUrl(glitchyAddress)}
+                        title="OpenSea"
+                      >
+                        view collection on opensea
+                      </ChakraLink>
+                    </ListItem>
+                  )}
                 </List>
                 <Text mt={6}>
                   glitch by misha de ridder, released by Fingerprints, is a
