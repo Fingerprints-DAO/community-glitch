@@ -31,7 +31,13 @@ const handleRequest = frames(async (ctx) => {
     },
     buttons: [
       <Button action="tx" target="/txdata" post_url="/">
-        Mint now per 0.025Ξ
+        Mint 1 per 0.025Ξ
+      </Button>,
+      <Button
+        action="link"
+        target="https://glitch.mishaderidder.com/mint-edition"
+      >
+        Mint multiple on the website
       </Button>,
     ],
   }
