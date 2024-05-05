@@ -1,6 +1,3 @@
-import Link from 'next/link'
-import type { Metadata } from 'next'
-import { fetchMetadata } from 'frames.js/next'
 import { headers } from 'next/headers'
 
 const DEFAULT_DEBUGGER_URL =
@@ -51,29 +48,4 @@ export function vercelURL() {
   return process.env.VERCEL_URL
     ? `https://${process.env.VERCEL_URL}`
     : undefined
-}
-
-export async function generateMetadata(): Promise<Metadata> {
-  return {
-    title: 'New api example',
-    description: 'This is a new api example',
-    other: {
-      ...(await fetchMetadata(
-        new URL('/examples/new-api-transaction/frames', appURL()),
-      )),
-    },
-  }
-}
-
-export default async function Home() {
-  const url = currentURL('/examples/new-api-transaction')
-
-  return (
-    <div>
-      Rent farcaster storage example{' '}
-      <Link href={createDebugUrl(url)} className="underline">
-        Debug
-      </Link>
-    </div>
-  )
 }

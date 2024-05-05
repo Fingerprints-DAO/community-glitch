@@ -1,45 +1,37 @@
-import { createFrames } from 'frames.js/next'
 import { NextResponse } from 'next/server'
 import { createPublicClient, encodeFunctionData, getContract, http } from 'viem'
-import { sepolia } from 'viem/chains'
-import { glitchyAbi, glitchyAddress } from 'web3/contract-functions'
+import { mainnet } from 'viem/chains'
+import { glitchyAbi } from 'web3/contract-functions'
+import { frames } from '../frames'
 
-const frames = createFrames({
-  basePath: '/frame',
+const publicClient = createPublicClient({
+  chain: mainnet,
+  transport: http(),
 })
 
-export const POST = frames(async (ctx) => {
+const handleRequest = frames(async (ctx) => {
+  console.log('xd')
   if (!ctx.message) {
     throw new Error('No message')
   }
-
+  console.log('frame minting', ctx.message.connectedAddress)
   const calldata = encodeFunctionData({
     abi: glitchyAbi,
     functionName: 'mint',
     args: [ctx.message.connectedAddress as any, 1, []],
   })
 
-  const publicClient = createPublicClient({
-    chain: sepolia,
-    transport: http(),
-  })
-
-  const glitchyContract = getContract({
-    address: glitchyAddress,
-    abi: glitchyAbi,
-    client: publicClient,
-  })
-
-  const unitPrice = await glitchyContract.read.tokenPrice()
-
   return NextResponse.json({
-    chainId: 'eip155:11155111', // sepolia
+    chainId: 'eip155:1',
     method: 'eth_sendTransaction',
     params: {
       abi: glitchyAbi,
-      to: glitchyAddress,
+      to: '0xF9989Ace51BC4698FB0bf1C8d569C90CF83A7Ab1',
       data: calldata,
-      value: unitPrice.toString(),
+      value: '25000000000000000',
     },
   })
 })
+
+export const GET = handleRequest
+export const POST = handleRequest

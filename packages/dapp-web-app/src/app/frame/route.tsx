@@ -6,7 +6,7 @@ const handleRequest = frames(async (ctx) => {
   if (ctx.message?.transactionId) {
     return {
       image: (
-        <div tw="bg-purple-800 text-white w-full h-full justify-center items-center flex">
+        <div tw="bg-white text-black w-full h-full justify-center items-center flex">
           Transaction submitted! {ctx.message.transactionId}
         </div>
       ),
@@ -16,7 +16,7 @@ const handleRequest = frames(async (ctx) => {
       buttons: [
         <Button
           action="link"
-          target={`https://sepolia.etherscan.io/tx/${ctx.message.transactionId}`}
+          target={`https://etherscan.io/tx/${ctx.message.transactionId}`}
         >
           View on block explorer
         </Button>,
@@ -25,17 +25,13 @@ const handleRequest = frames(async (ctx) => {
   }
 
   return {
-    image: (
-      <div tw="bg-purple-800 text-white w-full h-full justify-center items-center">
-        Buy a glitchy grid grid
-      </div>
-    ),
+    image: 'https://glitch.mishaderidder.com/mint-edition/thumbnails/1.png',
     imageOptions: {
       aspectRatio: '1:1',
     },
     buttons: [
-      <Button action="tx" target="/txdata" post_url="/frames">
-        Buy a unit
+      <Button action="tx" target="/txdata" post_url="/">
+        Mint now per 0.025Ξ
       </Button>,
     ],
   }
