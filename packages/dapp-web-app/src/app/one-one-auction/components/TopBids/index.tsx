@@ -1,5 +1,5 @@
 import { Button, Box, Text } from '@chakra-ui/react'
-import { useAccount } from 'wagmi'
+import { useAccount, useEnsName } from 'wagmi'
 import { cleanEmptyBids } from 'app/one-one-auction/data-handler'
 import { CustomTable } from 'components/CustomTable'
 import { TableRow } from 'components/CustomTable/TableRow'
@@ -7,10 +7,41 @@ import { formatToEtherStringBN } from 'utils/price'
 import { isUserAddress, shortenAddress } from 'utils/string'
 import { useAuctionContext } from 'contexts/AuctionContext'
 import { SalesState } from 'types/auction'
+import { useMemo } from 'react'
 
 type TopBidsType = {
   bids: ReturnType<typeof cleanEmptyBids>
   onViewAll?: () => void
+}
+
+const TableRowWithENS = ({
+  index,
+  userAddress,
+  bid,
+}: {
+  index: number
+  userAddress?: string
+  bid: ReturnType<typeof cleanEmptyBids>[number]
+}) => {
+  const { data = bid.bidder } = useEnsName({
+    address: bid.bidder,
+  })
+  const handledAddress = useMemo(() => {
+    if (data) {
+      return shortenAddress(data, 10, 5)
+    }
+    return shortenAddress(bid.bidder, 5, 6)
+  }, [bid.bidder, data])
+
+  return (
+    <TableRow
+      index={index + 1}
+      amount={formatToEtherStringBN(bid.amount)}
+      address={isUserAddress(userAddress, bid.bidder) ? 'you' : handledAddress}
+      fullAddress={data ?? bid.bidder}
+      isHighlighted={isUserAddress(userAddress, bid.bidder)}
+    />
+  )
 }
 export const TopBids = ({ bids, onViewAll }: TopBidsType) => {
   const { address: userAddress } = useAccount()
@@ -30,17 +61,11 @@ export const TopBids = ({ bids, onViewAll }: TopBidsType) => {
         <>
           <CustomTable mt={1} maxH={'260px'}>
             {bids.map((bid, index) => (
-              <TableRow
+              <TableRowWithENS
                 key={index}
-                index={index + 1}
-                amount={formatToEtherStringBN(bid.amount)}
-                address={
-                  isUserAddress(userAddress, bid.bidder)
-                    ? 'you'
-                    : shortenAddress(bid.bidder, 5, 6)
-                }
-                fullAddress={bid.bidder}
-                isHighlighted={isUserAddress(userAddress, bid.bidder)}
+                index={index}
+                bid={bid}
+                userAddress={userAddress}
               />
             ))}
           </CustomTable>

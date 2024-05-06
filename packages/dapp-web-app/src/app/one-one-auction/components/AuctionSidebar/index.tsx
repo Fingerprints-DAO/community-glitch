@@ -18,11 +18,10 @@ import Link from 'next/link'
 import { formatToEtherStringBN } from 'utils/price'
 import {
   auctionConfig,
+  glitchAddress,
   useReadAuctionGetMinimumBid,
   useWriteAuctionBid,
 } from 'web3/contract-functions'
-import useCountdownTime from 'hooks/use-countdown-timer'
-import Countdown from 'components/Countdown'
 import { useAuctionContext } from 'contexts/AuctionContext'
 import { SalesState, BidLogsType } from 'types/auction'
 import ForceConnectButton from 'components/ForceConnectButton'
@@ -43,16 +42,10 @@ import useGetTopBids from 'hooks/use-get-top-bids'
 import { ClaimButton } from '../ClaimButton'
 import useTxToast from 'hooks/use-tx-toast'
 import { useDiscount } from 'hooks/use-discount'
+import { getExternalOpenseaUrl } from 'utils/getLink'
 
-const getCountdownText = (state: SalesState) => {
-  console.log('state', state, SalesState.ENDED)
-  if (state === SalesState.ENDED) {
-    return 'auction ended'
-  }
-  if (state === SalesState.STARTED) {
-    return 'remaining time: '
-  }
-  return 'auction starts in: '
+const getCountdownText = () => {
+  return 'auction ended'
 }
 
 const auctionContract = getContractAddressesForChainOrThrow(getChainId())
@@ -64,11 +57,6 @@ export const AuctionSidebar = (props: FlexProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { data: minimumBid, refetch: refetchMinimumBid } =
     useReadAuctionGetMinimumBid()
-  const { countdownInMili } = useCountdownTime({
-    salesState: auctionState,
-    startTime,
-    endTime,
-  })
   const { topBids, myBids, refetchBids } = useGetTopBids()
   const bid = useWriteAuctionBid()
   const bidTx = useWaitForTransactionReceipt({
@@ -176,8 +164,6 @@ export const AuctionSidebar = (props: FlexProps) => {
     showTxExecutedToast,
   ])
 
-  console.log('auctionState', auctionState)
-
   return (
     <Flex
       as={'section'}
@@ -199,20 +185,22 @@ export const AuctionSidebar = (props: FlexProps) => {
         <Flex flexDir={'column'} gap={8} w={'full'}>
           <Box>
             <Text as={'span'} fontWeight={'bold'}>
-              {getCountdownText(auctionState)}
-            </Text>{' '}
-            {!auctionEnded && (
-              <Text as={'span'}>
-                <Countdown timestampInMili={countdownInMili} />
-              </Text>
-            )}
+              {getCountdownText()}
+            </Text>
           </Box>
+
+          <ChakraLink
+            as={Link}
+            target="_blank"
+            href={getExternalOpenseaUrl(glitchAddress)}
+            title="OpenSea"
+          >
+            buy on opensea
+          </ChakraLink>
 
           {auctionNotStartedAndNotIdle && topBids.length > 0 && (
             <Flex flexDir={'column'} gap={4}>
-              <Text fontWeight={'bold'}>
-                {auctionEnded ? 'final price' : 'lowest winning bid'}
-              </Text>
+              <Text fontWeight={'bold'}>final price</Text>
               <Text>
                 <Text as={'span'} fontSize={'xs'}>
                   Ξ

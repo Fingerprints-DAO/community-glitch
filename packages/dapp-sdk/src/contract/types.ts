@@ -1,6 +1,7 @@
 export interface ContractAddress {
   Glitch: string
   GlitchAuction: string
+  GlitchyGridGrid: string
   startBlock: number
   endBlock: number
   chainId: number
