@@ -8,9 +8,7 @@ export const config = createConfig(
   getDefaultConfig({
     ...wagmiPlainConfig,
     // Required API Keys
-    walletConnectProjectId:
-      process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ??
-      '5e9390a7f8281ac44f6cf4348e74bdc5',
+    walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
 
     // Required App Info
     appName: 'glitch',
